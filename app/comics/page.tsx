@@ -15,17 +15,20 @@ export default function ComicsPage() {
   useEffect(() => {
     async function loadComics() {
       try {
+        setError('');
         const data = await getComics(page);
-          console.log('Comics API response:', data);  // Debug log
-          if (data && Array.isArray(data.comics)) {
-            setComics(data.comics);
-            setTotal(data.total || 0);
-            setTotalPages(Math.ceil((data.total || 0) / 20)); // Using default limit of 20
-          } else {
-            setComics([]);
-            setTotal(0);
-            setTotalPages(0);
-          }
+        console.log('Comics API response:', data);
+        
+        if (data?.items) {
+          setComics(data.items);
+          setTotal(data.total);
+          setTotalPages(Math.ceil(data.total / data.limit));
+        } else {
+          console.warn('Invalid response format:', data);
+          setComics([]);
+          setTotal(0);
+          setTotalPages(0);
+        }
       } catch (err: any) {
         setError(err.message);
         setComics([]);
@@ -99,7 +102,7 @@ export default function ComicsPage() {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {comics.map((comic) => (
-                  <ComicCard key={comic.id} comic={comic} />
+                  <ComicCard key={comic._id} comic={comic} />
                 ))}
               </div>
 

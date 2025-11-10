@@ -1,4 +1,4 @@
-import { Comic, getComics } from "./lib/api";
+import { getComics, type Comic } from "./lib/comics";
 import ComicCard from "./components/ComicCard";
 
 // Mock data for development when backend is unavailable
@@ -8,21 +8,33 @@ const mockComics: Comic[] = [
     title: "Manga Demo 1",
     description: "Truyện demo 1",
     cover: "/file.svg",
-    views: 100,
+    slug: "manga-demo-1",
+    authors: ["Author 1"],
+    genres: [],
+    status: "ongoing",
+    chapters: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
   {
     _id: "2",
     title: "Manga Demo 2",
     description: "Truyện demo 2",
     cover: "/globe.svg",
-    views: 200,
+    slug: "manga-demo-2",
+    authors: ["Author 2"],
+    genres: [],
+    status: "ongoing",
+    chapters: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   },
 ];
 
 async function getLatestComics() {
   try {
     const data = await getComics(1, 8);
-    return data?.data || [];
+    return data?.items || [];
   } catch (error) {
     console.error("Error fetching latest comics:", error);
     // Return mock data in development when backend is unavailable
@@ -37,7 +49,7 @@ async function getPopularComics() {
   try {
     // Thêm query parameter để lấy truyện phổ biến (sắp xếp theo lượt xem)
     const data = await getComics(1, 4);
-    return data?.data || [];
+    return data?.items || [];
   } catch (error) {
     console.error("Error fetching popular comics:", error);
     // Return mock data in development when backend is unavailable
