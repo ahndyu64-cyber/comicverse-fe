@@ -3,7 +3,16 @@ import { getComics } from "../lib/api";
 
 export default async function ComicsPage() {
   const res = await getComics(1, 24).catch(() => ({ data: [] }));
-  const comics = res?.data || res || [];
+  // Normalize response to always be an array of comics.
+  // Backend may return { data: [...] } or an array directly.
+  let comics: any[] = [];
+  if (Array.isArray(res)) {
+    comics = res;
+  } else if (res && Array.isArray((res as any).data)) {
+    comics = (res as any).data;
+  } else {
+    comics = [];
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">

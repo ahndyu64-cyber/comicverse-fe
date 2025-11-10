@@ -21,10 +21,6 @@
   --bg: #ffffff;
   --text: #1a1a1a;
   --muted: #666666;
-:root {
-  --bg: #ffffff;
-  --text: #1a1a1a;
-  --muted: #666666;
   --border: #e5e5e5;
   --accent: #3b82f6;
   --accent-dark: #2563eb;
@@ -44,11 +40,6 @@
     color: var(--text);
   }
 }
-  --border: #e5e5e5;
-  --accent: #3b82f6;
-  --accent-dark: #2563eb;
-  --accent-bg: #eff6ff;
-}
 
 .dark {
   --bg: #1a1a1a;
@@ -63,6 +54,22 @@
 body {
   background: var(--bg);
   color: var(--text);
+}
+
+/* Site container utility (used in layout) */
+.site-container {
+  width: 100%;
+  max-width: 1280px; /* matches Tailwind's max-w-7xl */
+  margin-inline: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 768px) {
+  .site-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
 }
 
 /* Header/Navigation Styles */

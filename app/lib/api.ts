@@ -57,21 +57,50 @@ async function fetchJSON(path: string, opts: RequestInit = {}) {
     console.log("[api] fetch:", opts.method || "GET", url);
   }
 
-  let res: Response;
-  try {
-    res = await fetch(url, {
-      ...opts,
-      credentials: "include",
-      headers: {
-        ...opts.headers,
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-      mode: "cors", // explicitly request CORS mode
+  // Provide runtime debug information (helps when Next uses Edge runtime)
+  if (process.env.NODE_ENV !== "production") {
+    // eslint-disable-next-line no-console
+    console.debug("[api] runtime:", {
+      nodeVersion: process?.version,
+      nextRuntime: process?.env?.NEXT_RUNTIME,
+      fetchType: typeof globalThis?.fetch,
     });
-  } catch (err: any) {
-    // Network-level failures (ECONNREFUSED, DNS, etc.)
-    const message = `Network error when fetching ${url}: ${err?.message || err}`;
+  }
+
+  // Attempt fetch with a small retry for transient network errors
+  let res: Response | undefined;
+  const maxAttempts = 2;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      res = await fetch(url, {
+        ...opts,
+        credentials: "include",
+        headers: {
+          ...opts.headers,
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        mode: "cors", // explicitly request CORS mode
+      });
+      break; // success
+    } catch (err: any) {
+      const message = `Network error when fetching ${url}: ${err?.message || err} (attempt ${attempt}/${maxAttempts})`;
+      // eslint-disable-next-line no-console
+      console.warn(message);
+      if (attempt < maxAttempts) {
+        // small backoff before retrying
+        await new Promise((r) => setTimeout(r, 200));
+        continue;
+      }
+      // final failure
+      // eslint-disable-next-line no-console
+      console.error(message);
+      throw new Error(message);
+    }
+  }
+
+  if (!res) {
+    const message = `No response when fetching ${url}`;
     // eslint-disable-next-line no-console
     console.error(message);
     throw new Error(message);
