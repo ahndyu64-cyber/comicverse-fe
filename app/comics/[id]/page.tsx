@@ -6,8 +6,12 @@ type Props = {
 };
 
 export default async function ComicDetail({ params }: Props) {
-  const { id } = params;
-  const res = await getComic(id).catch(() => null);
+  // Ensure params is a valid object and id is a string before using
+  if (!params?.id || typeof params.id !== 'string') {
+    return <div className="p-8">ID truyện không hợp lệ</div>;
+  }
+  
+  const res = await getComic(params.id).catch(() => null);
   const comic = res?.data || res || null;
 
   if (!comic) return <div className="p-8">Không tìm thấy truyện</div>;

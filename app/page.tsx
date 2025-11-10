@@ -2,12 +2,34 @@ import { Comic, getComics } from "./lib/api";
 import ComicCard from "./components/ComicCard";
 import BannerSlider from "./components/BannerSlider";
 
+// Mock data for development when backend is unavailable
+const mockComics: Comic[] = [
+  {
+    _id: "1",
+    title: "Manga Demo 1",
+    description: "Truyện demo 1",
+    cover: "/file.svg",
+    views: 100,
+  },
+  {
+    _id: "2",
+    title: "Manga Demo 2",
+    description: "Truyện demo 2",
+    cover: "/globe.svg",
+    views: 200,
+  },
+];
+
 async function getLatestComics() {
   try {
     const data = await getComics(1, 8);
     return data?.data || [];
   } catch (error) {
     console.error("Error fetching latest comics:", error);
+    // Return mock data in development when backend is unavailable
+    if (process.env.NODE_ENV === "development") {
+      return mockComics;
+    }
     return [];
   }
 }
@@ -19,6 +41,10 @@ async function getPopularComics() {
     return data?.data || [];
   } catch (error) {
     console.error("Error fetching popular comics:", error);
+    // Return mock data in development when backend is unavailable
+    if (process.env.NODE_ENV === "development") {
+      return mockComics.slice(0, 2);
+    }
     return [];
   }
 }

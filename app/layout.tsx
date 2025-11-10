@@ -19,7 +19,9 @@ export default function RootLayout({
     <html lang="vi">
       <body className={inter.className}>
         <Navbar />
-        {children}
+        <main className="site-container mt-6">
+          {children}
+        </main>
       </body>
     </html>
   );

@@ -1,0 +1,22 @@
+{
+  "comics": [
+    {
+      "_id": "1",
+      "title": "Manga Demo 1",
+      "cover": "/file.svg",
+      "description": "Truyện demo 1",
+      "views": 123,
+      "follows": 10
+    },
+    {
+      "_id": "2",
+      "title": "Manga Demo 2",
+      "cover": "/globe.svg",
+      "description": "Truyện demo 2",
+      "views": 456,
+      "follows": 20
+    }
+  ],
+  "chapters": [],
+  "users": []
+}

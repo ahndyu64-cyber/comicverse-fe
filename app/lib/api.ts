@@ -1,4 +1,11 @@
-export const API_BASE = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3000";
+// Default API backend port changed to 4000 to avoid accidental self-requests
+// to the Next dev server (localhost:3000) during server-side rendering which
+// can cause the dev server to hang. Override with NEXT_PUBLIC_API_BASE in
+// your .env.local when needed.
+// Prefer a full API URL (including any global prefix like `/api`) when provided.
+// `NEXT_PUBLIC_API_URL` can be set to e.g. `http://localhost:3000/api`.
+export const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE || "http://localhost:4000";
 
 export type User = {
   _id?: string;
@@ -41,19 +48,43 @@ export type Comic = {
 };
 
 async function fetchJSON(path: string, opts: RequestInit = {}) {
-  const url = `${API_BASE}${path}`;
-  const res = await fetch(url, {
-    ...opts,
-    credentials: "include",
-    headers: {
-      ...opts.headers,
-      "Content-Type": "application/json",
-    },
-  });
+  // If `path` is already an absolute URL, use it as-is. Otherwise prefix with API_BASE.
+  const url = path.startsWith("http") ? path : `${API_BASE}${path}`;
+
+  // Log outgoing requests in development for easier debugging.
+  if (process.env.NODE_ENV !== "production") {
+    // eslint-disable-next-line no-console
+    console.log("[api] fetch:", opts.method || "GET", url);
+  }
+
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      ...opts,
+      credentials: "include",
+      headers: {
+        ...opts.headers,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+      mode: "cors", // explicitly request CORS mode
+    });
+  } catch (err: any) {
+    // Network-level failures (ECONNREFUSED, DNS, etc.)
+    const message = `Network error when fetching ${url}: ${err?.message || err}`;
+    // eslint-disable-next-line no-console
+    console.error(message);
+    throw new Error(message);
+  }
+
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(`API error ${res.status}: ${text}`);
+    const message = `API error ${res.status} when fetching ${url}: ${text}`;
+    // eslint-disable-next-line no-console
+    console.error(message);
+    throw new Error(message);
   }
+
   return res.json();
 }
 
@@ -78,7 +109,10 @@ export async function logout() {
 
 // Comics APIs
 export async function getComics(page = 1, limit = 20) {
-  return fetchJSON(`/comics?page=${page}&limit=${limit}`);
+  // Ensure page and limit are valid positive integers before sending to API
+  const p = Math.max(1, Number(page) || 1);
+  const l = Math.max(1, Number(limit) || 20);
+  return fetchJSON(`/comics?page=${p}&limit=${l}`);
 }
 
 export async function getComic(id: string) {
