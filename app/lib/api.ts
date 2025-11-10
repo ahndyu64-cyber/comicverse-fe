@@ -72,6 +72,9 @@ async function fetchJSON(path: string, opts: RequestInit = {}) {
   const maxAttempts = 2;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
+      // If running in the browser, include the stored access token (if any)
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
       res = await fetch(url, {
         ...opts,
         credentials: "include",
@@ -79,6 +82,7 @@ async function fetchJSON(path: string, opts: RequestInit = {}) {
           ...opts.headers,
           "Content-Type": "application/json",
           "Accept": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         mode: "cors", // explicitly request CORS mode
       });
@@ -107,6 +111,15 @@ async function fetchJSON(path: string, opts: RequestInit = {}) {
   }
 
   if (!res.ok) {
+    // If unauthorized, return null so callers can fallback to client auth state
+    if (res.status === 401) {
+      if (process.env.NODE_ENV !== "production") {
+        // eslint-disable-next-line no-console
+        console.debug(`[api] 401 returned for ${url} - returning null`);
+      }
+      return null;
+    }
+
     const text = await res.text();
     const message = `API error ${res.status} when fetching ${url}: ${text}`;
     // eslint-disable-next-line no-console
@@ -189,6 +202,24 @@ export async function updateProfile(data: Partial<User>) {
   return fetchJSON(`/users/profile`, {
     method: "PUT",
     body: JSON.stringify(data),
+  });
+}
+
+// Admin APIs
+export async function getAdminUsers() {
+  return fetchJSON(`/admin/users`);
+}
+
+export async function updateAdminUserRole(userId: string, role: string) {
+  return fetchJSON(`/admin/users/${userId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ role }),
+  });
+}
+
+export async function deleteAdminUser(userId: string) {
+  return fetchJSON(`/admin/users/${userId}`, {
+    method: "DELETE",
   });
 }
 

@@ -1,9 +1,45 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, forwardRef } from "react";
+import { useRouter } from "next/navigation";
+
+// Small focusable menu button that forwards ref to the underlying button element
+const MenuNavButton = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(function MenuNavButton(
+  { children, className, ...rest },
+  ref
+) {
+  return (
+    <button
+      ref={ref}
+      {...rest}
+      className={`w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 ${className ?? ""}`}
+    >
+      {children}
+    </button>
+  );
+});
+MenuNavButton.displayName = "MenuNavButton";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Navbar() {
   const [dark, setDark] = useState<boolean>(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const firstMenuItemRef = useRef<HTMLButtonElement | null>(null);
+  const router = useRouter();
+  const { user, logout, isAdmin } = useAuth();
+  // read localStorage only after mount to avoid hydration mismatch
+  const [localUser, setLocalUser] = useState<any | null>(null);
+  useEffect(() => {
+    try {
+      const raw = typeof window !== "undefined" ? localStorage.getItem("user") : null;
+      setLocalUser(raw ? JSON.parse(raw) : null);
+    } catch (e) {
+      setLocalUser(null);
+    }
+  }, []);
+
+  const effectiveUser = (user as any) || localUser;
 
   useEffect(() => {
     const stored = typeof window !== "undefined" && localStorage.getItem("cv-dark");
@@ -24,6 +60,32 @@ export default function Navbar() {
     document.documentElement.classList.toggle("dark", next);
     localStorage.setItem("cv-dark", next ? "1" : "0");
   }
+
+  // Close menu on outside click or Escape; focus first item when opened
+  useEffect(() => {
+    function onDoc(e: MouseEvent) {
+      if (!menuRef.current) return;
+      if (e.target instanceof Node && !menuRef.current.contains(e.target)) {
+        setShowMenu(false);
+      }
+    }
+
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setShowMenu(false);
+    }
+
+    if (showMenu) {
+      document.addEventListener("mousedown", onDoc);
+      document.addEventListener("keydown", onKey);
+      // focus the first focusable menu item
+      setTimeout(() => firstMenuItemRef.current?.focus(), 0);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [showMenu]);
 
   // Search toggle (icon -> show input)
   function Search() {
@@ -82,9 +144,103 @@ export default function Navbar() {
           {/* Search: show icon by default, reveal input when active */}
           {/** searchVisible controls whether the input is shown */}
           <Search />
-          <Link href="/auth/login" className="text-sm text-neutral-600 dark:text-neutral-300">
-            Đăng nhập
-          </Link>
+          <div className="relative" ref={menuRef}>
+            <button
+              onClick={() => setShowMenu((s) => !s)}
+              className="flex items-center gap-2 rounded px-2 py-1 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+              aria-haspopup="true"
+              aria-expanded={showMenu}
+            >
+              {effectiveUser ? (
+                <>
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-sm font-semibold text-white">
+                    {(effectiveUser.username || effectiveUser.userName || "?")?.slice(0,1).toUpperCase()}
+                  </span>
+                  <span className="hidden sm:inline text-sm text-neutral-700 dark:text-neutral-300">{effectiveUser.username || effectiveUser.userName}</span>
+                </>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-neutral-700 dark:text-neutral-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+
+            {showMenu && (
+              <div
+                role="menu"
+                aria-label="Site menu"
+                className="absolute right-0 top-full mt-2 w-48 rounded-md border bg-white p-2 shadow-lg dark:bg-neutral-900"
+              >
+                {!effectiveUser ? (
+                  <>
+                    <MenuNavButton
+                      ref={firstMenuItemRef}
+                      onClick={() => { router.push("/auth/login"); setShowMenu(false); }}
+                    >
+                      Đăng nhập
+                    </MenuNavButton>
+                    <MenuNavButton onClick={() => { router.push("/auth/register"); setShowMenu(false); }}>Đăng ký</MenuNavButton>
+                  </>
+                ) : (
+                  <>
+                    {/* show admin link if user roles indicate admin in any common shape */}
+                    {(() => {
+                      const u = effectiveUser as any;
+                      function isAdminUser(x: any) {
+                        if (!x) return false;
+                        // roles as array - elements may be strings or objects
+                        if (Array.isArray(x.roles)) {
+                          for (const el of x.roles) {
+                            if (!el) continue;
+                            if (typeof el === "string" && el.toLowerCase().includes("admin")) return true;
+                            if (typeof el === "object") {
+                              if (el.name === "admin" || el.role === "admin") return true;
+                              // sometimes stored as { _id: ..., name: 'admin' }
+                              if (typeof el.name === "string" && el.name.toLowerCase().includes("admin")) return true;
+                            }
+                          }
+                        }
+                        // roles as string
+                        if (typeof x.roles === "string" && x.roles.toLowerCase().includes("admin")) return true;
+                        // single role field
+                        if (typeof x.role === "string" && x.role.toLowerCase().includes("admin")) return true;
+                        // fallback: username or email contains admin (very permissive)
+                        if (typeof x.username === "string" && x.username.toLowerCase().includes("admin")) return true;
+                        if (typeof x.email === "string" && x.email.toLowerCase().includes("admin")) return true;
+                        return false;
+                      }
+
+                      try {
+                        if (isAdminUser(u)) {
+                          return (
+                            <MenuNavButton onClick={() => { router.push("/admin/users"); setShowMenu(false); }}>
+                              Trang quản lý
+                            </MenuNavButton>
+                          );
+                        }
+                      } catch (e) {
+                        // ignore
+                      }
+                      return null;
+                    })()}
+                    <MenuNavButton
+                      ref={firstMenuItemRef}
+                      onClick={() => { router.push("/profile"); setShowMenu(false); }}
+                    >
+                      Hồ sơ của tôi
+                    </MenuNavButton>
+                    <MenuNavButton onClick={() => { router.push("/comics/following"); setShowMenu(false); }}>Truyện đã theo dõi</MenuNavButton>
+                    <button
+                      onClick={() => { logout(); setShowMenu(false); }}
+                      className="w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300"
+                    >
+                      Đăng xuất
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
           <button
             onClick={toggle}
             aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}

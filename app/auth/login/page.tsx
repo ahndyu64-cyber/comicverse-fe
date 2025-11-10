@@ -3,9 +3,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
 import { login } from "../../lib/auth";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login: setAuth } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -17,11 +19,8 @@ export default function LoginPage() {
 
     try {
       const response = await login({ email, password });
-      // Lưu token vào localStorage để sử dụng sau này
-      localStorage.setItem("token", response.accessToken);
-      localStorage.setItem("refreshToken", response.refreshToken);
-      // Lưu thông tin user
-      localStorage.setItem("user", JSON.stringify(response.user));
+      // Lưu thông tin đăng nhập vào auth context
+      setAuth(response);
       router.push("/");
     } catch (err: any) {
       console.error('Login error:', err);

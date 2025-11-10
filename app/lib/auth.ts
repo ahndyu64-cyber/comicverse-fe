@@ -21,7 +21,7 @@ export type AuthResponse = {
   };
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+import { API_BASE } from './api';
 
 export async function login(data: LoginData) {
   const response = await fetch(`${API_BASE}/auth/login`, {
