@@ -1,77 +1,54 @@
 "use client";
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { Comic } from "../lib/api";
 
-interface BannerSliderProps {
-  comics: Comic[];
-}
+// Danh sách banner tĩnh từ thư mục public
+const BANNERS = [
+  "https://placehold.co/1920x400/232323/FFFFFF/png?text=Banner+1",
+  "https://placehold.co/1920x400/333333/FFFFFF/png?text=Banner+2",
+  "https://placehold.co/1920x400/444444/FFFFFF/png?text=Banner+3"
+];
 
-export default function BannerSlider({ comics }: BannerSliderProps) {
+export default function BannerSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((current) =>
-        current === comics.length - 1 ? 0 : current + 1
-      );
+      setCurrentSlide((current) => (current === BANNERS.length - 1 ? 0 : current + 1));
     }, 5000);
 
     return () => clearInterval(timer);
-  }, [comics.length]);
+  }, []);
 
   const nextSlide = () => {
-    setCurrentSlide((current) =>
-      current === comics.length - 1 ? 0 : current + 1
-    );
+    setCurrentSlide((current) => (current === BANNERS.length - 1 ? 0 : current + 1));
   };
 
   const prevSlide = () => {
-    setCurrentSlide((current) =>
-      current === 0 ? comics.length - 1 : current - 1
-    );
+    setCurrentSlide((current) => (current === 0 ? BANNERS.length - 1 : current - 1));
   };
 
-  if (!comics.length) return null;
+  if (!BANNERS.length) return null;
 
   return (
     <div className="relative h-[400px] w-full overflow-hidden">
       {/* Slides */}
-      {comics.map((comic, index) => (
+      {BANNERS.map((banner, index) => (
         <div
-          key={comic._id}
+          key={banner}
           className={`absolute inset-0 transition-opacity duration-500 ${
             index === currentSlide ? "opacity-100" : "opacity-0"
           }`}
         >
-          {/* Banner Image */}
+          {/* Banner Image (no text overlay) */}
           <div className="relative h-full w-full">
             <Image
-              src={comic.cover || "/placeholder-banner.jpg"}
-              alt={comic.title}
+              src={banner}
+              alt="Banner"
               fill
               className="object-cover"
               priority={index === 0}
             />
-            {/* Overlay gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-          </div>
-
-          {/* Content */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-            <div className="mx-auto max-w-7xl">
-              <h2 className="mb-2 text-3xl font-bold">{comic.title}</h2>
-              <p className="mb-4 max-w-xl text-sm opacity-90">
-                {comic.description?.slice(0, 150)}...
-              </p>
-              <Link
-                href={`/comics/${comic._id}`}
-                className="inline-block rounded bg-blue-600 px-6 py-2 font-medium transition-colors hover:bg-blue-700"
-              >
-                Đọc ngay
-              </Link>
-            </div>
           </div>
         </div>
       ))}
@@ -120,7 +97,7 @@ export default function BannerSlider({ comics }: BannerSliderProps) {
 
       {/* Indicators */}
       <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
-        {comics.map((_, index) => (
+        {BANNERS.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}

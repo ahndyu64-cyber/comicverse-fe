@@ -1,6 +1,5 @@
 import { Comic, getComics } from "./lib/api";
 import ComicCard from "./components/ComicCard";
-import BannerSlider from "./components/BannerSlider";
 
 // Mock data for development when backend is unavailable
 const mockComics: Comic[] = [
@@ -56,12 +55,22 @@ export default async function HomePage() {
   ]);
 
   return (
-    <main>
-      {/* Banner Slider */}
-      <BannerSlider comics={popularComics} />
+    <main className="min-h-screen bg-[color:var(--bg)]">
+      {/* Banner placeholder (hero removed) */}
+      <section className="px-4 mt-8">
+        <div className="site-container">
+          <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl ring-1 ring-black/5 overflow-hidden h-64 flex items-center justify-center">
+            {/* Replace with your banner image or promo content */}
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-neutral-700 dark:text-neutral-200">Banner trắng</h3>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">Thêm hình ảnh hoặc thông điệp quảng bá ở đây</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Latest Comics */}
-      <section className="mx-auto max-w-7xl px-4 py-8">
+      <section className="mx-auto max-w-7xl px-4 py-12">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold">Truyện mới cập nhật</h2>
           <a
@@ -97,35 +106,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Categories/Genres Section */}
-      <section className="mx-auto max-w-7xl px-4 py-8">
-        <h2 className="mb-6 text-2xl font-bold">Thể loại</h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-          {[
-            "Hành động",
-            "Phiêu lưu",
-            "Tình cảm",
-            "Hài hước",
-            "Kinh dị",
-            "Thể thao",
-            "Học đường",
-            "Đời thường",
-            "Fantasy",
-            "Sci-fi",
-            "Shounen",
-            "Shoujo",
-          ].map((genre) => (
-            <a
-              key={genre}
-              href={`/comics?genre=${encodeURIComponent(genre)}`}
-              className="rounded-lg bg-white p-4 text-center shadow transition-shadow hover:shadow-md dark:bg-gray-800"
-            >
-              {genre}
-            </a>
-          ))}
-        </div>
-      </section>
+      {/* Genres removed from homepage (moved to /comics/genres if needed) */}
     </main>
   );
 }
