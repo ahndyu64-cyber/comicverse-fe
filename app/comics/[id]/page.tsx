@@ -1,19 +1,26 @@
+import { use } from "react";
 import ChapterList from "../../components/ChapterList";
 import { getComicById } from "../../lib/comics";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export default async function ComicDetail({ params }: Props) {
-  // Ensure params is a valid object and id is a string before using
-  if (!params?.id || typeof params.id !== 'string') {
+export default function ComicDetail({ params }: Props) {
+  // Unwrap params using React.use()
+  const { id } = use(params);
+  
+  if (!id || typeof id !== 'string') {
     return <div className="p-8">ID truyện không hợp lệ</div>;
   }
   
+  return <ComicDetailContent id={id} />;
+}
+
+async function ComicDetailContent({ id }: { id: string }) {
   let comic;
   try {
-    comic = await getComicById(params.id);
+    comic = await getComicById(id);
     if (!comic) return <div className="p-8">Không tìm thấy truyện</div>;
   } catch (error) {
     console.error('Error fetching comic:', error);
@@ -21,25 +28,134 @@ export default async function ComicDetail({ params }: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
-      <div className="flex flex-col gap-6 md:flex-row">
-        <div className="w-full md:w-1/3">
-          {comic.cover ? (
-            <img src={comic.cover} alt={comic.title} className="w-full rounded" />
-          ) : (
-            <div className="h-64 w-full rounded bg-neutral-100 dark:bg-neutral-800" />
-          )}
+    <div style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }} className="min-h-screen py-8 px-4">
+      <div className="mx-auto max-w-5xl">
+        {/* Header Card */}
+        <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl overflow-hidden">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-8">
+            {/* Bìa truyện */}
+            <div className="md:col-span-1">
+              <div className="relative group">
+                {comic.cover ? (
+                  <img 
+                    src={comic.cover} 
+                    alt={comic.title} 
+                    className="w-full rounded-xl shadow-xl object-cover aspect-[3/4] group-hover:shadow-2xl transition-shadow duration-300"
+                  />
+                ) : (
+                  <div className="w-full rounded-xl bg-gradient-to-br from-neutral-200 to-neutral-300 dark:from-neutral-700 dark:to-neutral-800 aspect-[3/4] flex items-center justify-center">
+                    <span className="text-neutral-500 dark:text-neutral-400">Không có ảnh bìa</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Thông tin truyện */}
+            <div className="md:col-span-2 flex flex-col justify-start gap-6">
+              {/* Tiêu đề */}
+              <div>
+                <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-2">
+                  {comic.title}
+                </h1>
+                <div className="h-1 w-20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full"></div>
+              </div>
+
+              {/* Tác giả */}
+              {comic.authors && comic.authors.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Tác giả</span>
+                  <p className="text-lg text-neutral-700 dark:text-neutral-300 font-semibold">
+                    {comic.authors.map((author, idx) => (
+                      <span key={idx}>
+                        {author}
+                        {idx < comic.authors.length - 1 && <span>, </span>}
+                      </span>
+                    ))}
+                  </p>
+                </div>
+              )}
+
+              {/* Thể loại */}
+              {comic.genres && comic.genres.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Thể loại</span>
+                  <div className="flex flex-wrap gap-2">
+                    {comic.genres.map((genre, idx) => (
+                      <span 
+                        key={idx}
+                        className="px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-700 dark:text-purple-300 text-sm font-medium rounded-full"
+                      >
+                        {genre}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Tác giả (hiển thị dưới thể loại) */}
+              {comic.authors && comic.authors.length > 0 && (
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Tác giả</span>
+                  <p className="text-base text-neutral-700 dark:text-neutral-300 font-medium">
+                    {comic.authors.join(", ")}
+                  </p>
+                </div>
+              )}
+
+              {/* Trạng thái */}
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Trạng thái</span>
+                <div className="flex items-center gap-3">
+                  <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold ${
+                    comic.status === 'ongoing' 
+                      ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
+                      'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                  }`}>
+                    <span className={`w-2 h-2 rounded-full mr-2 ${
+                      comic.status === 'ongoing' ? 'bg-blue-600' : 'bg-green-600'
+                    }`}></span>
+                    {comic.status === 'ongoing' ? 'Đang cập nhật' : 'Hoàn thành'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Nút đọc từ đầu */}
+              {comic.chapters && comic.chapters.length > 0 && (
+                <a 
+                  href={`/reader/${comic._id}/${comic.chapters[0]._id}`}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl w-full md:w-auto"
+                >
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v10H5V5z"></path>
+                    <path d="M7 7h6v2H7V7zm0 4h6v2H7v-2z"></path>
+                  </svg>
+                  Đọc từ đầu
+                </a>
+              )}
+            </div>
+          </div>
         </div>
 
-        <div className="flex w-full flex-1 flex-col gap-3">
-          <h1 className="text-2xl font-semibold">{comic.title}</h1>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">{comic.authors?.join(", ")}</p>
-          <p className="text-sm text-neutral-700 dark:text-neutral-400">{comic.status || "Đang cập nhật"}</p>
-
-          <div>
-            <h3 className="mt-4 text-lg font-medium">Danh sách chương</h3>
-            <ChapterList chapters={comic.chapters} basePath={`/reader/${comic._id}`} />
+        {/* Mô tả truyện */}
+        {comic.description && (
+          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl mt-8 p-8">
+            <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4 flex items-center gap-3">
+              <span className="w-1 h-8 bg-gradient-to-b from-purple-600 to-pink-600 rounded-full"></span>
+              Mô tả
+            </h2>
+            <p className="text-neutral-700 dark:text-neutral-300 leading-relaxed whitespace-pre-wrap text-base">
+              {comic.description}
+            </p>
           </div>
+        )}
+
+        {/* Danh sách chương */}
+        <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl mt-8 p-8">
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-6 flex items-center gap-3">
+            <span className="w-1 h-8 bg-gradient-to-b from-purple-600 to-pink-600 rounded-full"></span>
+            Danh sách chương ({comic.chapters?.length || 0})
+          </h2>
+          <ChapterList chapters={comic.chapters} basePath={`/reader/${comic._id}`} />
         </div>
       </div>
     </div>

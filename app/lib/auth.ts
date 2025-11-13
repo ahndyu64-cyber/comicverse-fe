@@ -82,3 +82,102 @@ export async function logout() {
     credentials: 'include',
   });
 }
+
+/**
+ * Check if a user has admin or moderator role
+ * Handles multiple formats: role as string, roles as array, roles as objects
+ */
+export function hasAdminOrModeratorRole(user: any): boolean {
+  if (!user) return false;
+
+  // Check single role field (string)
+  if (typeof user.role === 'string') {
+    const roleStr = user.role.toLowerCase();
+    if (roleStr === 'admin' || roleStr === 'moderator') return true;
+  }
+
+  // Check roles field - could be string or array
+  if (user.roles) {
+    // If roles is a string
+    if (typeof user.roles === 'string') {
+      const roleStr = user.roles.toLowerCase();
+      if (roleStr === 'admin' || roleStr === 'moderator') return true;
+    }
+
+    // If roles is an array
+    if (Array.isArray(user.roles)) {
+      for (const role of user.roles) {
+        // Handle role as string
+        if (typeof role === 'string') {
+          const roleStr = role.toLowerCase();
+          if (roleStr === 'admin' || roleStr === 'moderator') return true;
+        }
+        // Handle role as object with name or role property
+        if (typeof role === 'object' && role !== null) {
+          const roleStr = (role.name || role.role || '').toLowerCase();
+          if (roleStr === 'admin' || roleStr === 'moderator') return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Check if a user has admin role only
+ */
+export function hasAdminRole(user: any): boolean {
+  if (!user) return false;
+
+  // Check single role field (string)
+  if (typeof user.role === 'string') {
+    return user.role.toLowerCase() === 'admin';
+  }
+
+  // Check roles field - could be string or array
+  if (user.roles) {
+    // If roles is a string
+    if (typeof user.roles === 'string') {
+      return user.roles.toLowerCase() === 'admin';
+    }
+
+    // If roles is an array
+    if (Array.isArray(user.roles)) {
+      for (const role of user.roles) {
+        // Handle role as string
+        if (typeof role === 'string' && role.toLowerCase() === 'admin') {
+          return true;
+        }
+        // Handle role as object with name or role property
+        if (typeof role === 'object' && role !== null) {
+          const roleStr = (role.name || role.role || '').toLowerCase();
+          if (roleStr === 'admin') return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Check if a user can manage (edit/delete) a specific comic
+ * - Admins can manage all comics
+ * - Moderators can only manage comics they created
+ */
+export function canManageComic(user: any, comic: any): boolean {
+  if (!user || !comic) return false;
+
+  // Admins can manage all comics
+  if (hasAdminRole(user)) return true;
+
+  // Moderators can only manage comics they created
+  if (hasAdminOrModeratorRole(user)) {
+    const comicCreatorId = comic.createdBy || comic.createdById;
+    const userId = user._id || user.id;
+    return userId && comicCreatorId && userId === comicCreatorId;
+  }
+
+  return false;
+}

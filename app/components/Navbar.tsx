@@ -183,39 +183,66 @@ export default function Navbar() {
                   </>
                 ) : (
                   <>
-                    {/* show admin link if user roles indicate admin in any common shape */}
+                    {/* show admin/moderator links if user has permission */}
                     {(() => {
                       const u = effectiveUser as any;
-                      function isAdminUser(x: any) {
+                      function hasAdminOrModeratorRole(x: any) {
                         if (!x) return false;
                         // roles as array - elements may be strings or objects
                         if (Array.isArray(x.roles)) {
                           for (const el of x.roles) {
                             if (!el) continue;
-                            if (typeof el === "string" && el.toLowerCase().includes("admin")) return true;
+                            if (typeof el === "string" && (el.toLowerCase().includes("admin") || el.toLowerCase().includes("moderator"))) return true;
                             if (typeof el === "object") {
-                              if (el.name === "admin" || el.role === "admin") return true;
-                              // sometimes stored as { _id: ..., name: 'admin' }
-                              if (typeof el.name === "string" && el.name.toLowerCase().includes("admin")) return true;
+                              if ((el.name === "admin" || el.name === "moderator" || el.role === "admin" || el.role === "moderator")) return true;
+                              if (typeof el.name === "string" && (el.name.toLowerCase().includes("admin") || el.name.toLowerCase().includes("moderator"))) return true;
                             }
                           }
                         }
                         // roles as string
-                        if (typeof x.roles === "string" && x.roles.toLowerCase().includes("admin")) return true;
+                        if (typeof x.roles === "string" && (x.roles.toLowerCase().includes("admin") || x.roles.toLowerCase().includes("moderator"))) return true;
                         // single role field
-                        if (typeof x.role === "string" && x.role.toLowerCase().includes("admin")) return true;
-                        // fallback: username or email contains admin (very permissive)
-                        if (typeof x.username === "string" && x.username.toLowerCase().includes("admin")) return true;
-                        if (typeof x.email === "string" && x.email.toLowerCase().includes("admin")) return true;
+                        if (typeof x.role === "string" && (x.role.toLowerCase().includes("admin") || x.role.toLowerCase().includes("moderator"))) return true;
                         return false;
                       }
 
                       try {
-                        if (isAdminUser(u)) {
+                        if (hasAdminOrModeratorRole(u)) {
                           return (
-                            <MenuNavButton onClick={() => { router.push("/admin/users"); setShowMenu(false); }}>
-                              Trang quản lý
-                            </MenuNavButton>
+                            <>
+                              {/* Only show user management to admins */}
+                              {(() => {
+                                function isAdminUser(x: any) {
+                                  if (!x) return false;
+                                  if (Array.isArray(x.roles)) {
+                                    for (const el of x.roles) {
+                                      if (!el) continue;
+                                      if (typeof el === "string" && el.toLowerCase().includes("admin")) return true;
+                                      if (typeof el === "object") {
+                                        if (el.name === "admin" || el.role === "admin") return true;
+                                        if (typeof el.name === "string" && el.name.toLowerCase().includes("admin")) return true;
+                                      }
+                                    }
+                                  }
+                                  if (typeof x.roles === "string" && x.roles.toLowerCase().includes("admin")) return true;
+                                  if (typeof x.role === "string" && x.role.toLowerCase().includes("admin")) return true;
+                                  if (typeof x.username === "string" && x.username.toLowerCase().includes("admin")) return true;
+                                  if (typeof x.email === "string" && x.email.toLowerCase().includes("admin")) return true;
+                                  return false;
+                                }
+                                
+                                if (isAdminUser(u)) {
+                                  return (
+                                    <MenuNavButton onClick={() => { router.push("/admin/users"); setShowMenu(false); }}>
+                                      Quản lý người dùng
+                                    </MenuNavButton>
+                                  );
+                                }
+                              })()}
+                              <MenuNavButton onClick={() => { router.push("/admin/comics"); setShowMenu(false); }}>
+                                Quản lý truyện
+                              </MenuNavButton>
+                            </>
                           );
                         }
                       } catch (e) {

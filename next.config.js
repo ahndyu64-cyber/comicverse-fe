@@ -20,6 +20,8 @@ const nextConfig = {
       allowedOrigins: ['localhost:3000'],
     },
   },
+  // Enable static file serving for uploads
+  staticPageGenerationTimeout: 60,
 }
 
 module.exports = nextConfig

@@ -15,8 +15,10 @@ type AuthContextType = {
   user: User | null;
   token: string | null;
   refreshToken: string | null;
+  isLoading: boolean;
   login: (response: AuthResponse) => void;
   logout: () => void;
+  refreshUser: () => Promise<void>;
   isAdmin: () => boolean;
 };
 
@@ -26,6 +28,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const refreshUserData = async (authToken: string) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000'}/users/profile`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const userData = await response.json();
+        const userData_data = userData.data || userData;
+        setUser(userData_data);
+        // Update localStorage with new user data
+        localStorage.setItem('user', JSON.stringify(userData_data));
+      }
+    } catch (error) {
+      console.error('Error refreshing user data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     // Load auth state from localStorage on mount
@@ -37,6 +65,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(JSON.parse(storedUser));
       setToken(storedToken);
       setRefreshToken(storedRefreshToken);
+      
+      // Refresh user data from server to get latest role/permissions
+      refreshUserData(storedToken);
+    } else {
+      setIsLoading(false);
     }
   }, []);
 
@@ -62,6 +95,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem('refreshToken');
   };
 
+  const refreshUser = async () => {
+    if (!token) return;
+    await refreshUserData(token);
+  };
+
   const isAdmin = () => {
     if (!user) return false;
     if (Array.isArray(user.roles)) return user.roles.includes('admin');
@@ -71,7 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, refreshToken, login, logout, isAdmin }}>
+    <AuthContext.Provider value={{ user, token, refreshToken, isLoading, login, logout, refreshUser, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

@@ -22,10 +22,13 @@ export default function AdminUsersPage() {
         }
 
         // Normalize response shapes: API may return an array directly or an
-        // object like { users: [...] } depending on backend implementation.
+        // object like { items: [...] }, { users: [...] }, or { data: [...] }
         let list: any[] = [];
         if (Array.isArray(data)) {
           list = data;
+        } else if (Array.isArray((data as any).items)) {
+          // API returns { items: [...], total, page, limit }
+          list = (data as any).items;
         } else if (Array.isArray((data as any).users)) {
           list = (data as any).users;
         } else if (Array.isArray((data as any).data)) {
@@ -59,12 +62,34 @@ export default function AdminUsersPage() {
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
-      const updated = await updateAdminUserRole(userId, newRole);
-      if (updated === null) throw new Error("Failed to update user role (unauthorized)");
-
+      // Immediately update UI
       setUsers(users.map((user) => (user._id === userId ? { ...user, role: newRole } : user)));
+      
+      // Send update to backend
+      const updated = await updateAdminUserRole(userId, newRole);
+      if (updated === null) {
+        throw new Error("Failed to update user role (unauthorized)");
+      }
+
+      // The API might return the updated user, so update state with the response if available
+      if (updated && updated._id) {
+        setUsers(users.map((user) => (user._id === userId ? { ...user, role: updated.role || newRole } : user)));
+      }
     } catch (err) {
       console.error("Error updating user role:", err);
+      // Reload users to revert the optimistic update on error
+      const data = await getAdminUsers();
+      let list: any[] = [];
+      if (Array.isArray(data)) {
+        list = data;
+      } else if (Array.isArray((data as any).items)) {
+        list = (data as any).items;
+      } else if (Array.isArray((data as any).users)) {
+        list = (data as any).users;
+      } else if (Array.isArray((data as any).data)) {
+        list = (data as any).data;
+      }
+      setUsers(list);
       alert("Không thể cập nhật quyền người dùng");
     }
   };
@@ -88,6 +113,23 @@ export default function AdminUsersPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="mb-6 text-2xl font-semibold">Quản lý người dùng</h1>
+      {/* Search / actions */}
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3 w-full max-w-md">
+          <input
+            placeholder="Tìm theo tên hoặc email"
+            className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white outline-none shadow-sm"
+          />
+          <button className="rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-2 text-sm font-semibold text-white hover:shadow-lg transition-all duration-200">
+            Tìm
+          </button>
+        </div>
+        <div>
+          <a href="/admin/users/create" className="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">
+            Thêm người dùng
+          </a>
+        </div>
+      </div>
       {error && (
         <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
           {error}
@@ -102,9 +144,6 @@ export default function AdminUsersPage() {
                 Tên người dùng
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                Email
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
                 Quyền
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
@@ -115,7 +154,7 @@ export default function AdminUsersPage() {
           <tbody className="divide-y divide-gray-200 bg-white">
             {users.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
+                <td colSpan={3} className="px-6 py-8 text-center text-gray-500">
                   {error ? "Không có quyền truy cập hoặc có lỗi." : "Không có người dùng để hiển thị."}
                 </td>
               </tr>
@@ -124,32 +163,37 @@ export default function AdminUsersPage() {
                 <tr key={user._id}>
                   <td className="whitespace-nowrap px-6 py-4">
                     <div className="flex items-center">
-                      {user.avatar && (
-                        <img
-                          src={user.avatar}
-                          alt={user.username}
-                          className="mr-3 h-8 w-8 rounded-full"
-                        />
+                      {user.avatar ? (
+                        <img src={user.avatar} alt={user.username} className="mr-3 h-10 w-10 rounded-full object-cover" />
+                      ) : (
+                        <div className="mr-3 h-10 w-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500">{user.username?.[0]?.toUpperCase() || '?'}</div>
                       )}
-                      {user.username}
+                      <div className="flex flex-col">
+                        <span className="font-medium text-neutral-900 dark:text-white">{user.username}</span>
+                        <span className="text-xs text-neutral-500">{user.email}</span>
+                      </div>
                     </div>
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4">{user.email}</td>
                   <td className="whitespace-nowrap px-6 py-4">
-                    <select
-                      value={user.role || "user"}
-                      onChange={(e) => handleRoleChange(user._id!, e.target.value)}
-                      className="rounded border p-1"
-                    >
-                      <option value="user">User</option>
-                      <option value="admin">Admin</option>
-                      <option value="moderator">Moderator</option>
-                    </select>
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={user.role || "user"}
+                        onChange={(e) => handleRoleChange(user._id!, e.target.value)}
+                        className="rounded-md border border-neutral-200 dark:border-neutral-700 px-2 py-1 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                      >
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                        <option value="moderator">Moderator</option>
+                      </select>
+                      <span className="text-xs px-2 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-700">{user.role || 'user'}</span>
+                    </div>
                   </td>
                   <td className="whitespace-nowrap px-6 py-4">
-                    <button onClick={() => handleDelete(user._id!)} className="text-sm text-red-600 hover:underline">
-                      Xóa
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => handleDelete(user._id!)} className="px-3 py-1 rounded-md bg-red-100 text-red-700 text-sm hover:bg-red-200 transition">
+                        Xóa
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

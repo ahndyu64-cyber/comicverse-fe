@@ -1,11 +1,9 @@
-// Default API backend port changed to 4000 to avoid accidental self-requests
-// to the Next dev server (localhost:3000) during server-side rendering which
-// can cause the dev server to hang. Override with NEXT_PUBLIC_API_BASE in
+// Default API backend port is 3001. Override with NEXT_PUBLIC_API_BASE in
 // your .env.local when needed.
 // Prefer a full API URL (including any global prefix like `/api`) when provided.
 // `NEXT_PUBLIC_API_URL` can be set to e.g. `http://localhost:3000/api`.
 export const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE || "http://localhost:4000";
+  process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3001";
 
 export type User = {
   _id?: string;
@@ -13,6 +11,7 @@ export type User = {
   email: string;
   avatar?: string;
   role?: string;
+  roles?: string[];
   createdAt?: string;
 };
 
@@ -45,6 +44,8 @@ export type Comic = {
   views?: number;
   follows?: number;
   comments?: Comment[];
+  createdBy?: string; // User ID of the person who created this comic
+  createdById?: string; // Alternative field name for created by user ID
 };
 
 async function fetchJSON(path: string, opts: RequestInit = {}) {
@@ -193,6 +194,12 @@ export async function createComment(comicId: string, content: string) {
   });
 }
 
+export async function deleteComment(commentId: string) {
+  return fetchJSON(`/comments/${commentId}`, {
+    method: "DELETE",
+  });
+}
+
 // User APIs
 export async function getCurrentUser() {
   return fetchJSON(`/users/profile`);
@@ -213,12 +220,40 @@ export async function getAdminUsers() {
 export async function updateAdminUserRole(userId: string, role: string) {
   return fetchJSON(`/admin/users/${userId}`, {
     method: "PATCH",
-    body: JSON.stringify({ role }),
+    body: JSON.stringify({ role: role }),
   });
 }
 
 export async function deleteAdminUser(userId: string) {
   return fetchJSON(`/admin/users/${userId}`, {
+    method: "DELETE",
+  });
+}
+
+export async function getAdminComics() {
+  return fetchJSON(`/comics`);
+}
+
+export async function getAdminComic(comicId: string) {
+  return fetchJSON(`/comics/${comicId}`);
+}
+
+export async function createAdminComic(data: Partial<Comic>) {
+  return fetchJSON(`/comics`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function updateAdminComic(comicId: string, data: Partial<Comic>) {
+  return fetchJSON(`/comics/${comicId}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteAdminComic(comicId: string) {
+  return fetchJSON(`/comics/${comicId}`, {
     method: "DELETE",
   });
 }
