@@ -5,6 +5,7 @@ import Link from "next/link";
 import { createAdminComic, getGenres } from "../../../lib/api";
 import { useAuth } from "../../../contexts/AuthContext";
 import { hasAdminOrModeratorRole } from "../../../lib/auth";
+import { uploadComicCover, validateImageFile } from "../../../lib/cloudinary";
 import { useEffect } from "react";
 
 type Comic = {
@@ -75,15 +76,10 @@ export default function CreateComicPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setError('Vui lòng chọn file ảnh');
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setError('Kích thước ảnh không được vượt quá 5MB');
+    // Validate file
+    const validation = validateImageFile(file, 10);
+    if (!validation.valid) {
+      setError(validation.error || 'Lỗi xác thực file');
       return;
     }
 
@@ -91,21 +87,12 @@ export default function CreateComicPage() {
     setError("");
 
     try {
-      // Create FormData for file upload
-      const formDataFile = new FormData();
-      formDataFile.append('file', file);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formDataFile,
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to upload image');
-      }
-
-      const data = await response.json();
-      const imageUrl = data.url || data.path;
+      // Upload using cloudinary utility, forward JWT from auth context if available
+      const jwt = authContext?.token || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
+      // Debug: confirm token presence (only print a short prefix)
+      console.log('uploadCover jwt present:', !!jwt, jwt ? `${jwt.slice(0,8)}...` : null);
+      const uploadResult = await uploadComicCover(file, jwt ?? undefined);
+      const imageUrl = uploadResult.secure_url || uploadResult.url;
 
       // Set cover in formData
       setFormData({ ...formData, cover: imageUrl });
@@ -116,9 +103,9 @@ export default function CreateComicPage() {
         setCoverPreview(event.target?.result as string);
       };
       reader.readAsDataURL(file);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error uploading image:', err);
-      setError('Không thể tải lên ảnh. Vui lòng thử lại.');
+      setError(err.message || 'Không thể tải lên ảnh. Vui lòng thử lại.');
     } finally {
       setUploading(false);
     }

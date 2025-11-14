@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { API_BASE, getChapterImages } from "../../../../../lib/api";
+import { uploadChapterImage, validateImageFile } from "../../../../../lib/cloudinary";
 
 export default function AdminChapterDetail() {
   const params = useParams() as any;
@@ -113,31 +114,27 @@ export default function AdminChapterDetail() {
     }
   }
 
-  // Upload selected files to local /api/upload and then persist the image URLs to the chapter
+  // Upload selected files to Cloudinary via backend and persist URLs to chapter
   async function uploadSelected() {
     if (selectedFiles.length === 0) return alert('Chưa chọn ảnh để tải lên');
     setUploading(true);
     try {
       const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      // Debug: show whether a token will be sent (don't print full token)
+      try { console.log('[chapters] uploadSelected token present:', !!token, token ? `${String(token).slice(0,8)}...` : 'no token'); } catch {}
       const uploadedUrls: string[] = [];
+      
       for (const file of selectedFiles) {
-        const fd = new FormData();
-        fd.append('file', file);
-
-        // Send token in headers when uploading
-        const uploadRes = await fetch('/api/upload', {
-          method: 'POST',
-          body: fd,
-          headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-          },
-        });
-        if (!uploadRes.ok) {
-          const txt = await uploadRes.text();
-          throw new Error(`Upload failed: ${uploadRes.status} ${txt}`);
+        // Validate file before upload
+        const validation = validateImageFile(file, 10);
+        if (!validation.valid) {
+          throw new Error(validation.error || 'Lỗi xác thực file');
         }
-        const j = await uploadRes.json();
-        if (j?.url) uploadedUrls.push(j.url);
+
+        // Upload using cloudinary utility
+        const uploadResult = await uploadChapterImage(file, token ?? undefined);
+        const imageUrl = uploadResult.secure_url || uploadResult.url;
+        uploadedUrls.push(imageUrl);
       }
 
       // Persist new images list on backend by updating the chapter
