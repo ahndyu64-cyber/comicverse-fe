@@ -220,20 +220,20 @@ export default function ProfilePage() {
               <h2 className="text-lg font-semibold">Hồ sơ của tôi</h2>
               <p className="text-neutral-700">Đây là trang thông tin cá nhân. Bạn có thể cập nhật tên hiển thị và avatar.</p>
 
-              <div className="mt-4 rounded-md border bg-neutral-50 p-4">
-                <h3 className="mb-2 text-sm font-medium text-neutral-800">Thông tin chi tiết</h3>
-                <div className="grid grid-cols-1 gap-2 text-sm text-neutral-700 md:grid-cols-1">
+              <div className="mt-4 rounded-md border bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 p-4">
+                <h3 className="mb-2 text-sm font-medium text-neutral-800 dark:text-neutral-100">Thông tin chi tiết</h3>
+                <div className="grid grid-cols-1 gap-2 text-sm text-neutral-700 dark:text-neutral-300 md:grid-cols-1">
                   <div className="flex items-start gap-2">
-                    <div className="w-32 text-neutral-500">Tên</div>
-                    <div className="font-medium">{user?.username || "-"}</div>
+                    <div className="w-32 text-neutral-500 dark:text-neutral-400">Tên</div>
+                    <div className="font-medium text-neutral-900 dark:text-white">{user?.username || "-"}</div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <div className="w-32 text-neutral-500">Email</div>
-                    <div className="font-medium">{user?.email || "-"}</div>
+                    <div className="w-32 text-neutral-500 dark:text-neutral-400">Email</div>
+                    <div className="font-medium text-neutral-900 dark:text-white">{user?.email || "-"}</div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <div className="w-32 text-neutral-500">Tham gia</div>
-                    <div className="font-medium">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "-"}</div>
+                    <div className="w-32 text-neutral-500 dark:text-neutral-400">Tham gia</div>
+                    <div className="font-medium text-neutral-900 dark:text-white">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "-"}</div>
                   </div>
                 </div>
               </div>
@@ -242,28 +242,28 @@ export default function ProfilePage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-neutral-700">Tên người dùng</label>
+                  <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Tên người dùng</label>
                   <input
                     type="text"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                    className="w-full rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-sky-300"
+                    className="w-full rounded border border-neutral-300 dark:border-neutral-600 px-3 py-2 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white outline-none focus:ring-2 focus:ring-sky-300"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-neutral-700">Email</label>
+                  <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Email</label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full rounded border px-3 py-2 bg-neutral-50"
+                    className="w-full rounded border border-neutral-300 dark:border-neutral-600 px-3 py-2 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white"
                     disabled
                   />
                 </div>
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium text-neutral-700">Avatar</label>
+                <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Avatar</label>
                 <div className="flex items-center gap-3">
                   {avatarPreview || formData.avatar ? (
                     <img
@@ -283,25 +283,25 @@ export default function ProfilePage() {
                     />
                     <label
                       htmlFor="avatar-file"
-                      className="inline-block cursor-pointer rounded bg-sky-100 px-3 py-2 text-sm font-medium text-sky-700 hover:bg-sky-200 disabled:opacity-50"
+                      className="inline-block cursor-pointer rounded bg-sky-100 dark:bg-sky-900/30 px-3 py-2 text-sm font-medium text-sky-700 dark:text-sky-300 hover:bg-sky-200 dark:hover:bg-sky-900/50 disabled:opacity-50"
                     >
                       {isUploading ? "Đang tải..." : "Chọn ảnh"}
                     </label>
                   </div>
                 </div>
-                <p className="mt-2 text-xs text-neutral-500">Hoặc dán URL ảnh avatar dưới đây:</p>
+                <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">Hoặc dán URL ảnh avatar dưới đây:</p>
                 <input
                   type="text"
                   value={formData.avatar}
                   onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
-                  className="mt-2 w-full rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-sky-300"
+                  className="mt-2 w-full rounded border border-neutral-300 dark:border-neutral-600 px-3 py-2 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white outline-none focus:ring-2 focus:ring-sky-300"
                   placeholder="https://.../avatar.jpg"
                 />
               </div>
 
               <div className="flex gap-2">
-                <button type="submit" className="rounded bg-emerald-600 px-4 py-2 font-bold text-white shadow hover:bg-emerald-700">Lưu thay đổi</button>
-                <button type="button" onClick={() => { setIsEditing(false); setError(""); }} className="rounded border-2 border-neutral-300 px-4 py-2 font-bold text-neutral-900 hover:bg-neutral-100">Hủy</button>
+                <button type="submit" className="rounded bg-emerald-600 px-4 py-2 font-bold text-white shadow hover:bg-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-600">Lưu thay đổi</button>
+                <button type="button" onClick={() => { setIsEditing(false); setError(""); }} className="rounded border-2 border-neutral-300 dark:border-neutral-600 px-4 py-2 font-bold text-neutral-900 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800">Hủy</button>
               </div>
             </form>
           )}

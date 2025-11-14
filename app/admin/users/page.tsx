@@ -204,7 +204,7 @@ export default function AdminUsersPage() {
                         <option value="admin">Admin</option>
                         <option value="uploader">Uploader</option>
                       </select>
-                      <span className="text-xs px-2 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-700">{user.role || 'user'}</span>
+                      <span className="text-xs px-2 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">{user.role || 'user'}</span>
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-6 py-4">

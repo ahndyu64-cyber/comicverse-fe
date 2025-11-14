@@ -162,14 +162,14 @@ export default function AdminComicsPage() {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          <div className="mb-6 rounded-lg border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-900/20 p-4 text-red-700 dark:text-red-400">
             <p className="font-medium">{error}</p>
           </div>
         )}
 
         {/* Empty State */}
         {comics.length === 0 ? (
-            <div className="rounded-lg border-2 border-dashed border-gray-300 bg-white p-12 text-center">
+            <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-neutral-900 p-12 text-center">
             <div className="mb-4 flex justify-center">
               <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
                 <span className="text-3xl text-gray-400">—</span>
@@ -199,7 +199,7 @@ export default function AdminComicsPage() {
               return (
                 <div
                   key={comicId}
-                  className="group rounded-lg border border-gray-200 bg-white transition-transform transform hover:-translate-y-1 hover:shadow-xl cursor-pointer"
+                  className="group rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-900 transition-transform transform hover:-translate-y-1 hover:shadow-xl cursor-pointer"
                   style={{ textDecoration: 'none', color: 'inherit' }}
                 >
                   {/* Cover */}
@@ -243,20 +243,20 @@ export default function AdminComicsPage() {
 
                   {/* Content */}
                   <div className="p-4">
-                    <h3 className="line-clamp-2 text-sm font-semibold text-gray-900 hover:text-sky-600">
+                    <h3 className="line-clamp-2 text-sm font-semibold text-gray-900 dark:text-white hover:text-sky-600 dark:hover:text-sky-400">
                       {comic.title}
                     </h3>
                     {comic.author && (
                       <p className="mt-1 line-clamp-1 text-sm text-neutral-600 dark:text-neutral-300">
-                        <span className="text-xs text-neutral-500 mr-2">Tác giả</span>
-                        <span className="font-medium">{comic.author}</span>
+                        <span className="text-xs text-neutral-500 dark:text-neutral-400 mr-2">Tác giả</span>
+                        <span className="font-medium text-neutral-900 dark:text-white">{comic.author}</span>
                       </p>
                     )}
 
                     {/* Meta */}
-                    <div className="mt-3 flex items-center justify-between text-xs text-neutral-500">
+                    <div className="mt-3 flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400">
                       <div>
-                        <span>{comic.chapters ? `${comic.chapters.length} chương` : '0 chương'}</span>
+                        <span className="text-neutral-700 dark:text-neutral-300">{comic.chapters ? `${comic.chapters.length} chương` : '0 chương'}</span>
                       </div>
 
                       {/* Actions: Edit, Add Chapter, Delete */}
