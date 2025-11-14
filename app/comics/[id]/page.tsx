@@ -1,5 +1,6 @@
 import { use } from "react";
 import ChapterList from "../../components/ChapterList";
+import ComicActions from "../../components/ComicActions";
 import { getComicById } from "../../lib/comics";
 
 type Props = {
@@ -121,16 +122,11 @@ async function ComicDetailContent({ id }: { id: string }) {
 
               {/* Nút đọc từ đầu */}
               {comic.chapters && comic.chapters.length > 0 && (
-                <a 
-                  href={`/reader/${comic._id}/${comic.chapters[0]._id}`}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl w-full md:w-auto"
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 2h10v10H5V5z"></path>
-                    <path d="M7 7h6v2H7V7zm0 4h6v2H7v-2z"></path>
-                  </svg>
-                  Đọc từ đầu
-                </a>
+                <ComicActions 
+                  comicId={comic._id || ''} 
+                  followCount={comic.follows || 0}
+                  firstChapterId={comic.chapters[0]._id}
+                />
               )}
             </div>
           </div>

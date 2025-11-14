@@ -121,6 +121,17 @@ async function fetchJSON(path: string, opts: RequestInit = {}) {
       return null;
     }
 
+    // Special-case: treat 404 from the search endpoint as an empty result set
+    // to avoid spamming the console with expected "not found" responses when
+    // a search yields no matches.
+    if (res.status === 404 && url.includes('/comics/search')) {
+      if (process.env.NODE_ENV !== "production") {
+        // eslint-disable-next-line no-console
+        console.debug(`[api] 404 search for ${url} - returning empty array`);
+      }
+      return [];
+    }
+
     const text = await res.text();
     const message = `API error ${res.status} when fetching ${url}: ${text}`;
     // eslint-disable-next-line no-console
@@ -175,7 +186,25 @@ export async function getChapterImages(comicId: string, chapterId: string) {
 }
 
 export async function searchComics(q: string) {
-  return fetchJSON(`/comics/search?q=${encodeURIComponent(q)}`);
+  try {
+    const data = await fetchJSON(`/comics/search?q=${encodeURIComponent(q)}`);
+    if (process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
+      console.debug('[api] search response for', q, data);
+    }
+    return data;
+  } catch (err: any) {
+    // Treat 404 / "not found" search results as empty result set instead of an error
+    const msg = String(err?.message || err || '');
+    if (msg.includes('404') || /not found/i.test(msg)) {
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line no-console
+        console.debug('[api] search 404 for', q, '- returning empty array');
+      }
+      return [];
+    }
+    throw err;
+  }
 }
 
 export async function followComic(comicId: string) {
@@ -183,7 +212,7 @@ export async function followComic(comicId: string) {
 }
 
 export async function unfollowComic(comicId: string) {
-  return fetchJSON(`/comics/${comicId}/follow`, { method: "DELETE" });
+  return fetchJSON(`/comics/${comicId}/unfollow`, { method: "POST" });
 }
 
 export async function getFollowingComics(userId: string) {

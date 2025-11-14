@@ -174,25 +174,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Call to Action Section */}
-      <section className="mx-auto max-w-7xl px-4 py-16">
-        <div style={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        }} className="rounded-2xl p-12 text-center text-white shadow-2xl">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Bạn là tác giả truyện tranh?
-          </h2>
-          <p className="text-lg mb-8 opacity-90">
-            Chia sẻ tác phẩm của bạn với cộng đồng ComicVerse
-          </p>
-          <a
-            href="/auth/register"
-            className="inline-block px-8 py-3 bg-white text-purple-600 font-bold rounded-lg hover:bg-gray-100 transition-all duration-300 shadow-lg"
-          >
-            Đăng ký ngay
-          </a>
-        </div>
-      </section>
+      {/* Call to Action removed per request */}
     </main>
   );
 }

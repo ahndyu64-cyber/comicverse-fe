@@ -2,24 +2,28 @@
 import { useEffect, useState } from "react";
 import { Comic, getFollowingComics } from "../../lib/api";
 import ComicCard from "../../components/ComicCard";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function FollowingPage() {
+  const { user, isLoading: authLoading } = useAuth();
   const [comics, setComics] = useState<Comic[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadFollowingComics = async () => {
       try {
-        // Lấy userId từ localStorage
-        const userData = localStorage.getItem('userData');
-        const userId = userData ? JSON.parse(userData).id : null;
-        
-        if (!userId) {
-          console.error("User not logged in");
+        // Wait for auth to finish loading
+        if (authLoading) {
+          return;
+        }
+
+        if (!user?.id) {
+          setLoading(false);
           return;
         }
         
-        const data = await getFollowingComics(userId);
+        setLoading(true);
+        const data = await getFollowingComics(user.id);
         setComics(data || []);
       } catch (err) {
         console.error("Error loading following comics:", err);
@@ -28,20 +32,39 @@ export default function FollowingPage() {
       }
     };
 
-    loadFollowingComics();
-  }, []);
+    if (!authLoading) {
+      loadFollowingComics();
+    }
+  }, [user?.id, authLoading]);
 
-  if (loading) {
-    return <div className="p-8">Loading...</div>;
+  if (loading || authLoading) {
+    return <div className="p-8 text-neutral-900 dark:text-white">Loading...</div>;
+  }
+
+  if (!user) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 py-8">
+        <h1 className="mb-6 text-2xl font-semibold text-neutral-900 dark:text-white">Truyện đang theo dõi</h1>
+        <div className="rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-8 text-center">
+          <p className="mb-4 text-gray-600 dark:text-neutral-400">Bạn cần đăng nhập để xem truyện đã theo dõi</p>
+          <a 
+            href="/auth/login"
+            className="inline-flex items-center gap-2 px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors"
+          >
+            Đăng nhập
+          </a>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-semibold">Truyện đang theo dõi</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-neutral-900 dark:text-white">Truyện đang theo dõi</h1>
       
       {comics.length === 0 ? (
-        <div className="rounded-lg border border-gray-200 p-8 text-center">
-          <p className="text-gray-600">Bạn chưa theo dõi truyện nào</p>
+        <div className="rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-8 text-center">
+          <p className="text-gray-600 dark:text-neutral-400">Bạn chưa theo dõi truyện nào</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
