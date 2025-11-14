@@ -128,7 +128,15 @@ async function fetchJSON(path: string, opts: RequestInit = {}) {
     throw new Error(message);
   }
 
-  return res.json();
+  const data = await res.json();
+  
+  // Log profile-related responses in dev mode for debugging avatar issues
+  if (process.env.NODE_ENV !== "production" && url.includes("/users/profile")) {
+    // eslint-disable-next-line no-console
+    console.log("[api] profile response:", { url, data });
+  }
+  
+  return data;
 }
 
 // Auth APIs

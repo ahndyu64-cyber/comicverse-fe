@@ -48,7 +48,15 @@ export default function AdminUsersPage() {
           console.debug(`[admin/users] loaded ${list.length} users`);
         }
 
-        setUsers(list);
+        // Normalize each user so we always have a `role` string available
+        const normalized = list.map((u: any) => {
+          const roleFromRolesArray = Array.isArray(u.roles) && u.roles.length > 0 ? u.roles[0] : undefined;
+          const roleFromRolesString = typeof u.roles === 'string' ? u.roles : undefined;
+          const role = u.role || roleFromRolesArray || roleFromRolesString || 'user';
+          return { ...u, role };
+        });
+
+        setUsers(normalized);
       } catch (err) {
         console.error("Error loading users:", err);
         setError("Không thể tải danh sách người dùng. Xem console để biết chi tiết.");
@@ -89,7 +97,18 @@ export default function AdminUsersPage() {
       } else if (Array.isArray((data as any).data)) {
         list = (data as any).data;
       }
-      setUsers(list);
+      const normalized = list.map((u: any) => {
+        let roleFromRolesArray: any = undefined;
+        if (Array.isArray(u.roles) && u.roles.length > 0) {
+          const first = u.roles[0];
+          if (typeof first === 'string') roleFromRolesArray = first;
+          else if (first && typeof first === 'object') roleFromRolesArray = first.name || first.role || first.value || undefined;
+        }
+        const roleFromRolesString = typeof u.roles === 'string' ? u.roles : undefined;
+        const role = u.role || roleFromRolesArray || roleFromRolesString || 'user';
+        return { ...u, role };
+      });
+      setUsers(normalized);
       alert("Không thể cập nhật quyền người dùng");
     }
   };
@@ -183,7 +202,7 @@ export default function AdminUsersPage() {
                       >
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
-                        <option value="moderator">Moderator</option>
+                        <option value="uploader">Uploader</option>
                       </select>
                       <span className="text-xs px-2 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-700">{user.role || 'user'}</span>
                     </div>

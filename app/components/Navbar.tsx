@@ -21,6 +21,16 @@ const MenuNavButton = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<H
 MenuNavButton.displayName = "MenuNavButton";
 import { useAuth } from "../contexts/AuthContext";
 
+// Helper to extract avatar URL from various response formats
+const extractAvatarUrl = (avatarVal: any): string => {
+  if (!avatarVal) return "";
+  if (typeof avatarVal === "string") return avatarVal;
+  if (typeof avatarVal === "object") {
+    return avatarVal.secure_url || avatarVal.url || avatarVal.data?.secure_url || avatarVal.data?.url || "";
+  }
+  return "";
+};
+
 export default function Navbar() {
   const [dark, setDark] = useState<boolean>(false);
   const [showMenu, setShowMenu] = useState(false);
@@ -40,6 +50,7 @@ export default function Navbar() {
   }, []);
 
   const effectiveUser = (user as any) || localUser;
+  const avatarUrl = extractAvatarUrl((effectiveUser as any)?.avatar);
 
   useEffect(() => {
     const stored = typeof window !== "undefined" && localStorage.getItem("cv-dark");
@@ -153,9 +164,17 @@ export default function Navbar() {
             >
               {effectiveUser ? (
                 <>
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-sm font-semibold text-white">
-                    {(effectiveUser.username || effectiveUser.userName || "?")?.slice(0,1).toUpperCase()}
-                  </span>
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt={effectiveUser.username || effectiveUser.userName}
+                      className="h-8 w-8 rounded-full object-cover"
+                    />
+                  ) : (
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-sky-500 text-sm font-semibold text-white">
+                      {(effectiveUser.username || effectiveUser.userName || "?")?.slice(0,1).toUpperCase()}
+                    </span>
+                  )}
                   <span className="hidden sm:inline text-sm text-neutral-700 dark:text-neutral-300">{effectiveUser.username || effectiveUser.userName}</span>
                 </>
               ) : (
@@ -183,31 +202,31 @@ export default function Navbar() {
                   </>
                 ) : (
                   <>
-                    {/* show admin/moderator links if user has permission */}
+                    {/* show admin/uploader links if user has permission */}
                     {(() => {
                       const u = effectiveUser as any;
-                      function hasAdminOrModeratorRole(x: any) {
+                      function hasAdminOrUploaderRole(x: any) {
                         if (!x) return false;
                         // roles as array - elements may be strings or objects
                         if (Array.isArray(x.roles)) {
                           for (const el of x.roles) {
                             if (!el) continue;
-                            if (typeof el === "string" && (el.toLowerCase().includes("admin") || el.toLowerCase().includes("moderator"))) return true;
+                            if (typeof el === "string" && (el.toLowerCase().includes("admin") || el.toLowerCase().includes("uploader"))) return true;
                             if (typeof el === "object") {
-                              if ((el.name === "admin" || el.name === "moderator" || el.role === "admin" || el.role === "moderator")) return true;
-                              if (typeof el.name === "string" && (el.name.toLowerCase().includes("admin") || el.name.toLowerCase().includes("moderator"))) return true;
+                              if ((el.name === "admin" || el.name === "uploader" || el.role === "admin" || el.role === "uploader")) return true;
+                              if (typeof el.name === "string" && (el.name.toLowerCase().includes("admin") || el.name.toLowerCase().includes("uploader"))) return true;
                             }
                           }
                         }
                         // roles as string
-                        if (typeof x.roles === "string" && (x.roles.toLowerCase().includes("admin") || x.roles.toLowerCase().includes("moderator"))) return true;
+                        if (typeof x.roles === "string" && (x.roles.toLowerCase().includes("admin") || x.roles.toLowerCase().includes("uploader"))) return true;
                         // single role field
-                        if (typeof x.role === "string" && (x.role.toLowerCase().includes("admin") || x.role.toLowerCase().includes("moderator"))) return true;
+                        if (typeof x.role === "string" && (x.role.toLowerCase().includes("admin") || x.role.toLowerCase().includes("uploader"))) return true;
                         return false;
                       }
 
                       try {
-                        if (hasAdminOrModeratorRole(u)) {
+                        if (hasAdminOrUploaderRole(u)) {
                           return (
                             <>
                               {/* Only show user management to admins */}

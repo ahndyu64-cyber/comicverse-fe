@@ -33,7 +33,7 @@ export default function AdminChaptersPage() {
     }
 
     if (!isAuthorized) {
-      setError("Bạn cần quyền quản lý truyện (Admin hoặc Moderator) để xem trang này.");
+      setError("Bạn cần quyền quản lý truyện (Admin hoặc Uploader) để xem trang này.");
       setLoading(false);
       return;
     }

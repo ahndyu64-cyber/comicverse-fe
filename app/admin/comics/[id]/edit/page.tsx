@@ -46,7 +46,7 @@ export default function EditComicPage() {
     }
 
     if (!isAuthorized) {
-      setError("Bạn cần quyền quản lý truyện (Admin hoặc Moderator) để chỉnh sửa truyện.");
+      setError("Bạn cần quyền quản lý truyện (Admin hoặc Uploader) để chỉnh sửa truyện.");
       setLoading(false);
       return;
     }

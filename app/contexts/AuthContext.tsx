@@ -44,9 +44,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.ok) {
         const userData = await response.json();
         const userData_data = userData.data || userData;
-        setUser(userData_data);
+        // Normalize user shape so `role` is always a string (supports `roles` array)
+        const normalize = (u: any) => {
+          if (!u) return u;
+          let roleFromRolesArray: any = undefined;
+          if (Array.isArray(u.roles) && u.roles.length > 0) {
+            const first = u.roles[0];
+            if (typeof first === 'string') roleFromRolesArray = first;
+            else if (first && typeof first === 'object') roleFromRolesArray = first.name || first.role || first.value || undefined;
+          }
+          const roleFromRolesString = typeof u.roles === 'string' ? u.roles : undefined;
+          const role = u.role || roleFromRolesArray || roleFromRolesString || 'user';
+          return { ...u, role };
+        };
+
+        const normalized = normalize(userData_data);
+        setUser(normalized);
         // Update localStorage with new user data
-        localStorage.setItem('user', JSON.stringify(userData_data));
+        localStorage.setItem('user', JSON.stringify(normalized));
       }
     } catch (error) {
       console.error('Error refreshing user data:', error);
@@ -62,7 +77,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const storedRefreshToken = localStorage.getItem('refreshToken');
 
     if (storedUser && storedToken && storedRefreshToken) {
-      setUser(JSON.parse(storedUser));
+      try {
+        const parsed = JSON.parse(storedUser);
+        // Ensure role normalization on load from localStorage
+        let roleFromRolesArray: any = undefined;
+        if (Array.isArray(parsed.roles) && parsed.roles.length > 0) {
+          const first = parsed.roles[0];
+          if (typeof first === 'string') roleFromRolesArray = first;
+          else if (first && typeof first === 'object') roleFromRolesArray = first.name || first.role || first.value || undefined;
+        }
+        const roleFromRolesString = typeof parsed.roles === 'string' ? parsed.roles : undefined;
+        const role = parsed.role || roleFromRolesArray || roleFromRolesString || 'user';
+        setUser({ ...parsed, role });
+      } catch (e) {
+        setUser(JSON.parse(storedUser));
+      }
       setToken(storedToken);
       setRefreshToken(storedRefreshToken);
       
@@ -74,12 +103,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = (response: AuthResponse) => {
-    setUser(response.user);
+    // Normalize incoming user shape to ensure `role` is set
+    const parsedUser: any = response.user || {};
+    let roleFromRolesArray: any = undefined;
+    if (Array.isArray(parsedUser.roles) && parsedUser.roles.length > 0) {
+      const first = parsedUser.roles[0];
+      if (typeof first === 'string') roleFromRolesArray = first;
+      else if (first && typeof first === 'object') roleFromRolesArray = first.name || first.role || first.value || undefined;
+    }
+    const roleFromRolesString = typeof parsedUser.roles === 'string' ? parsedUser.roles : undefined;
+    const role = parsedUser.role || roleFromRolesArray || roleFromRolesString || 'user';
+    const normalizedUser = { ...parsedUser, role };
+    setUser(normalizedUser);
     setToken(response.accessToken);
     setRefreshToken(response.refreshToken);
 
     // Store in localStorage
-    localStorage.setItem('user', JSON.stringify(response.user));
+    localStorage.setItem('user', JSON.stringify(normalizedUser));
     localStorage.setItem('token', response.accessToken);
     localStorage.setItem('refreshToken', response.refreshToken);
   };

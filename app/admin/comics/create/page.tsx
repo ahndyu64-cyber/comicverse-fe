@@ -44,7 +44,7 @@ export default function CreateComicPage() {
     }
 
     if (!isAuthorized) {
-      setError("Bạn cần quyền quản lý truyện (Admin hoặc Moderator) để tạo truyện.");
+      setError("Bạn cần quyền quản lý truyện (Admin hoặc Uploader) để tạo truyện.");
       return;
     }
     loadGenres();
@@ -137,7 +137,14 @@ export default function CreateComicPage() {
       router.push("/admin/comics");
     } catch (err) {
       console.error("Error creating comic:", err);
-      setError("Không thể tạo truyện mới");
+      const errMsg = err instanceof Error ? err.message : "Không thể tạo truyện mới";
+      
+      // If 403 Forbidden with uploader role, show specific message
+      if (errMsg.includes('403')) {
+        setError("Quyền hạn không đủ. Vui lòng liên hệ với quản trị viên (Admin).");
+      } else {
+        setError(errMsg);
+      }
     } finally {
       setLoading(false);
     }

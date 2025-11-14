@@ -14,25 +14,44 @@ export async function uploadFile(file: File, type: string = 'comic', token?: str
     const BACKEND = (process.env.NEXT_PUBLIC_BACKEND_URL as string) || '';
     const uploadUrl = BACKEND ? `${BACKEND.replace(/\/+$/, '')}/upload` : '/api/upload';
 
-    // Attach Authorization header if a token is provided
+    // Attach Authorization header when we have a token.
+    // For external backend: send Bearer token in Authorization header
+    // For local /api/upload: send Bearer token in Authorization header (Next.js route handler will validate)
     const headers: Record<string, string> = {};
-    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const isExternal = Boolean(BACKEND);
+    
+    // Use provided token, or fall back to localStorage if available
+    const effectiveToken = token || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
+    if (effectiveToken) {
+      headers['Authorization'] = `Bearer ${effectiveToken}`;
+    }
 
-    // Debug: log destination and whether token will be sent
+    // Debug: log destination and whether auth header will be sent
     try {
-      console.log('uploadFile ->', { uploadUrl, willSendAuth: !!token });
+      console.log('uploadFile ->', { uploadUrl, isExternal, willSendAuthHeader: !!headers['Authorization'], hasToken: !!effectiveToken });
+      if (!effectiveToken) {
+        console.warn('uploadFile: No token found in localStorage or params — upload may fail with 401');
+      }
     } catch {}
 
     const response = await fetch(uploadUrl, {
       method: 'POST',
       body: formData,
       headers,
+      credentials: 'include', // Send cookies for both external backend and local API
     });
 
     if (!response.ok) {
       // Clone the response so we can attempt multiple reads (json/text)
       const clone = response.clone();
       let errorMessage = `Upload failed (${response.status})`;
+      
+      // Special handling for 401 Unauthorized
+      if (response.status === 401) {
+        errorMessage = 'Unauthorized — token may be missing or expired. Please login again.';
+        console.error('Upload 401 Unauthorized:', { url: uploadUrl, hasAuthHeader: !!headers['Authorization'], hasToken: !!effectiveToken });
+      }
+      
       try {
         const error = await response.json();
         errorMessage = error?.error || error?.message || errorMessage;
@@ -44,7 +63,9 @@ export async function uploadFile(file: File, type: string = 'comic', token?: str
         try {
           const text = await clone.text();
           console.error('Backend response (text):', text.substring(0, 1000));
-          errorMessage = `Server error: ${response.status} ${response.statusText}`;
+          if (response.status !== 401) {
+            errorMessage = `Server error: ${response.status} ${response.statusText}`;
+          }
         } catch (readErr) {
           console.error('Failed reading backend response text:', readErr);
         }
@@ -70,6 +91,10 @@ export async function uploadComicCover(file: File, token?: string) {
 
 export async function uploadChapterImage(file: File, token?: string) {
   return uploadFile(file, 'chapter', token);
+}
+
+export async function uploadProfileAvatar(file: File, token?: string) {
+  return uploadFile(file, 'profile', token);
 }
 
 export async function uploadMultipleFiles(files: File[], type: string = 'chapter', token?: string) {
