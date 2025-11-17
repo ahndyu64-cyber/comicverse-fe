@@ -45,26 +45,8 @@ async function getLatestComics() {
   }
 }
 
-async function getPopularComics() {
-  try {
-    // Thêm query parameter để lấy truyện phổ biến (sắp xếp theo lượt xem)
-    const data = await getComics(1, 4);
-    return data?.items || [];
-  } catch (error) {
-    console.error("Error fetching popular comics:", error);
-    // Return mock data in development when backend is unavailable
-    if (process.env.NODE_ENV === "development") {
-      return mockComics.slice(0, 2);
-    }
-    return [];
-  }
-}
-
 export default async function HomePage() {
-  const [latestComics, popularComics] = await Promise.all([
-    getLatestComics(),
-    getPopularComics(),
-  ]);
+  const latestComics = await getLatestComics();
 
   return (
     <main className="min-h-screen bg-white dark:bg-neutral-950">
@@ -109,7 +91,7 @@ export default async function HomePage() {
         <div className="mb-12">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
+              <h2 className="text-4xl font-bold text-neutral-900 mb-2">
                 Truyện mới cập nhật
               </h2>
               <p className="text-neutral-600 dark:text-neutral-400">
@@ -136,42 +118,6 @@ export default async function HomePage() {
             <p className="text-neutral-600 dark:text-neutral-400">Chưa có truyện nào</p>
           </div>
         )}
-      </section>
-
-      {/* Popular Comics */}
-      <section className="bg-gradient-to-b from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800/50 py-16">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="mb-12">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
-                  Truyện nổi bật
-                </h2>
-                <p className="text-neutral-600 dark:text-neutral-400">
-                  Những bộ truyện được yêu thích nhất
-                </p>
-              </div>
-              <a
-                href="/comics"
-                className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
-              >
-                Xem tất cả
-              </a>
-            </div>
-          </div>
-          
-          {popularComics.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-              {popularComics.map((comic: Comic) => (
-                <ComicCard key={comic._id} comic={comic} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-neutral-600 dark:text-neutral-400">Chưa có truyện nào</p>
-            </div>
-          )}
-        </div>
       </section>
 
       {/* Call to Action removed per request */}

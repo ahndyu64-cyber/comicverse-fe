@@ -55,7 +55,7 @@ async function ComicDetailContent({ id }: { id: string }) {
             <div className="md:col-span-2 flex flex-col justify-start gap-6">
               {/* Tiêu đề */}
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-2">
+                <h1 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-2">
                   {comic.title}
                 </h1>
                 <div className="h-1 w-20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full"></div>
@@ -81,14 +81,27 @@ async function ComicDetailContent({ id }: { id: string }) {
                 <div className="flex flex-col gap-2">
                   <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Thể loại</span>
                   <div className="flex flex-wrap gap-2">
-                    {comic.genres.map((genre, idx) => (
-                      <span 
-                        key={idx}
-                        className="px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-700 dark:text-purple-300 text-sm font-medium rounded-full"
-                      >
-                        {genre}
-                      </span>
-                    ))}
+                    {comic.genres
+                      .filter(genre => {
+                        // Lọc bỏ thể loại trống hoặc không hợp lệ
+                        if (typeof genre === 'string') {
+                          return genre && genre.trim() !== '';
+                        }
+                        // Nếu là object, kiểm tra có name hoặc _id không
+                        return genre && (genre.name || genre._id);
+                      })
+                      .map((genre, idx) => {
+                        // Lấy tên thể loại (có thể là string hoặc object)
+                        const genreName = typeof genre === 'string' ? genre : (genre.name || genre._id || '');
+                        return genreName ? (
+                          <span 
+                            key={idx}
+                            className="px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-700 dark:text-purple-300 text-sm font-medium rounded-full"
+                          >
+                            {genreName}
+                          </span>
+                        ) : null;
+                      })}
                   </div>
                 </div>
               )}
@@ -135,7 +148,7 @@ async function ComicDetailContent({ id }: { id: string }) {
         {/* Mô tả truyện */}
         {comic.description && (
           <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl mt-8 p-8">
-            <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-4 flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-neutral-900 mb-4 flex items-center gap-3">
               <span className="w-1 h-8 bg-gradient-to-b from-purple-600 to-pink-600 rounded-full"></span>
               Mô tả
             </h2>
@@ -147,7 +160,7 @@ async function ComicDetailContent({ id }: { id: string }) {
 
         {/* Danh sách chương */}
         <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-xl mt-8 p-8">
-          <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-6 flex items-center gap-3">
+          <h2 className="text-2xl font-bold text-neutral-900 mb-6 flex items-center gap-3">
             <span className="w-1 h-8 bg-gradient-to-b from-purple-600 to-pink-600 rounded-full"></span>
             Danh sách chương ({comic.chapters?.length || 0})
           </h2>

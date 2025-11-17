@@ -162,69 +162,96 @@ export function hasAdminRole(user: any): boolean {
 }
 
 /**
- * Check if a user can manage (edit/delete) a specific comic
- * - Admins can manage all comics
- * - Uploaders can only manage comics they created
+ * Helper to extract creator ID from a comic and check if user matches
+ */
+function checkComicOwnership(comic: any, user: any): boolean {
+  if (!comic || !user) return false;
+
+  const userIdRaw = user._id || user.id || (user as any)?.userId;
+
+  const extractCreatorRaw = (c: any) => {
+    if (!c) return null;
+    const candidates = [
+      c.createdBy,
+      c.createdById,
+      c.uploaderId,
+      c.uploader,
+      c.creator,
+      c.owner,
+      c.user,
+      c.created_by,
+    ];
+
+    for (const cand of candidates) {
+      if (!cand) continue;
+      if (Array.isArray(cand) && cand.length > 0) return cand[0];
+      return cand;
+    }
+
+    return null;
+  };
+
+  const normalizeId = (v: any) => {
+    if (!v) return null;
+    if (typeof v === 'string') return v;
+    if (typeof v === 'object') {
+      if ((v as any).user) {
+        const u = (v as any).user;
+        if (u._id) return String(u._id);
+        if (u.id) return String(u.id);
+      }
+      if ((v as any)._id) return String((v as any)._id);
+      if ((v as any).id) return String((v as any).id);
+      if (typeof v.toString === 'function') return v.toString();
+    }
+    return null;
+  };
+
+  const comicCreatorRaw = extractCreatorRaw(comic);
+  const comicCreatorId = normalizeId(comicCreatorRaw);
+  const userId = normalizeId(userIdRaw);
+
+  if (process.env.NODE_ENV !== 'production') {
+    // eslint-disable-next-line no-console
+    console.debug('[auth] checkComicOwnership:', { userIdRaw, comicCreatorRaw, userId, comicCreatorId });
+  }
+
+  return !!userId && !!comicCreatorId && String(userId) === String(comicCreatorId);
+}
+
+/**
+ * Check if a user can delete a comic
+ * - Admins can delete any comic
+ * - Uploaders can delete comics they created
  */
 export function canManageComic(user: any, comic: any): boolean {
   if (!user || !comic) return false;
-
-  // Admins can manage all comics
+  
+  // Admins can delete any comic
   if (hasAdminRole(user)) return true;
 
-  // Uploaders can only manage comics they created
-  if (hasAdminOrModeratorRole(user)) {
-    const userIdRaw = user._id || user.id || (user as any)?.userId;
+  // Uploaders can delete their own comics
+  if (hasAdminOrModeratorRole(user) && !hasAdminRole(user)) {
+    return checkComicOwnership(comic, user);
+  }
 
-    const extractCreatorRaw = (c: any) => {
-      if (!c) return null;
-      const candidates = [
-        c.createdBy,
-        c.createdById,
-        c.creator,
-        c.owner,
-        c.user,
-        c.created_by,
-      ];
+  return false;
+}
 
-      for (const cand of candidates) {
-        if (!cand) continue;
-        // If it's an array, take first element
-        if (Array.isArray(cand) && cand.length > 0) return cand[0];
-        return cand;
-      }
+/**
+ * Check if a user can edit/add chapters to a comic
+ * - Admins can edit any comic
+ * - Uploaders can edit comics they created
+ */
+export function canEditComic(user: any, comic: any): boolean {
+  if (!user || !comic) return false;
 
-      return null;
-    };
+  // Admins can edit any comic
+  if (hasAdminRole(user)) return true;
 
-    const normalizeId = (v: any) => {
-      if (!v) return null;
-      if (typeof v === 'string') return v;
-      if (typeof v === 'object') {
-        // if nested like { user: { _id: '...' } }
-        if ((v as any).user) {
-          const u = (v as any).user;
-          if (u._id) return String(u._id);
-          if (u.id) return String(u.id);
-        }
-        // common shapes: { _id: '...', id: '...' } or mongoose ObjectId
-        if ((v as any)._id) return String((v as any)._id);
-        if ((v as any).id) return String((v as any).id);
-        if (typeof v.toString === 'function') return v.toString();
-      }
-      return null;
-    };
-
-    const comicCreatorRaw = extractCreatorRaw(comic);
-    const comicCreatorId = normalizeId(comicCreatorRaw);
-    const userId = normalizeId(userIdRaw);
-
-    if (process.env.NODE_ENV !== 'production') {
-      // eslint-disable-next-line no-console
-      console.debug('[auth] canManageComic ids:', { userIdRaw, comicCreatorRaw, userId, comicCreatorId });
-    }
-
-    return !!userId && !!comicCreatorId && String(userId) === String(comicCreatorId);
+  // Uploaders can edit their own comics
+  if (hasAdminOrModeratorRole(user) && !hasAdminRole(user)) {
+    return checkComicOwnership(comic, user);
   }
 
   return false;

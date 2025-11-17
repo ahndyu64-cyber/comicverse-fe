@@ -58,7 +58,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return { ...u, role };
         };
 
-        const normalized = normalize(userData_data);
+        const normalizedRaw = normalize(userData_data);
+        // Ensure `id` is always set (prefer `_id` for some backends)
+        const id = (userData_data && (userData_data._id || userData_data.id)) || (normalizedRaw && (normalizedRaw._id || normalizedRaw.id));
+        const normalized = { ...normalizedRaw, id };
         setUser(normalized);
         // Update localStorage with new user data
         localStorage.setItem('user', JSON.stringify(normalized));
@@ -76,7 +79,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const storedToken = localStorage.getItem('token');
     const storedRefreshToken = localStorage.getItem('refreshToken');
 
-    if (storedUser && storedToken && storedRefreshToken) {
+    // If we have a stored user and token, restore them; refresh token is optional.
+    if (storedUser && storedToken) {
       try {
         const parsed = JSON.parse(storedUser);
         // Ensure role normalization on load from localStorage
@@ -88,15 +92,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         const roleFromRolesString = typeof parsed.roles === 'string' ? parsed.roles : undefined;
         const role = parsed.role || roleFromRolesArray || roleFromRolesString || 'user';
-        setUser({ ...parsed, role });
+        // normalize id if backend uses _id
+        const id = parsed?.id || parsed?._id || undefined;
+        setUser({ ...parsed, role, id });
       } catch (e) {
         setUser(JSON.parse(storedUser));
       }
       setToken(storedToken);
-      setRefreshToken(storedRefreshToken);
-      
-      // Refresh user data from server to get latest role/permissions
-      refreshUserData(storedToken);
+      // Only set `refreshToken` if present
+      if (storedRefreshToken) setRefreshToken(storedRefreshToken);
+
+      // If we have a refreshToken, attempt to get the freshest user data.
+      if (storedRefreshToken) {
+        refreshUserData(storedToken);
+      } else {
+        // No refresh token; we still restored `user` & `token` from localStorage
+        // but avoid calling refreshUserData so we don't trip over missing credentials.
+        setIsLoading(false);
+      }
     } else {
       setIsLoading(false);
     }
@@ -113,7 +126,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     const roleFromRolesString = typeof parsedUser.roles === 'string' ? parsedUser.roles : undefined;
     const role = parsedUser.role || roleFromRolesArray || roleFromRolesString || 'user';
-    const normalizedUser = { ...parsedUser, role };
+    const id = parsedUser?.id || parsedUser?._id || undefined;
+    const normalizedUser = { ...parsedUser, role, id };
     setUser(normalizedUser);
     setToken(response.accessToken);
     setRefreshToken(response.refreshToken);
@@ -122,6 +136,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('user', JSON.stringify(normalizedUser));
     localStorage.setItem('token', response.accessToken);
     localStorage.setItem('refreshToken', response.refreshToken);
+    
+    // Refresh user data from server to get latest avatar and info
+    refreshUserData(response.accessToken);
   };
 
   const logout = () => {

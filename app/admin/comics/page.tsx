@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../contexts/AuthContext";
 import { getAdminComics, deleteAdminComic } from "../../lib/api";
-import { hasAdminOrModeratorRole, hasAdminRole, canManageComic } from "../../lib/auth";
+import { hasAdminOrModeratorRole, hasAdminRole, canManageComic, canEditComic } from "../../lib/auth";
 
 type Comic = {
   _id: string;
@@ -130,6 +130,12 @@ export default function AdminComicsPage() {
               <p className="mt-1 text-gray-600">Tổng cộng: <span className="font-semibold text-gray-900">{comics.length}</span> truyện</p>
             </div>
             <div className="flex items-center gap-3">
+              <Link
+                href="/admin/genres"
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition shadow-md"
+              >
+                ⚙ Quản lý thể loại
+              </Link>
               <Link
                 href="/admin/comics/create"
                 className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-2 text-sm font-semibold text-white hover:opacity-95 transition"
@@ -259,9 +265,10 @@ export default function AdminComicsPage() {
                         <span className="text-neutral-700 dark:text-neutral-300">{comic.chapters ? `${comic.chapters.length} chương` : '0 chương'}</span>
                       </div>
 
-                      {/* Actions: Edit, Add Chapter, Delete */}
+                      {/* Actions: Edit, Add Chapter (uploaders only), Delete (admins only) */}
                       <div className="flex items-center gap-2">
-                        {canManageComic(authContext?.user, comic) ? (
+                        {/* Edit & Add Chapter - Only for uploaders who own the comic */}
+                        {canEditComic(authContext?.user, comic) ? (
                           <>
                             <button
                               onClick={(e) => { e.stopPropagation(); router.push(`/admin/comics/${comic._id}/edit`); }}
@@ -276,16 +283,22 @@ export default function AdminComicsPage() {
                             >
                               Thêm chương
                             </button>
-
-                            <button
-                              onClick={(e) => { e.stopPropagation(); handleDelete(comic._id); }}
-                              disabled={deleteLoading === comic._id}
-                              className="inline-flex items-center gap-1 rounded px-3 py-1 text-xs font-semibold bg-red-50 text-red-700 hover:bg-red-100 transition disabled:opacity-50"
-                            >
-                              {deleteLoading === comic._id ? "Xóa..." : "Xóa"}
-                            </button>
                           </>
-                        ) : (
+                        ) : null}
+
+                        {/* Delete - Only for admins */}
+                        {canManageComic(authContext?.user, comic) && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleDelete(comic._id); }}
+                            disabled={deleteLoading === comic._id}
+                            className="inline-flex items-center gap-1 rounded px-3 py-1 text-xs font-semibold bg-red-50 text-red-700 hover:bg-red-100 transition disabled:opacity-50"
+                          >
+                            {deleteLoading === comic._id ? "Xóa..." : "Xóa"}
+                          </button>
+                        )}
+
+                        {/* No permissions message */}
+                        {!canEditComic(authContext?.user, comic) && !canManageComic(authContext?.user, comic) && (
                           <span className="text-xs text-neutral-400 italic">Không có quyền quản lý</span>
                         )}
                       </div>

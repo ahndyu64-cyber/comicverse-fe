@@ -21,13 +21,15 @@ export default function FollowButton({ comicId, initialFollows = 0, onFollowChan
   // Check if user is following this comic on mount
   useEffect(() => {
     const checkFollowStatus = async () => {
-      if (!user?.id || !token) {
+      const userId = (user && ((user as any).id || (user as any)._id)) as string | undefined;
+      const storedToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      if (!userId || (!token && !storedToken)) {
         setIsCheckingStatus(false);
         return;
       }
 
       try {
-        const followingComics = await getFollowingComics(user.id);
+        const followingComics = await getFollowingComics(userId || '');
         const isUserFollowing = followingComics?.some((comic: any) => comic._id === comicId);
         setIsFollowing(isUserFollowing || false);
       } catch (err) {
@@ -45,7 +47,9 @@ export default function FollowButton({ comicId, initialFollows = 0, onFollowChan
   }, [initialFollows]);
 
   const handleFollow = async () => {
-    if (!user?.id || !token) {
+    const storedToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const userId = (user && ((user as any).id || (user as any)._id)) as string | undefined;
+    if (!user || (!token && !storedToken) || !userId) {
       setError('Bạn cần đăng nhập để theo dõi truyện');
       return;
     }
@@ -62,7 +66,7 @@ export default function FollowButton({ comicId, initialFollows = 0, onFollowChan
 
       // Refetch the follow status to ensure accuracy
       try {
-        const followingComics = await getFollowingComics(user.id);
+        const followingComics = await getFollowingComics(userId || '');
         const isUserFollowing = followingComics?.some((comic: any) => comic._id === comicId);
         setIsFollowing(isUserFollowing || false);
       } catch (err) {

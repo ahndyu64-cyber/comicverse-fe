@@ -137,7 +137,7 @@ export default function AdminUsersPage() {
         <div className="flex items-center gap-3 w-full max-w-md">
           <input
             placeholder="Tìm theo tên hoặc email"
-            className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white outline-none shadow-sm"
+            className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 outline-none shadow-sm"
           />
           <button className="rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-2 text-sm font-semibold text-white hover:shadow-lg transition-all duration-200">
             Tìm
@@ -188,7 +188,7 @@ export default function AdminUsersPage() {
                         <div className="mr-3 h-10 w-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500">{user.username?.[0]?.toUpperCase() || '?'}</div>
                       )}
                       <div className="flex flex-col">
-                        <span className="font-medium text-neutral-900 dark:text-white">{user.username}</span>
+                        <span className="font-medium text-neutral-900">{user.username}</span>
                         <span className="text-xs text-neutral-500">{user.email}</span>
                       </div>
                     </div>
@@ -198,7 +198,7 @@ export default function AdminUsersPage() {
                       <select
                         value={user.role || "user"}
                         onChange={(e) => handleRoleChange(user._id!, e.target.value)}
-                        className="rounded-md border border-neutral-200 dark:border-neutral-700 px-2 py-1 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                        className="rounded-md border border-neutral-200 dark:border-neutral-700 px-2 py-1 text-sm bg-white dark:bg-neutral-800 text-neutral-900"
                       >
                         <option value="user">User</option>
                         <option value="admin">Admin</option>

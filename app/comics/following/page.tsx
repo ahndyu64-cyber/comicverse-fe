@@ -17,13 +17,14 @@ export default function FollowingPage() {
           return;
         }
 
-        if (!user?.id) {
+        const userId = user?.id || (user as any)?._id;
+        if (!userId) {
           setLoading(false);
           return;
         }
         
         setLoading(true);
-        const data = await getFollowingComics(user.id);
+        const data = await getFollowingComics(userId);
         setComics(data || []);
       } catch (err) {
         console.error("Error loading following comics:", err);
@@ -38,13 +39,13 @@ export default function FollowingPage() {
   }, [user?.id, authLoading]);
 
   if (loading || authLoading) {
-    return <div className="p-8 text-neutral-900 dark:text-white">Loading...</div>;
+    return <div className="p-8 text-neutral-900">Loading...</div>;
   }
 
   if (!user) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <h1 className="mb-6 text-2xl font-semibold text-neutral-900 dark:text-white">Truyện đang theo dõi</h1>
+        <h1 className="mb-6 text-2xl font-semibold text-neutral-900">Truyện đang theo dõi</h1>
         <div className="rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-8 text-center">
           <p className="mb-4 text-gray-600 dark:text-neutral-400">Bạn cần đăng nhập để xem truyện đã theo dõi</p>
           <a 

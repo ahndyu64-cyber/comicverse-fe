@@ -225,15 +225,15 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-1 gap-2 text-sm text-neutral-700 dark:text-neutral-300 md:grid-cols-1">
                   <div className="flex items-start gap-2">
                     <div className="w-32 text-neutral-500 dark:text-neutral-400">Tên</div>
-                    <div className="font-medium text-neutral-900 dark:text-white">{user?.username || "-"}</div>
+                    <div className="font-medium text-neutral-900">{user?.username || "-"}</div>
                   </div>
                   <div className="flex items-start gap-2">
                     <div className="w-32 text-neutral-500 dark:text-neutral-400">Email</div>
-                    <div className="font-medium text-neutral-900 dark:text-white">{user?.email || "-"}</div>
+                    <div className="font-medium text-neutral-900">{user?.email || "-"}</div>
                   </div>
                   <div className="flex items-start gap-2">
                     <div className="w-32 text-neutral-500 dark:text-neutral-400">Tham gia</div>
-                    <div className="font-medium text-neutral-900 dark:text-white">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "-"}</div>
+                    <div className="font-medium text-neutral-900">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "-"}</div>
                   </div>
                 </div>
               </div>
@@ -247,7 +247,7 @@ export default function ProfilePage() {
                     type="text"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                    className="w-full rounded border border-neutral-300 dark:border-neutral-600 px-3 py-2 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white outline-none focus:ring-2 focus:ring-sky-300"
+                    className="w-full rounded border border-neutral-300 dark:border-neutral-600 px-3 py-2 bg-white dark:bg-neutral-800 text-neutral-900 outline-none focus:ring-2 focus:ring-sky-300"
                   />
                 </div>
                 <div>
@@ -256,7 +256,7 @@ export default function ProfilePage() {
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full rounded border border-neutral-300 dark:border-neutral-600 px-3 py-2 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                    className="w-full rounded border border-neutral-300 dark:border-neutral-600 px-3 py-2 bg-neutral-50 dark:bg-neutral-800 text-neutral-900"
                     disabled
                   />
                 </div>
@@ -294,14 +294,14 @@ export default function ProfilePage() {
                   type="text"
                   value={formData.avatar}
                   onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
-                  className="mt-2 w-full rounded border border-neutral-300 dark:border-neutral-600 px-3 py-2 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white outline-none focus:ring-2 focus:ring-sky-300"
+                  className="mt-2 w-full rounded border border-neutral-300 dark:border-neutral-600 px-3 py-2 bg-white dark:bg-neutral-800 text-neutral-900 outline-none focus:ring-2 focus:ring-sky-300"
                   placeholder="https://.../avatar.jpg"
                 />
               </div>
 
               <div className="flex gap-2">
                 <button type="submit" className="rounded bg-emerald-600 px-4 py-2 font-bold text-white shadow hover:bg-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-600">Lưu thay đổi</button>
-                <button type="button" onClick={() => { setIsEditing(false); setError(""); }} className="rounded border-2 border-neutral-300 dark:border-neutral-600 px-4 py-2 font-bold text-neutral-900 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800">Hủy</button>
+                <button type="button" onClick={() => { setIsEditing(false); setError(""); }} className="rounded border-2 border-neutral-300 dark:border-neutral-600 px-4 py-2 font-bold text-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800">Hủy</button>
               </div>
             </form>
           )}

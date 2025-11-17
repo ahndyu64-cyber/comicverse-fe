@@ -25,6 +25,10 @@
   --accent: #3b82f6;
   --accent-dark: #2563eb;
   --accent-bg: #eff6ff;
+  --input-bg: #ffffff;
+  --input-text: #111827;
+  --input-border: #e5e7eb;
+  --label-text: #111827;
 }
 
 /* Small opinionated base styles to make the UI more modern */
@@ -43,12 +47,16 @@
 
 .dark {
   --bg: #1a1a1a;
-  --text: #ffffff;
-  --muted: #a3a3a3;
+  --text: #1a1a1a;
+  --muted: #666666;
   --border: #333333;
   --accent: #60a5fa;
   --accent-dark: #3b82f6;
   --accent-bg: #1e3a8a;
+  --input-bg: #27272a;
+  --input-text: #111827;
+  --input-border: #404040;
+  --label-text: #111827;
 }
 
 body {

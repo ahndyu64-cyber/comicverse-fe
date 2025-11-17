@@ -46,6 +46,7 @@ export type Comic = {
   comments?: Comment[];
   createdBy?: string; // User ID of the person who created this comic
   createdById?: string; // Alternative field name for created by user ID
+  uploaderId?: string; // Some backends return uploaderId
 };
 
 async function fetchJSON(path: string, opts: RequestInit = {}) {
@@ -284,7 +285,7 @@ export async function createAdminComic(data: Partial<Comic>) {
 
 export async function updateAdminComic(comicId: string, data: Partial<Comic>) {
   return fetchJSON(`/comics/${comicId}`, {
-    method: "PATCH",
+    method: "PUT",
     body: JSON.stringify(data),
   });
 }

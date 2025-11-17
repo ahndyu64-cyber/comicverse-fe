@@ -151,7 +151,7 @@ export default function CreateComicPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-neutral-950 dark:to-neutral-900">
       <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-10">
@@ -173,8 +173,8 @@ export default function CreateComicPage() {
             <span>←</span>
             <span>Quay lại danh sách</span>
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 mt-4">Thêm truyện mới</h1>
-          <p className="mt-2 text-lg text-gray-600">Tạo một truyện mới vào kho truyện của bạn</p>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mt-4">Thêm truyện mới</h1>
+          <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">Tạo một truyện mới vào kho truyện của bạn</p>
         </div>
 
         {/* Error Alert */}
@@ -193,7 +193,7 @@ export default function CreateComicPage() {
 
         {/* Form */}
         <div style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--input-bg)',
           borderRadius: '12px',
           boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
           overflow: 'hidden'
@@ -205,7 +205,7 @@ export default function CreateComicPage() {
               <div className="lg:col-span-2 p-8">
                 {/* Tiêu đề */}
                 <div className="mb-8">
-                  <label htmlFor="title" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#111827', marginBottom: '8px' }}>
+                  <label htmlFor="title" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--label-text)', marginBottom: '8px' }}>
                     Tiêu đề <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <input
@@ -220,9 +220,10 @@ export default function CreateComicPage() {
                       width: '100%',
                       padding: '12px 16px',
                       borderRadius: '8px',
-                      border: '1px solid #e5e7eb',
+                      border: '1px solid var(--input-border)',
                       fontSize: '16px',
-                      color: '#111827',
+                      color: 'var(--input-text)',
+                      backgroundColor: 'var(--input-bg)',
                       transition: 'all 0.2s',
                       boxSizing: 'border-box'
                     }}
@@ -239,7 +240,7 @@ export default function CreateComicPage() {
 
                 {/* Tác giả */}
                 <div className="mb-8">
-                  <label htmlFor="author" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#111827', marginBottom: '8px' }}>
+                  <label htmlFor="author" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--label-text)', marginBottom: '8px' }}>
                     Tác giả
                   </label>
                   <input
@@ -254,9 +255,10 @@ export default function CreateComicPage() {
                       width: '100%',
                       padding: '12px 16px',
                       borderRadius: '8px',
-                      border: '1px solid #e5e7eb',
+                      border: '1px solid var(--input-border)',
                       fontSize: '16px',
-                      color: '#111827',
+                      color: 'var(--input-text)',
+                      backgroundColor: 'var(--input-bg)',
                       transition: 'all 0.2s',
                       boxSizing: 'border-box'
                     }}
@@ -273,7 +275,7 @@ export default function CreateComicPage() {
 
                 {/* Mô tả */}
                 <div className="mb-8">
-                  <label htmlFor="description" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#111827', marginBottom: '8px' }}>
+                  <label htmlFor="description" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--label-text)', marginBottom: '8px' }}>
                     Mô tả
                   </label>
                   <textarea
@@ -281,16 +283,17 @@ export default function CreateComicPage() {
                     name="description"
                     value={formData.description || ""}
                     onChange={handleInputChange}
-                    placeholder="Nhập mô tả truyện (tối thiểu 50 ký tự)"
+                    placeholder="Nhập mô tả truyện"
                     rows={5}
                     disabled={loading}
                     style={{
                       width: '100%',
                       padding: '12px 16px',
                       borderRadius: '8px',
-                      border: '1px solid #e5e7eb',
+                      border: '1px solid var(--input-border)',
                       fontSize: '16px',
-                      color: '#111827',
+                      color: 'var(--input-text)',
+                      backgroundColor: 'var(--input-bg)',
                       fontFamily: 'inherit',
                       transition: 'all 0.2s',
                       boxSizing: 'border-box',
@@ -309,7 +312,7 @@ export default function CreateComicPage() {
 
                 {/* Trạng thái */}
                 <div className="mb-8">
-                  <label htmlFor="status" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#111827', marginBottom: '8px' }}>
+                  <label htmlFor="status" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--label-text)', marginBottom: '8px' }}>
                     Trạng thái
                   </label>
                   <select
@@ -322,9 +325,10 @@ export default function CreateComicPage() {
                       width: '100%',
                       padding: '12px 16px',
                       borderRadius: '8px',
-                      border: '1px solid #e5e7eb',
+                      border: '1px solid var(--input-border)',
                       fontSize: '16px',
-                      color: '#111827',
+                      color: 'var(--input-text)',
+                      backgroundColor: 'var(--input-bg)',
                       transition: 'all 0.2s',
                       boxSizing: 'border-box',
                       cursor: 'pointer'
@@ -347,7 +351,7 @@ export default function CreateComicPage() {
                 {/* Thể loại */}
                 {genres.length > 0 && (
                   <div className="mb-8">
-                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#111827', marginBottom: '12px' }}>
+                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--label-text)', marginBottom: '12px' }}>
                       Thể loại
                     </label>
                     <div className="grid grid-cols-2 gap-3">
@@ -399,8 +403,8 @@ export default function CreateComicPage() {
                 alignItems: 'center',
                 justifyContent: 'flex-start'
               }}>
-                <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#111827', marginBottom: '16px' }}>
-                  Upload Ảnh Bìa
+                                <h3 style={{ fontSize: '14px', fontWeight: '600', color: 'var(--label-text)', marginBottom: '16px' }}>
+                  Chọn bìa truyện
                 </h3>
                 
                 {/* File Input */}

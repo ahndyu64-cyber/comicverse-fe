@@ -12,10 +12,12 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
 
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
 
     try {
       const response = await login({ email, password });
@@ -26,8 +28,25 @@ export default function LoginPage() {
       console.error('Login error:', err);
       // Prefer server-provided message when available
       setError(err?.message || "Email hoặc mật khẩu không đúng");
+    } finally {
+      setIsLoading(false);
     }
   }
+
+  const handleGoogleLogin = async () => {
+    setError("");
+    setIsLoading(true);
+    
+    try {
+      // Initiate Google OAuth flow
+      const redirectUrl = `${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001'}/auth/google`;
+      window.location.href = redirectUrl;
+    } catch (err: any) {
+      console.error('Google login error:', err);
+      setError("Không thể đăng nhập bằng Google");
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -104,9 +123,10 @@ export default function LoginPage() {
 
                 <button
                   type="submit"
-                  className="w-full transform rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition-all hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-[0.98]"
+                  disabled={isLoading}
+                  className="w-full transform rounded-lg bg-blue-600 px-4 py-3 font-medium text-white transition-all hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Đăng nhập
+                  {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
                 </button>
 
                 <div className="relative my-6">
@@ -121,7 +141,9 @@ export default function LoginPage() {
                 <div className="flex justify-center">
                   <button
                     type="button"
-                    className="flex w-full max-w-[240px] items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    onClick={handleGoogleLogin}
+                    disabled={isLoading}
+                    className="flex w-full max-w-[240px] items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <svg className="h-5 w-5" viewBox="0 0 24 24">
                       <path
@@ -141,7 +163,7 @@ export default function LoginPage() {
                         fill="#EA4335"
                       />
                     </svg>
-                    Đăng nhập bằng Google
+                    {isLoading ? "Đang xử lý..." : "Đăng nhập bằng Google"}
                   </button>
                 </div>
 

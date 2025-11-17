@@ -229,7 +229,7 @@ export default function EditComicPage() {
     <div style={{
       minHeight: '100vh',
       background: 'linear-gradient(to bottom right, #f9fafb, #f3f4f6)'
-    }}>
+    }} className="dark:bg-gradient-to-br dark:from-neutral-950 dark:to-neutral-900">
       <div style={{
         margin: '0 auto',
         maxWidth: '1280px',
@@ -256,10 +256,10 @@ export default function EditComicPage() {
             <span>←</span>
             <span>Quay lại danh sách</span>
           </Link>
-          <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#111827', marginTop: '16px' }}>
+          <h1 style={{ fontSize: '32px', fontWeight: '700', color: 'var(--text)', marginTop: '16px' }}>
             Chỉnh sửa truyện
           </h1>
-          <p style={{ marginTop: '8px', fontSize: '18px', color: '#4b5563' }}>
+          <p style={{ marginTop: '8px', fontSize: '18px', color: 'var(--muted)' }}>
             Cập nhật thông tin truyện của bạn
           </p>
         </div>
@@ -280,7 +280,7 @@ export default function EditComicPage() {
 
         {/* Form */}
         <div style={{
-          backgroundColor: '#ffffff',
+          backgroundColor: 'var(--input-bg)',
           borderRadius: '12px',
           boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
           overflow: 'hidden'
@@ -296,7 +296,7 @@ export default function EditComicPage() {
               <div style={{ padding: '32px' }}>
                 {/* Tiêu đề */}
                 <div style={{ marginBottom: '32px' }}>
-                  <label htmlFor="title" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#111827', marginBottom: '8px' }}>
+                  <label htmlFor="title" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--label-text)', marginBottom: '8px' }}>
                     Tiêu đề <span style={{ color: '#ef4444' }}>*</span>
                   </label>
                   <input
@@ -311,9 +311,10 @@ export default function EditComicPage() {
                       width: '100%',
                       padding: '12px 16px',
                       borderRadius: '8px',
-                      border: '1px solid #e5e7eb',
+                      border: '1px solid var(--input-border)',
                       fontSize: '16px',
-                      color: '#111827',
+                      color: 'var(--input-text)',
+                      backgroundColor: 'var(--input-bg)',
                       transition: 'all 0.2s',
                       boxSizing: 'border-box'
                     }}
@@ -330,7 +331,7 @@ export default function EditComicPage() {
 
                 {/* Tác giả */}
                 <div style={{ marginBottom: '32px' }}>
-                  <label htmlFor="author" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#111827', marginBottom: '8px' }}>
+                  <label htmlFor="author" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--label-text)', marginBottom: '8px' }}>
                     Tác giả
                   </label>
                   <input
@@ -345,9 +346,10 @@ export default function EditComicPage() {
                       width: '100%',
                       padding: '12px 16px',
                       borderRadius: '8px',
-                      border: '1px solid #e5e7eb',
+                      border: '1px solid var(--input-border)',
                       fontSize: '16px',
-                      color: '#111827',
+                      color: 'var(--input-text)',
+                      backgroundColor: 'var(--input-bg)',
                       transition: 'all 0.2s',
                       boxSizing: 'border-box'
                     }}
@@ -364,7 +366,7 @@ export default function EditComicPage() {
 
                 {/* Mô tả */}
                 <div style={{ marginBottom: '32px' }}>
-                  <label htmlFor="description" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#111827', marginBottom: '8px' }}>
+                  <label htmlFor="description" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--label-text)', marginBottom: '8px' }}>
                     Mô tả
                   </label>
                   <textarea
@@ -379,9 +381,10 @@ export default function EditComicPage() {
                       width: '100%',
                       padding: '12px 16px',
                       borderRadius: '8px',
-                      border: '1px solid #e5e7eb',
+                      border: '1px solid var(--input-border)',
                       fontSize: '16px',
-                      color: '#111827',
+                      color: 'var(--input-text)',
+                      backgroundColor: 'var(--input-bg)',
                       fontFamily: 'inherit',
                       transition: 'all 0.2s',
                       boxSizing: 'border-box',
@@ -400,7 +403,7 @@ export default function EditComicPage() {
 
                 {/* Trạng thái */}
                 <div style={{ marginBottom: '32px' }}>
-                  <label htmlFor="status" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#111827', marginBottom: '8px' }}>
+                  <label htmlFor="status" style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--label-text)', marginBottom: '8px' }}>
                     Trạng thái
                   </label>
                   <select
@@ -413,9 +416,10 @@ export default function EditComicPage() {
                       width: '100%',
                       padding: '12px 16px',
                       borderRadius: '8px',
-                      border: '1px solid #e5e7eb',
+                      border: '1px solid var(--input-border)',
                       fontSize: '16px',
-                      color: '#111827',
+                      color: 'var(--input-text)',
+                      backgroundColor: 'var(--input-bg)',
                       transition: 'all 0.2s',
                       boxSizing: 'border-box',
                       cursor: 'pointer'
@@ -438,7 +442,7 @@ export default function EditComicPage() {
                 {/* Thể loại */}
                 {genres.length > 0 && (
                   <div style={{ marginBottom: '32px' }}>
-                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#111827', marginBottom: '12px' }}>
+                    <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: 'var(--label-text)', marginBottom: '12px' }}>
                       Thể loại
                     </label>
                     <div style={{

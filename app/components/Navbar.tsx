@@ -12,7 +12,7 @@ const MenuNavButton = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<H
     <button
       ref={ref}
       {...rest}
-      className={`w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 ${className ?? ""}`}
+      className={`w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 ${className ?? ""}`}
     >
       {children}
     </button>
@@ -48,6 +48,15 @@ export default function Navbar() {
       setLocalUser(null);
     }
   }, []);
+
+  // Update localUser when user from AuthContext changes
+  useEffect(() => {
+    if (user) {
+      setLocalUser(user);
+    } else {
+      setLocalUser(null);
+    }
+  }, [user]);
 
   const effectiveUser = (user as any) || localUser;
   const avatarUrl = extractAvatarUrl((effectiveUser as any)?.avatar);
@@ -165,9 +174,9 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-3">
             <span className="inline-block h-8 w-8 rounded-full bg-gradient-to-br from-sky-500 to-indigo-600" />
-            <span className="text-lg font-extrabold text-sky-600 dark:text-sky-400">Comicverse</span>
+            <span className="text-lg font-extrabold text-sky-600 dark:text-sky-400 dark:text-white">Comicverse</span>
           </Link>
-          <Link href="/comics" className="text-sm text-neutral-600 hover:text-sky-600 dark:text-neutral-300 dark:hover:text-sky-400">
+          <Link href="/comics" className="text-sm text-neutral-600 hover:text-sky-600 dark:text-neutral-300 dark:hover:text-sky-400 dark:text-white">
             Danh sách truyện
           </Link>
         </div>
@@ -196,10 +205,10 @@ export default function Navbar() {
                       {(effectiveUser.username || effectiveUser.userName || "?")?.slice(0,1).toUpperCase()}
                     </span>
                   )}
-                  <span className="hidden sm:inline text-sm text-neutral-700 dark:text-neutral-300">{effectiveUser.username || effectiveUser.userName}</span>
+                  <span className="hidden sm:inline text-sm text-neutral-700 dark:text-neutral-300 dark:text-white">{effectiveUser.username || effectiveUser.userName}</span>
                 </>
               ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-neutral-700 dark:text-neutral-300" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-neutral-700 dark:text-neutral-300 dark:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}
