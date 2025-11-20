@@ -224,7 +224,7 @@ export default function AdminComicsPage() {
             )}
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
             {sortedComics.map((comic) => {
               const statusBadge = getStatusBadge(comic.status);
               const comicId = comic._id || comic.id;
@@ -237,12 +237,11 @@ export default function AdminComicsPage() {
               return (
                 <div
                   key={comicId}
-                  className="group rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-900 transition-transform transform hover:-translate-y-1 hover:shadow-xl cursor-pointer"
-                  style={{ textDecoration: 'none', color: 'inherit' }}
+                  className="group flex flex-col h-full rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm hover:shadow-lg transition-shadow overflow-hidden"
                 >
                   {/* Cover */}
                   <div
-                    className="relative h-48 overflow-hidden rounded-t-lg bg-gray-100 cursor-pointer"
+                    className="relative w-full h-56 bg-neutral-100 dark:bg-neutral-800 overflow-hidden flex-shrink-0 cursor-pointer"
                     onClick={(e) => {
                       // Clicking the cover should navigate to the public comic detail page
                       e.stopPropagation();
@@ -253,25 +252,25 @@ export default function AdminComicsPage() {
                       <img
                         src={comic.cover}
                         alt={comic.title}
-                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-700">
+                      <div className="flex h-full items-center justify-center bg-gradient-to-br from-neutral-200 to-neutral-300 dark:from-neutral-800 dark:to-neutral-700">
                         <div className="text-center">
-                          <svg className="mx-auto mb-2 h-8 w-8 text-gray-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M4 19.5V5.5a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v14" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M8 3v4" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                          <svg className="mx-auto mb-2 h-8 w-8 text-neutral-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 19.5V5.5a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M8 3v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
-                          <p className="text-sm text-gray-500">Không có ảnh</p>
+                          <p className="text-sm text-neutral-500 dark:text-neutral-400">Không có ảnh</p>
                         </div>
                       </div>
                     )}
                     {/* Status Badge */}
                     <div className="absolute right-3 top-3">
                       <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold shadow-sm ${
-                        comic.status === 'ongoing' ? 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 dark:from-blue-900/30 dark:text-blue-200' :
-                        comic.status === 'completed' ? 'bg-gradient-to-r from-green-50 to-green-100 text-green-800 dark:from-green-900/30 dark:text-green-200' :
-                        'bg-neutral-100 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-300'
+                        comic.status === 'ongoing' ? 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 dark:from-blue-900/30 dark:to-blue-900/20 dark:text-blue-200' :
+                        comic.status === 'completed' ? 'bg-gradient-to-r from-green-50 to-green-100 text-green-800 dark:from-green-900/30 dark:to-green-900/20 dark:text-green-200' :
+                        'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-300'
                       }`}>
                         <span className={`w-2 h-2 rounded-full ${comic.status === 'ongoing' ? 'bg-blue-600' : 'bg-green-600'}`}></span>
                         {statusBadge.label}
@@ -280,60 +279,62 @@ export default function AdminComicsPage() {
                   </div>
 
                   {/* Content */}
-                  <div className="p-4">
-                    <h3 className="line-clamp-2 text-sm font-semibold text-gray-900 dark:text-white hover:text-sky-600 dark:hover:text-sky-400">
+                  <div className="flex flex-col flex-1 p-3 min-h-0">
+                    {/* Title */}
+                    <h3 className="line-clamp-2 text-sm font-bold text-neutral-900 dark:text-white hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex-shrink-0 cursor-pointer"
+                      onClick={() => comicId && router.push(`/comics/${comicId}`)}
+                    >
                       {comic.title}
                     </h3>
+
+                    {/* Author */}
                     {comic.author && (
-                      <p className="mt-1 line-clamp-1 text-sm text-neutral-600 dark:text-neutral-300">
-                        <span className="text-xs text-neutral-500 dark:text-neutral-400 mr-2">Tác giả</span>
-                        <span className="font-medium text-neutral-900 dark:text-white">{comic.author}</span>
+                      <p className="mt-1.5 line-clamp-1 text-xs text-neutral-600 dark:text-neutral-400 flex-shrink-0">
+                        {comic.author}
                       </p>
                     )}
 
-                    {/* Meta */}
-                    <div className="mt-3 flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400">
-                      <div>
-                        <span className="text-neutral-700 dark:text-neutral-300">{comic.chapters ? `${comic.chapters.length} chương` : '0 chương'}</span>
-                      </div>
+                    {/* Chapters count */}
+                    <div className="mt-auto pt-2 text-xs text-neutral-500 dark:text-neutral-400 flex-shrink-0">
+                      <span className="font-medium">{comic.chapters ? `${comic.chapters.length} chương` : '0 chương'}</span>
+                    </div>
 
-                      {/* Actions: Edit, Add Chapter (uploaders only), Delete (admins only) */}
-                      <div className="flex items-center gap-2">
-                        {/* Edit & Add Chapter - Only for uploaders who own the comic */}
-                        {canEditComic(authContext?.user, comic) ? (
-                          <>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); router.push(`/admin/comics/${comic._id}/edit`); }}
-                              className="inline-flex items-center gap-1 rounded px-3 py-1 text-xs font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 transition"
-                            >
-                              Sửa
-                            </button>
-
-                            <button
-                              onClick={(e) => { e.stopPropagation(); router.push(`/admin/comics/${comic._id}/chapters`); }}
-                              className="inline-flex items-center gap-1 rounded px-3 py-1 text-xs font-semibold bg-sky-50 text-sky-700 hover:bg-sky-100 transition"
-                            >
-                              Thêm chương
-                            </button>
-                          </>
-                        ) : null}
-
-                        {/* Delete - Only for admins */}
-                        {canManageComic(authContext?.user, comic) && (
+                    {/* Actions */}
+                    <div className="mt-3 flex flex-wrap gap-2 flex-shrink-0">
+                      {/* Edit & Add Chapter - Only for uploaders who own the comic */}
+                      {canEditComic(authContext?.user, comic) ? (
+                        <>
                           <button
-                            onClick={(e) => { e.stopPropagation(); handleDelete(comic._id); }}
-                            disabled={deleteLoading === comic._id}
-                            className="inline-flex items-center gap-1 rounded px-3 py-1 text-xs font-semibold bg-red-50 text-red-700 hover:bg-red-100 transition disabled:opacity-50"
+                            onClick={(e) => { e.stopPropagation(); router.push(`/admin/comics/${comic._id}/edit`); }}
+                            className="flex-1 inline-flex items-center justify-center gap-1 rounded px-2 py-1.5 text-xs font-semibold bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition"
                           >
-                            {deleteLoading === comic._id ? "Xóa..." : "Xóa"}
+                            Sửa
                           </button>
-                        )}
 
-                        {/* No permissions message */}
-                        {!canEditComic(authContext?.user, comic) && !canManageComic(authContext?.user, comic) && (
-                          <span className="text-xs text-neutral-400 italic">Không có quyền quản lý</span>
-                        )}
-                      </div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); router.push(`/admin/comics/${comic._id}/chapters`); }}
+                            className="flex-1 inline-flex items-center justify-center gap-1 rounded px-2 py-1.5 text-xs font-semibold bg-sky-50 dark:bg-sky-900/20 text-sky-700 dark:text-sky-200 hover:bg-sky-100 dark:hover:bg-sky-900/30 transition"
+                          >
+                            Thêm chương
+                          </button>
+                        </>
+                      ) : null}
+
+                      {/* Delete - Only for admins */}
+                      {canManageComic(authContext?.user, comic) && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); handleDelete(comic._id); }}
+                          disabled={deleteLoading === comic._id}
+                          className="flex-1 inline-flex items-center justify-center gap-1 rounded px-2 py-1.5 text-xs font-semibold bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-200 hover:bg-red-100 dark:hover:bg-red-900/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {deleteLoading === comic._id ? "Xóa..." : "Xóa"}
+                        </button>
+                      )}
+
+                      {/* No permissions message */}
+                      {!canEditComic(authContext?.user, comic) && !canManageComic(authContext?.user, comic) && (
+                        <span className="w-full text-xs text-neutral-400 italic text-center py-1">Không có quyền</span>
+                      )}
                     </div>
                   </div>
                 </div>
