@@ -33,7 +33,7 @@ const mockComics: Comic[] = [
 
 async function getLatestComics() {
   try {
-    const data = await getComics(1, 8);
+    const data = await getComics(1, 30); // 5 hàng × 6 cột = 30 truyện
     return data?.items || [];
   } catch (error) {
     console.error("Error fetching latest comics:", error);
@@ -108,7 +108,7 @@ export default async function HomePage() {
         </div>
         
         {latestComics.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
             {latestComics.map((comic: Comic) => (
               <ComicCard key={comic._id} comic={comic} />
             ))}

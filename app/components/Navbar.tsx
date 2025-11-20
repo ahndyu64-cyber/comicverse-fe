@@ -169,7 +169,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 z-40 w-full bg-white/80 dark:bg-neutral-900/80 shadow-sm border-b border-transparent backdrop-blur">
+    <nav className="sticky top-0 z-50 w-full bg-white/80 dark:bg-neutral-900/80 shadow-sm border-b border-transparent backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-3">

@@ -28,6 +28,8 @@ export default function AdminComicsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("new");
 
   useEffect(() => {
     // Wait for auth to be ready
@@ -106,6 +108,26 @@ export default function AdminComicsPage() {
     return { ...config, label: statusConfig[status || "ongoing"]?.label || "Đang cập nhật" };
   };
 
+  // Filter and sort comics
+  const filteredComics = comics.filter((comic) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      comic.title.toLowerCase().includes(query) ||
+      (comic.author && comic.author.toLowerCase().includes(query))
+    );
+  });
+
+  const sortedComics = [...filteredComics].sort((a, b) => {
+    if (sortBy === "alpha") {
+      return a.title.localeCompare(b.title);
+    } else if (sortBy === "popular") {
+      // Sort by number of chapters (as a proxy for popularity)
+      return (b.chapters?.length || 0) - (a.chapters?.length || 0);
+    }
+    // Default: "new" - keep original order (typically newest first from API)
+    return 0;
+  });
+
   if (loading) {
     return (
       <div className="flex items-center justify-center p-12">
@@ -150,14 +172,18 @@ export default function AdminComicsPage() {
             <div className="flex items-center gap-3 w-full md:w-1/2">
               <input
                 placeholder="Tìm theo tiêu đề hoặc tác giả"
-                className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white outline-none shadow-sm"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white outline-none shadow-sm focus:ring-2 focus:ring-purple-500 transition"
               />
-              <button className="rounded-lg bg-white/10 backdrop-blur-sm px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition">Tìm</button>
             </div>
 
             <div className="flex items-center gap-3">
-              <label className="text-sm text-neutral-600">Sắp xếp:</label>
-              <select className="rounded-md border border-neutral-200 dark:border-neutral-700 px-3 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white">
+              <label className="text-sm text-neutral-600 dark:text-neutral-300">Sắp xếp:</label>
+              <select 
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="rounded-md border border-neutral-200 dark:border-neutral-700 px-3 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500 transition">
                 <option value="new">Mới cập nhật</option>
                 <option value="alpha">A → Z</option>
                 <option value="popular">Nổi bật</option>
@@ -174,26 +200,32 @@ export default function AdminComicsPage() {
         )}
 
         {/* Empty State */}
-        {comics.length === 0 ? (
+        {sortedComics.length === 0 ? (
             <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-neutral-900 p-12 text-center">
             <div className="mb-4 flex justify-center">
               <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
                 <span className="text-3xl text-gray-400">—</span>
               </div>
             </div>
-            <h3 className="text-lg font-medium text-gray-900">Không có truyện nào</h3>
-            <p className="mt-1 text-gray-600">Bắt đầu bằng cách thêm truyện đầu tiên của bạn</p>
-            <Link
-              href="/admin/comics/create"
-              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700"
-            >
-              <span className="text-lg">+</span>
-              Tạo truyện mới
-            </Link>
+            <h3 className="text-lg font-medium text-gray-900">
+              {searchQuery ? "Không tìm thấy truyện" : "Không có truyện nào"}
+            </h3>
+            <p className="mt-1 text-gray-600">
+              {searchQuery ? "Thử thay đổi từ khóa tìm kiếm" : "Bắt đầu bằng cách thêm truyện đầu tiên của bạn"}
+            </p>
+            {!searchQuery && (
+              <Link
+                href="/admin/comics/create"
+                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700"
+              >
+                <span className="text-lg">+</span>
+                Tạo truyện mới
+              </Link>
+            )}
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {comics.map((comic) => {
+            {sortedComics.map((comic) => {
               const statusBadge = getStatusBadge(comic.status);
               const comicId = comic._id || comic.id;
               

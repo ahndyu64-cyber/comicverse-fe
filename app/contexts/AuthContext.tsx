@@ -30,7 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const refreshUserData = async (authToken: string) => {
+  const refreshUserData = async (authToken: string): Promise<void> => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000'}/users/profile`, {
         method: 'GET',
@@ -68,8 +68,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error('Error refreshing user data:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -102,14 +100,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Only set `refreshToken` if present
       if (storedRefreshToken) setRefreshToken(storedRefreshToken);
 
-      // If we have a refreshToken, attempt to get the freshest user data.
-      if (storedRefreshToken) {
-        refreshUserData(storedToken);
-      } else {
-        // No refresh token; we still restored `user` & `token` from localStorage
-        // but avoid calling refreshUserData so we don't trip over missing credentials.
+      // Always attempt to refresh user data to ensure it's fresh
+      // This helps with persistence across page reloads
+      refreshUserData(storedToken).finally(() => {
         setIsLoading(false);
-      }
+      });
     } else {
       setIsLoading(false);
     }

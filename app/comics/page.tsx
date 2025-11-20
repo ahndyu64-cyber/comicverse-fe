@@ -14,6 +14,12 @@ interface Category {
   description?: string;
 }
 
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'Tất cả' },
+  { value: 'ongoing', label: 'Đang cập nhật' },
+  { value: 'completed', label: 'Hoàn thành' },
+];
+
 const SORT_OPTIONS = [
   { value: 'new', label: 'Mới cập nhật' },
   { value: 'popular', label: 'Nhiều lượt xem' },
@@ -32,7 +38,15 @@ export default function ComicsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('new');
-  const [showFilters, setShowFilters] = useState(true);
+  const [status, setStatus] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Collapse state
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    status: true,
+    genres: true,
+    sort: false,
+  });
 
   const searchParams = useSearchParams();
   const q = searchParams?.get('q') || '';
@@ -138,19 +152,32 @@ export default function ComicsPage() {
   // Apply client-side filters and sorting
   const visibleComics = React.useMemo(() => {
     let items = comics.slice();
-    if (selectedGenres.length > 0) {
-      // Get category names for the selected IDs
-      const selectedCategoryNames = selectedGenres
-        .map(id => categories.find(c => c._id === id)?.name)
-        .filter(Boolean) as string[];
-      
-      items = items.filter(c => 
-        (c.genres || []).some((g: string) => 
-          selectedCategoryNames.some(name => 
-            g.toLowerCase() === name.toLowerCase()
-          )
-        )
+    
+    // Apply search query filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      items = items.filter(c =>
+        (c.title || '').toLowerCase().includes(query) ||
+        (c.authors || []).some(a => a.toLowerCase().includes(query))
       );
+    }
+    
+    if (selectedGenres.length > 0) {
+      items = items.filter(c => {
+        // Check if comic has any genre that matches selected genre IDs
+        if (!c.genres || c.genres.length === 0) return false;
+        
+        return selectedGenres.some(selectedId => {
+          // Find the category name for this ID
+          const categoryName = categories.find(cat => cat._id === selectedId)?.name;
+          if (!categoryName) return false;
+          
+          // Check if comic's genres include this category
+          return c.genres.some((g: string) => 
+            g.toLowerCase() === categoryName.toLowerCase()
+          );
+        });
+      });
     }
     if (sortBy === 'alpha') {
       items.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
@@ -158,11 +185,12 @@ export default function ComicsPage() {
       items.sort((a, b) => (b.views || 0) - (a.views || 0));
     }
     return items;
-  }, [comics, selectedGenres, sortBy, categories]);
+  }, [comics, selectedGenres, sortBy, categories, searchQuery]);
 
   const handleResetFilters = () => {
     setSelectedGenres([]);
     setSortBy('new');
+    setStatus('all');
     setPage(1);
   };
 
@@ -173,14 +201,21 @@ export default function ComicsPage() {
     );
   };
 
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }));
+  };
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-white via-neutral-50 to-neutral-100 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-900">
       {/* Page Header */}
-      <div className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950/50 backdrop-blur-sm sticky top-20 z-20">
+      <div className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950/50 backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold text-neutral-900">
+              <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white">
                 {q ? `Tìm kiếm: "${q}"` : 'Danh sách truyện'}
               </h1>
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
@@ -194,93 +229,157 @@ export default function ComicsPage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-8">
-        <div className="flex flex-col md:flex-row gap-6">
-          {/* Sidebar Filters */}
-          <aside className="md:w-56 shrink-0">
-            <div className="sticky top-40 space-y-4">
-              {/* Filter Card */}
-              <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-sm border border-neutral-200 dark:border-neutral-800 p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold text-neutral-900 text-sm uppercase tracking-wide">Bộ lọc</h3>
-                  {(selectedGenres.length > 0 || sortBy !== 'new') && (
-                    <button
-                      onClick={handleResetFilters}
-                      className="text-xs font-medium text-purple-600 hover:text-purple-700 dark:hover:text-purple-400 transition-colors"
-                    >
-                      Đặt lại
-                    </button>
-                  )}
-                </div>
+      <div className="mx-auto max-w-7xl px-4 py-6">
+        {/* Filters Section */}
+        <div className="space-y-3">
+          {/* Filter Header */}
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-neutral-900 dark:text-white">TÌM KIẾM</h2>
+            {(selectedGenres.length > 0 || sortBy !== 'new' || status !== 'all') && (
+              <button
+                onClick={handleResetFilters}
+                className="text-xs font-medium text-purple-600 hover:text-purple-700 dark:hover:text-purple-400 transition-colors"
+              >
+                Xóa bộ lọc
+              </button>
+            )}
+          </div>
 
-                {/* Genre Filter */}
-                <div className="mb-5 pb-5 border-b border-neutral-200 dark:border-neutral-800">
-                  <p className="text-xs font-medium text-neutral-600 dark:text-neutral-400 mb-3 uppercase tracking-wider">Thể loại</p>
-                  <div className="flex flex-wrap gap-2">
-                    {categories.length > 0 ? (
-                      categories.map((category) => {
-                        const active = selectedGenres.includes(category._id);
-                        return (
-                          <button
-                            key={category._id}
-                            onClick={() => toggleGenre(category._id)}
-                            className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-200 ${
-                              active
-                                ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30'
-                                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700'
-                            }`}
-                          >
-                            {category.name}
-                          </button>
-                        );
-                      })
-                    ) : (
-                      <p className="text-xs text-neutral-500">Không có thể loại</p>
-                    )}
-                  </div>
-                </div>
+          {/* Search Input */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Nhập từ khóa"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+            />
+          </div>
 
-                {/* Sort Filter */}
-                <div>
-                  <p className="text-xs font-medium text-neutral-600 dark:text-neutral-400 mb-3 uppercase tracking-wider">Sắp xếp</p>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => {
-                      setSortBy(e.target.value);
-                      setPage(1);
-                    }}
-                    className="w-full px-3 py-2 text-sm rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-900 outline-none focus:ring-2 focus:ring-purple-500 transition-all"
-                  >
-                    {SORT_OPTIONS.map(opt => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Active Filters Summary */}
-              {(selectedGenres.length > 0 || sortBy !== 'new') && (
-                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 p-3">
-                  <p className="text-xs font-medium text-blue-900 dark:text-blue-200">
-                    <span className="block mb-2">Bộ lọc đang áp dụng:</span>
-                    {selectedGenres.length > 0 && (
-                      <span>Thể loại: <strong>{selectedGenres.join(', ')}</strong></span>
-                    )}
-                    {selectedGenres.length > 0 && sortBy !== 'new' && <br />}
-                    {sortBy !== 'new' && (
-                      <span>Sắp xếp: <strong>{SORT_OPTIONS.find(o => o.value === sortBy)?.label}</strong></span>
-                    )}
-                  </p>
+          {/* Filters */}
+          <div className="space-y-2 border-t border-neutral-300 dark:border-neutral-700 pt-3">
+            {/* Status Filter */}
+            <div className="border border-neutral-300 dark:border-neutral-700 rounded-lg overflow-hidden">
+              <button
+                onClick={() => toggleSection('status')}
+                className="w-full px-4 py-3 flex items-center justify-between bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-750 transition-colors"
+              >
+                <span className="text-sm font-semibold text-neutral-900 dark:text-white">Trạng Thái</span>
+                <svg
+                  className={`w-5 h-5 text-neutral-600 dark:text-neutral-400 transition-transform ${expandedSections.status ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </button>
+              {expandedSections.status && (
+                <div className="px-4 py-3 space-y-2 bg-neutral-50 dark:bg-neutral-900/50 border-t border-neutral-300 dark:border-neutral-700">
+                  {STATUS_OPTIONS.map((option) => (
+                    <label key={option.value} className="flex items-center gap-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={status === option.value}
+                        onChange={() => {
+                          setStatus(option.value);
+                          setPage(1);
+                        }}
+                        className="w-4 h-4 accent-purple-600 cursor-pointer"
+                      />
+                      <span className="text-sm text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+                        {option.label}
+                      </span>
+                    </label>
+                  ))}
                 </div>
               )}
             </div>
-          </aside>
 
-          {/* Main Content */}
-          <section className="flex-1">
+            {/* Genre Filter */}
+            <div className="border border-neutral-300 dark:border-neutral-700 rounded-lg overflow-hidden">
+              <button
+                onClick={() => toggleSection('genres')}
+                className="w-full px-4 py-3 flex items-center justify-between bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-750 transition-colors"
+              >
+                <span className="text-sm font-semibold text-neutral-900 dark:text-white">Thể Loại</span>
+                <svg
+                  className={`w-5 h-5 text-neutral-600 dark:text-neutral-400 transition-transform ${expandedSections.genres ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </button>
+              {expandedSections.genres && (
+                <div className="px-4 py-3 space-y-2 bg-neutral-50 dark:bg-neutral-900/50 max-h-64 overflow-y-auto border-t border-neutral-300 dark:border-neutral-700">
+                  {categories.length > 0 ? (
+                    categories.map((category) => (
+                      <label key={category._id} className="flex items-center gap-3 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          checked={selectedGenres.includes(category._id)}
+                          onChange={() => toggleGenre(category._id)}
+                          className="w-4 h-4 accent-purple-600 cursor-pointer"
+                        />
+                        <span className="text-sm text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+                          {category.name}
+                        </span>
+                      </label>
+                    ))
+                  ) : (
+                    <p className="text-xs text-neutral-500">Không có thể loại</p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Sort Filter */}
+            <div className="border border-neutral-300 dark:border-neutral-700 rounded-lg overflow-hidden">
+              <button
+                onClick={() => toggleSection('sort')}
+                className="w-full px-4 py-3 flex items-center justify-between bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-750 transition-colors"
+              >
+                <span className="text-sm font-semibold text-neutral-900 dark:text-white">Sắp Xếp</span>
+                <svg
+                  className={`w-5 h-5 text-neutral-600 dark:text-neutral-400 transition-transform ${expandedSections.sort ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </button>
+              {expandedSections.sort && (
+                <div className="px-4 py-3 space-y-2 bg-neutral-50 dark:bg-neutral-900/50 border-t border-neutral-300 dark:border-neutral-700">
+                  {SORT_OPTIONS.map((option) => (
+                    <label key={option.value} className="flex items-center gap-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={sortBy === option.value}
+                        onChange={() => {
+                          setSortBy(option.value);
+                          setPage(1);
+                        }}
+                        className="w-4 h-4 accent-purple-600 cursor-pointer"
+                      />
+                      <span className="text-sm text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+                        {option.label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <section className="w-full mt-8">
             {loading ? (
               <div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                   {Array.from({ length: 12 }).map((_, idx) => (
                     <div key={idx} className="group cursor-wait">
                       <div className="aspect-[2/3] bg-gradient-to-br from-neutral-200 to-neutral-300 dark:from-neutral-800 dark:to-neutral-700 rounded-xl animate-pulse"></div>
@@ -335,9 +434,9 @@ export default function ComicsPage() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5 auto-rows-max">
                   {visibleComics.map((comic) => (
-                    <div key={comic._id} className="group">
+                    <div key={comic._id} className="group h-full">
                       <ComicCard comic={comic} />
                     </div>
                   ))}
@@ -389,8 +488,7 @@ export default function ComicsPage() {
                 )}
               </>
             )}
-          </section>
-        </div>
+        </section>
       </div>
     </main>
   );
