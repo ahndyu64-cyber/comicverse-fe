@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3001";
 
@@ -197,15 +198,23 @@ export default function AdminGenresPage() {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Quản lý thể loại</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Quản lý thể loại</h1>
               <p className="mt-1 text-gray-600 dark:text-gray-400">Quản lý tất cả các thể loại truyện tranh</p>
             </div>
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-2 text-sm font-semibold text-white hover:shadow-lg transition-all duration-300"
-            >
-              {showForm ? "✕ Huỷ" : "+ Thêm thể loại mới"}
-            </button>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/admin/comics"
+                className="inline-flex items-center gap-2 rounded-lg bg-neutral-600 dark:bg-neutral-700 px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-700 dark:hover:bg-neutral-600 transition-all duration-300"
+              >
+                ← Quay lại
+              </Link>
+              <button
+                onClick={() => setShowForm(!showForm)}
+                className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-2 text-sm font-semibold text-white hover:shadow-lg transition-all duration-300"
+              >
+                {showForm ? "✕ Huỷ" : "+ Thêm thể loại mới"}
+              </button>
+            </div>
           </div>
         </div>
 
