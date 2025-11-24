@@ -198,8 +198,8 @@ export default function AdminGenresPage() {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Quản lý thể loại</h1>
-              <p className="mt-1 text-gray-600 dark:text-gray-400">Quản lý tất cả các thể loại truyện tranh</p>
+              <h1 className="text-3xl font-bold text-gray-900">Quản lý thể loại</h1>
+              <p className="mt-1 text-gray-600">Quản lý tất cả các thể loại truyện tranh</p>
             </div>
             <div className="flex items-center gap-3">
               <Link

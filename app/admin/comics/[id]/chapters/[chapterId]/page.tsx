@@ -299,12 +299,12 @@ export default function AdminChapterDetail() {
     <div className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Chương</h1>
-          <div className="text-sm text-neutral-500">Truyện: {comicId} · Chương: {chapterId}</div>
+          <h1 className="text-2xl font-bold dark:text-white">Chương</h1>
+          <div className="text-sm text-neutral-500 dark:text-white">Truyện: {comicId} · Chương: {chapterId}</div>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => router.push(`/admin/comics/${comicId}/chapters`)} className="rounded bg-neutral-100 px-3 py-2">Quay lại</button>
-          <button onClick={() => router.push(`/admin/comics/${comicId}/edit`)} className="rounded bg-sky-100 px-3 py-2">Sửa truyện</button>
+          <button onClick={() => router.push(`/admin/comics/${comicId}/chapters`)} className="rounded bg-neutral-100 dark:bg-neutral-800 dark:text-white px-3 py-2">Quay lại</button>
+          <button onClick={() => router.push(`/admin/comics/${comicId}/edit`)} className="rounded bg-sky-100 dark:bg-neutral-800 dark:text-white px-3 py-2">Sửa truyện</button>
         </div>
       </div>
 

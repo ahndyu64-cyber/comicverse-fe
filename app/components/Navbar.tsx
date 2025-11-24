@@ -144,14 +144,14 @@ export default function Navbar() {
 
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-800 dark:to-pink-800 shadow-lg border-b border-transparent backdrop-blur">
+    <nav className="sticky top-0 z-50 w-full bg-gradient-to-r from-teal-700 to-cyan-800 dark:from-teal-900 dark:to-cyan-950 shadow-lg border-b border-transparent backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-3">
             <span className="inline-block h-8 w-8 rounded-full bg-white/20" />
-            <span className="text-lg font-extrabold text-white">Comicverse</span>
+            <span className="text-lg font-extrabold text-black dark:text-white">Comicverse</span>
           </Link>
-          <Link href="/comics" className="text-sm text-white/80 hover:text-white dark:text-white/80 dark:hover:text-white transition-colors">
+          <Link href="/comics" className="text-sm text-black/70 hover:text-black dark:text-white dark:hover:text-white transition-colors">
             Danh sách truyện
           </Link>
           
@@ -159,7 +159,7 @@ export default function Navbar() {
           <div className="relative" ref={genreMenuRef}>
             <button
               onClick={() => setShowGenreMenu((s) => !s)}
-              className="flex items-center gap-2 text-sm text-white/80 hover:text-white dark:text-white/80 dark:hover:text-white transition-colors"
+              className="flex items-center gap-2 text-sm text-black/70 hover:text-black dark:text-white dark:hover:text-white transition-colors"
               aria-haspopup="true"
               aria-expanded={showGenreMenu}
             >
@@ -216,14 +216,14 @@ export default function Navbar() {
                       className="h-8 w-8 rounded-full object-cover"
                     />
                   ) : (
-                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/30 text-sm font-semibold text-white">
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/30 dark:bg-white/30 text-sm font-semibold text-black dark:text-white">
                       {(effectiveUser.username || effectiveUser.userName || "?")?.slice(0,1).toUpperCase()}
                     </span>
                   )}
-                  <span className="hidden sm:inline text-sm text-white">{effectiveUser.username || effectiveUser.userName}</span>
+                  <span className="hidden sm:inline text-sm text-black dark:text-white">{effectiveUser.username || effectiveUser.userName}</span>
                 </>
               ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-black dark:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}
@@ -337,7 +337,7 @@ export default function Navbar() {
             aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
             aria-pressed={dark}
             title={dark ? "Light mode" : "Dark mode"}
-            className="rounded-md border border-white/30 bg-white/20 p-2 text-sm hover:bg-white/30 transition-colors flex items-center justify-center"
+            className="rounded-md border border-black/30 dark:border-white/30 bg-black/20 dark:bg-white/20 p-2 text-sm hover:bg-black/30 dark:hover:bg-white/30 transition-colors flex items-center justify-center"
           >
             {dark ? (
               // Sun icon (light mode)
@@ -346,7 +346,7 @@ export default function Navbar() {
               </svg>
             ) : (
               // Moon icon (dark mode)
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-neutral-700 dark:text-neutral-200">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-slate-700 dark:text-slate-200">
                 <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
               </svg>
             )}

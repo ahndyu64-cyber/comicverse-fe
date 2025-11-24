@@ -54,9 +54,9 @@
   --accent-dark: #3b82f6;
   --accent-bg: #1e3a8a;
   --input-bg: #27272a;
-  --input-text: #111827;
+  --input-text: #ffffff;
   --input-border: #404040;
-  --label-text: #111827;
+  --label-text: #ffffff;
 }
 
 body {

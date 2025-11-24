@@ -6,19 +6,19 @@ export default function Footer(){
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded bg-gradient-to-br from-sky-500 to-indigo-600" />
             <div>
-              <div className="font-semibold">ComicVerse</div>
-              <div className="text-sm text-neutral-500 dark:text-neutral-400">Đọc truyện tranh online miễn phí</div>
+              <div className="font-semibold text-neutral-900 dark:text-white">ComicVerse</div>
+              <div className="text-sm text-neutral-500 dark:text-white">Đọc truyện tranh online miễn phí</div>
             </div>
           </div>
 
           <nav className="flex flex-wrap items-center justify-center gap-4 text-sm">
-            <a href="/about" className="text-neutral-600 hover:text-sky-600 dark:text-neutral-300">Về chúng tôi</a>
-            <a href="/contact" className="text-neutral-600 hover:text-sky-600 dark:text-neutral-300">Liên hệ</a>
-            <a href="/terms" className="text-neutral-600 hover:text-sky-600 dark:text-neutral-300">Điều khoản</a>
+            <a href="/about" className="text-neutral-600 hover:text-sky-600 dark:text-white dark:hover:text-sky-400">Về chúng tôi</a>
+            <a href="/contact" className="text-neutral-600 hover:text-sky-600 dark:text-white dark:hover:text-sky-400">Liên hệ</a>
+            <a href="/terms" className="text-neutral-600 hover:text-sky-600 dark:text-white dark:hover:text-sky-400">Điều khoản</a>
           </nav>
         </div>
 
-        <div className="mt-6 text-center text-sm text-neutral-500 dark:text-neutral-400">© {new Date().getFullYear()} ComicVerse. All rights reserved.</div>
+        <div className="mt-6 text-center text-sm text-neutral-500 dark:text-neutral-200">© {new Date().getFullYear()} ComicVerse. All rights reserved.</div>
       </div>
     </footer>
   )

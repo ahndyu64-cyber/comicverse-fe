@@ -87,7 +87,7 @@ export default function RecentFollowing() {
           </div>
           <a
             href="/comics/following"
-            className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
+            className="px-6 py-2 bg-white text-black font-semibold rounded-lg hover:shadow-lg hover:bg-neutral-100 transition-all duration-300"
           >
             Xem tất cả
           </a>

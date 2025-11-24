@@ -194,16 +194,12 @@ export default function ProfilePage() {
                 </div>
               )}
             </div>
-            <div className="text-white drop-shadow">
-              <h1 className="text-2xl font-bold leading-tight">{user?.username}</h1>
-              <p className="text-sm opacity-90">{user?.email}</p>
-            </div>
           </div>
           <div className="pb-3">
             {!isEditing ? (
               <button
                 onClick={() => setIsEditing(true)}
-                className="rounded-md bg-white/90 px-4 py-2 text-sm font-medium text-neutral-900 hover:brightness-95"
+                className="rounded-md bg-white/90 dark:bg-neutral-800 px-4 py-2 text-sm font-medium text-neutral-900 dark:text-white hover:brightness-95 dark:hover:brightness-125"
               >
                 Chỉnh sửa
               </button>

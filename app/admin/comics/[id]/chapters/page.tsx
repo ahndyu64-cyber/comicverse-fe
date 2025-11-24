@@ -215,7 +215,7 @@ export default function AdminChaptersPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       {/* Header */}
-      <div className="mb-6 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 p-6 text-white shadow-lg flex items-center justify-between">
+      <div className="mb-6 rounded-2xl bg-black p-6 text-white shadow-lg flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Quản lý chương</h1>
           <p className="text-sm opacity-90">{comicTitle || '—'} · ID: {comicId}</p>
@@ -233,7 +233,7 @@ export default function AdminChaptersPage() {
           <p className="text-sm text-neutral-500 mb-4">Tạo chương rỗng trước, sau đó tải ảnh trong trang chỉnh sửa chương.</p>
           <div className="flex gap-3">
             <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Tiêu đề chương" className="flex-1 rounded-md border border-neutral-200 px-3 py-2 focus:ring-2 focus:ring-purple-200" />
-            <button onClick={createChapter} disabled={creating} className="rounded-md bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-2 text-white font-semibold">{creating ? 'Đang tạo...' : 'Tạo'}</button>
+            <button onClick={createChapter} disabled={creating} className="rounded-md bg-blue-600 hover:bg-blue-700 px-4 py-2 text-white font-semibold">{creating ? 'Đang tạo...' : 'Tạo'}</button>
           </div>
         </div>
 
@@ -251,7 +251,7 @@ export default function AdminChaptersPage() {
               <div className="p-6 text-red-600">{error}</div>
             ) : (
               <div className="space-y-3">
-                {chapters.map((ch) => (
+                {[...chapters].reverse().map((ch) => (
                   <div key={ch._id} className="flex items-center justify-between rounded-lg border bg-white dark:bg-neutral-900 p-4">
                     <div className="flex-1">
                       {editingId === ch._id ? (

@@ -159,7 +159,7 @@ export default function ReaderPage({ params }: Props) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link href={`/comics/${comicId}`} className="flex items-center gap-2 text-sm text-purple-400 hover:text-purple-300 transition">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
                 Trở về
@@ -228,7 +228,7 @@ export default function ReaderPage({ params }: Props) {
             <div className="mt-12 space-y-6">
               <div className="border-t border-neutral-800 pt-8">
                 <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                  <svg className="w-6 h-6 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-6 h-6 text-purple-400 dark:text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5z"></path>
                     <path d="M15 13H5m10 0v2a2 2 0 01-2 2H7a2 2 0 01-2-2v-2m10 0H5"></path>
                   </svg>
@@ -287,10 +287,10 @@ export default function ReaderPage({ params }: Props) {
                   </div>
                 ) : comments.length === 0 ? (
                   <div className="rounded-lg bg-neutral-800/30 border border-neutral-700 p-8 text-center">
-                    <svg className="w-12 h-12 text-neutral-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-12 h-12 text-neutral-600 dark:text-neutral-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
-                    <p className="text-neutral-400">Chưa có bình luận nào. Hãy là người đầu tiên!</p>
+                    <p className="text-neutral-400 dark:text-white">Chưa có bình luận nào. Hãy là người đầu tiên!</p>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -314,9 +314,9 @@ export default function ReaderPage({ params }: Props) {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-2 mb-1">
                               <div className="flex items-center gap-2">
-                                <p className="font-semibold text-purple-400">{comment.user?.username || 'Ẩn danh'}</p>
+                                <p className="font-semibold text-purple-400 dark:text-white">{comment.user?.username || 'Ẩn danh'}</p>
                                 {comment.createdAt && (
-                                  <span className="text-xs text-neutral-500">
+                                  <span className="text-xs text-neutral-500 dark:text-white">
                                     {new Date(comment.createdAt).toLocaleDateString('vi-VN')}
                                   </span>
                                 )}
@@ -336,7 +336,7 @@ export default function ReaderPage({ params }: Props) {
                                 <span className="text-neutral-500">Chương:</span> {comment.chapter.title}
                               </p>
                             )}
-                            <p className="text-neutral-300 break-words">{comment.content}</p>
+                            <p className="text-neutral-300 dark:text-white break-words">{comment.content}</p>
                           </div>
                         </div>
                       </div>
@@ -368,17 +368,17 @@ export default function ReaderPage({ params }: Props) {
                   </div>
                 </Link>
               ) : (
-                <div className="flex-1 px-4 py-3 bg-neutral-800/30 border border-neutral-700 rounded-lg text-neutral-600 flex items-center gap-2">
+                <div className="flex-1 px-4 py-3 bg-neutral-800/30 border border-neutral-700 rounded-lg text-neutral-600 dark:text-neutral-300 flex items-center gap-2">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
-                  <span className="text-sm">Đây là chương đầu tiên</span>
+                  <span className="text-sm dark:text-white">Đây là chương đầu tiên</span>
                 </div>
               )}
 
               <Link 
                 href={`/comics/${comicId}`}
-                className="px-6 py-3 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 rounded-lg text-neutral-300 font-medium transition"
+                className="px-6 py-3 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 rounded-lg text-neutral-300 dark:text-white font-medium transition"
               >
                 Danh sách chương
               </Link>
@@ -398,7 +398,7 @@ export default function ReaderPage({ params }: Props) {
                 </Link>
               ) : (
                 <div className="flex-1 px-4 py-3 bg-neutral-800/30 border border-neutral-700 rounded-lg text-neutral-600 flex items-center justify-end gap-2">
-                  <span className="text-sm">Đây là chương cuối cùng</span>
+                  <span className="text-sm dark:text-white">Đây là chương cuối cùng</span>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>

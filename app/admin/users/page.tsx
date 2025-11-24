@@ -6,6 +6,22 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+
+  // Filter users based on search query
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredUsers(users);
+    } else {
+      const query = searchQuery.toLowerCase();
+      const filtered = users.filter((user) => 
+        (user.username && user.username.toLowerCase().includes(query)) ||
+        (user.email && user.email.toLowerCase().includes(query))
+      );
+      setFilteredUsers(filtered);
+    }
+  }, [users, searchQuery]);
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -116,12 +132,59 @@ export default function AdminUsersPage() {
   const handleDelete = async (userId: string) => {
     if (!confirm("Bạn có chắc muốn xóa người dùng này?")) return;
     try {
+      console.log("Attempting to delete user:", userId);
       const res = await deleteAdminUser(userId);
-      if (res === null) throw new Error("Failed to delete user (unauthorized)");
-      setUsers(users.filter((u) => u._id !== userId));
+      console.log("Delete response:", res);
+      console.log("Delete response type:", typeof res);
+      console.log("Delete response keys:", Object.keys(res || {}));
+      
+      if (res === null) {
+        throw new Error("Failed to delete user (unauthorized)");
+      }
+      
+      // Always try to reload from backend to verify deletion
+      console.log("Reloading users from backend to verify deletion...");
+      
+      const data = await getAdminUsers();
+      console.log("Reloaded users from backend:", data);
+      console.log("Data structure keys:", Object.keys(data || {}));
+      
+      let list: any[] = [];
+      if (Array.isArray(data)) {
+        list = data;
+      } else if (Array.isArray((data as any).items)) {
+        list = (data as any).items;
+      } else if (Array.isArray((data as any).users)) {
+        list = (data as any).users;
+      } else if (Array.isArray((data as any).data)) {
+        list = (data as any).data;
+      }
+      
+      console.log("Extracted user list:", list);
+      console.log("User count after delete:", list.length);
+      console.log("Checking if deleted user still exists:", list.some((u: any) => u._id === userId));
+      
+      const normalized = list.map((u: any) => {
+        let roleFromRolesArray: any = undefined;
+        if (Array.isArray(u.roles) && u.roles.length > 0) {
+          const first = u.roles[0];
+          if (typeof first === 'string') roleFromRolesArray = first;
+          else if (first && typeof first === 'object') roleFromRolesArray = first.name || first.role || first.value || undefined;
+        }
+        const roleFromRolesString = typeof u.roles === 'string' ? u.roles : undefined;
+        const role = u.role || roleFromRolesArray || roleFromRolesString || 'user';
+        return { ...u, role };
+      });
+      
+      setUsers(normalized);
+      
+      // Check if deletion was successful
+      if (normalized.some((u) => u._id === userId)) {
+        alert("⚠️ Cảnh báo: Backend trả về thành công nhưng user vẫn còn trong danh sách. Vui lòng kiểm tra backend.");
+      }
     } catch (err) {
       console.error("Error deleting user:", err);
-      alert("Không thể xóa người dùng");
+      alert("Không thể xóa người dùng: " + (err instanceof Error ? err.message : String(err)));
     }
   };
 
@@ -132,22 +195,16 @@ export default function AdminUsersPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
       <h1 className="mb-6 text-2xl font-semibold">Quản lý người dùng</h1>
-      {/* Search / actions */}
-      <div className="mb-4 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3 w-full max-w-md">
-          <input
-            placeholder="Tìm theo tên hoặc email"
-            className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 outline-none shadow-sm"
-          />
-          <button className="rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-2 text-sm font-semibold text-white hover:shadow-lg transition-all duration-200">
-            Tìm
-          </button>
-        </div>
-        <div>
-          <a href="/admin/users/create" className="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sky-700 transition">
-            Thêm người dùng
-          </a>
-        </div>
+      {/* Search */}
+      <div className="mb-4 flex items-center gap-3 w-full max-w-md">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(searchQuery)}
+          placeholder="Tìm theo tên hoặc email"
+          className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white outline-none shadow-sm"
+        />
       </div>
       {error && (
         <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
@@ -171,14 +228,14 @@ export default function AdminUsersPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
-            {users.length === 0 ? (
+            {filteredUsers.length === 0 ? (
               <tr>
                 <td colSpan={3} className="px-6 py-8 text-center text-gray-500">
-                  {error ? "Không có quyền truy cập hoặc có lỗi." : "Không có người dùng để hiển thị."}
+                  {searchQuery ? `Không tìm thấy người dùng với từ khóa "${searchQuery}"` : (error ? "Không có quyền truy cập hoặc có lỗi." : "Không có người dùng để hiển thị.")}
                 </td>
               </tr>
             ) : (
-              users.map((user) => (
+              filteredUsers.map((user) => (
                 <tr key={user._id}>
                   <td className="whitespace-nowrap px-6 py-4">
                     <div className="flex items-center">

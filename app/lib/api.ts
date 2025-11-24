@@ -263,9 +263,22 @@ export async function updateAdminUserRole(userId: string, role: string) {
 }
 
 export async function deleteAdminUser(userId: string) {
-  return fetchJSON(`/admin/users/${userId}`, {
-    method: "DELETE",
-  });
+  // Try multiple possible endpoints
+  try {
+    return fetchJSON(`/admin/users/${userId}`, {
+      method: "DELETE",
+    });
+  } catch (err1) {
+    console.warn("Delete via /admin/users failed, trying /users:", err1);
+    try {
+      return fetchJSON(`/users/${userId}`, {
+        method: "DELETE",
+      });
+    } catch (err2) {
+      console.error("Both delete endpoints failed:", err2);
+      throw err2;
+    }
+  }
 }
 
 export async function getAdminComics(page: number = 1, limit: number = 30, search?: string) {

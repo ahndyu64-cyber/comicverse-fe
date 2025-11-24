@@ -173,8 +173,8 @@ export default function CreateComicPage() {
             <span>←</span>
             <span>Quay lại danh sách</span>
           </Link>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mt-4">Thêm truyện mới</h1>
-          <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">Tạo một truyện mới vào kho truyện của bạn</p>
+          <h1 className="text-4xl font-bold text-gray-900 mt-4">Thêm truyện mới</h1>
+          <p className="mt-2 text-lg text-gray-600">Tạo một truyện mới vào kho truyện của bạn</p>
         </div>
 
         {/* Error Alert */}

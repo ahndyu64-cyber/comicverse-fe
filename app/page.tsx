@@ -61,29 +61,31 @@ export default async function HomePage() {
       {/* Latest Comics */}
       <section id="latest" className="mx-auto max-w-7xl px-4 py-16">
         <div className="mb-12">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-4xl font-bold text-neutral-900 mb-2">
-                Truyện mới cập nhật
-              </h2>
-              <p className="text-neutral-600 dark:text-neutral-400">
-                Những bộ truyện mới nhất vừa được đăng tải
-              </p>
-            </div>
-            <a
-              href="/comics"
-              className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg hover:shadow-lg transition-all duration-300"
-            >
-              Xem tất cả
-            </a>
+          <div className="mb-4">
+            <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
+              Truyện mới cập nhật
+            </h2>
+            <p className="text-neutral-600 dark:text-neutral-400">
+              Những bộ truyện mới nhất vừa được đăng tải
+            </p>
           </div>
         </div>
         
         {latestComics.length > 0 ? (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-            {latestComics.map((comic: Comic) => (
-              <ComicCard key={comic._id} comic={comic} />
-            ))}
+          <div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+              {latestComics.map((comic: Comic) => (
+                <ComicCard key={comic._id} comic={comic} />
+              ))}
+            </div>
+            <div className="flex justify-center mt-8">
+              <a
+                href="/comics"
+                className="px-6 py-2 bg-white text-black font-semibold rounded-lg hover:shadow-lg hover:bg-neutral-100 transition-all duration-300"
+              >
+                Xem thêm
+              </a>
+            </div>
           </div>
         ) : (
           <div className="text-center py-12">

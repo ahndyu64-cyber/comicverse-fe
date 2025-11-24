@@ -177,7 +177,7 @@ export default function AdminComicsPage() {
               </Link>
               <Link
                 href="/admin/comics/create"
-                className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-2 text-sm font-semibold text-white hover:opacity-95 transition"
+                className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition shadow-md"
               >
                 + Thêm truyện mới
               </Link>
