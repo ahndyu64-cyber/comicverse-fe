@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../contexts/AuthContext";
@@ -29,8 +29,23 @@ export default function AdminComicsPage() {
   const [error, setError] = useState("");
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [sortBy, setSortBy] = useState("new");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
 
+  // Debounce search - delay API call by 1000ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      // Reset to page 1 when search query changes
+      setPage(1);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Load comics when auth, page, or debounced search changes
   useEffect(() => {
     // Wait for auth to be ready
     if (isAuthLoading) {
@@ -43,12 +58,14 @@ export default function AdminComicsPage() {
       setLoading(false);
       return;
     }
+    
     loadComics();
-  }, [isAuthorized, isAuthLoading]);
+  }, [isAuthorized, isAuthLoading, page, debouncedSearch]);
 
   const loadComics = async () => {
     try {
-      const data = await getAdminComics();
+      setLoading(true);
+      const data = await getAdminComics(page, 30, debouncedSearch);
       
       if (data === null) {
         setComics([]);
@@ -60,12 +77,20 @@ export default function AdminComicsPage() {
       let list: Comic[] = [];
       if (Array.isArray(data)) {
         list = data;
+        setTotal(list.length);
+        setTotalPages(Math.ceil(list.length / 30));
       } else if (Array.isArray((data as any).items)) {
         list = (data as any).items;
+        setTotal((data as any).total || list.length);
+        setTotalPages(Math.ceil(((data as any).total || list.length) / 30));
       } else if (Array.isArray((data as any).comics)) {
         list = (data as any).comics;
+        setTotal((data as any).total || list.length);
+        setTotalPages(Math.ceil(((data as any).total || list.length) / 30));
       } else if (Array.isArray((data as any).data)) {
         list = (data as any).data;
+        setTotal((data as any).total || list.length);
+        setTotalPages(Math.ceil(((data as any).total || list.length) / 30));
       } else {
         if (process.env.NODE_ENV !== "production") {
           // eslint-disable-next-line no-console
@@ -108,16 +133,8 @@ export default function AdminComicsPage() {
     return { ...config, label: statusConfig[status || "ongoing"]?.label || "Đang cập nhật" };
   };
 
-  // Filter and sort comics
-  const filteredComics = comics.filter((comic) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      comic.title.toLowerCase().includes(query) ||
-      (comic.author && comic.author.toLowerCase().includes(query))
-    );
-  });
-
-  const sortedComics = [...filteredComics].sort((a, b) => {
+  // Sort comics (filtering is now done server-side)
+  const sortedComics = [...comics].sort((a, b) => {
     if (sortBy === "alpha") {
       return a.title.localeCompare(b.title);
     } else if (sortBy === "popular") {
@@ -149,7 +166,7 @@ export default function AdminComicsPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Quản lý truyện</h1>
-              <p className="mt-1 text-gray-600">Tổng cộng: <span className="font-semibold text-gray-900">{comics.length}</span> truyện</p>
+              <p className="mt-1 text-gray-600">Tổng cộng: <span className="font-semibold text-gray-900">{total}</span> truyện</p>
             </div>
             <div className="flex items-center gap-3">
               <Link
@@ -174,7 +191,7 @@ export default function AdminComicsPage() {
                 placeholder="Tìm theo tiêu đề hoặc tác giả"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white outline-none shadow-sm focus:ring-2 focus:ring-purple-500 transition"
+                className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 outline-none shadow-sm focus:ring-2 focus:ring-purple-500 transition"
               />
             </div>
 
@@ -183,7 +200,7 @@ export default function AdminComicsPage() {
               <select 
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="rounded-md border border-neutral-200 dark:border-neutral-700 px-3 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500 transition">
+                className="rounded-md border border-neutral-200 dark:border-neutral-700 px-3 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 outline-none focus:ring-2 focus:ring-purple-500 transition">
                 <option value="new">Mới cập nhật</option>
                 <option value="alpha">A → Z</option>
                 <option value="popular">Nổi bật</option>
@@ -224,7 +241,8 @@ export default function AdminComicsPage() {
             )}
           </div>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+          <>
+            <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
             {sortedComics.map((comic) => {
               const statusBadge = getStatusBadge(comic.status);
               const comicId = comic._id || comic.id;
@@ -281,7 +299,7 @@ export default function AdminComicsPage() {
                   {/* Content */}
                   <div className="flex flex-col flex-1 p-3 min-h-0">
                     {/* Title */}
-                    <h3 className="line-clamp-2 text-sm font-bold text-neutral-900 dark:text-white hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex-shrink-0 cursor-pointer"
+                    <h3 className="line-clamp-2 text-sm font-bold text-neutral-900 hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex-shrink-0 cursor-pointer"
                       onClick={() => comicId && router.push(`/comics/${comicId}`)}
                     >
                       {comic.title}
@@ -341,6 +359,52 @@ export default function AdminComicsPage() {
               );
             })}
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-12 flex items-center justify-center">
+              <nav className="inline-flex items-center gap-1 rounded-xl bg-white dark:bg-neutral-900 p-2 shadow-lg border border-neutral-200 dark:border-neutral-800">
+                <button
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  ← Trước
+                </button>
+
+                <div className="flex items-center gap-1 mx-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter(p => Math.abs(p - page) <= 2 || p === 1 || p === totalPages)
+                    .map((p, i, arr) => (
+                      <React.Fragment key={p}>
+                        {i > 0 && arr[i - 1] !== p - 1 && (
+                          <span className="px-2 text-neutral-400">...</span>
+                        )}
+                        <button
+                          onClick={() => setPage(p)}
+                          className={`px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                            page === p
+                              ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
+                              : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      </React.Fragment>
+                    ))}
+                </div>
+
+                <button
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  Sau →
+                </button>
+              </nav>
+            </div>
+          )}
+        </>
         )}
       </div>
     </div>

@@ -28,6 +28,7 @@ const SORT_OPTIONS = [
 
 export default function ComicsPage() {
   const [comics, setComics] = useState<Comic[]>([]);
+  const [allComics, setAllComics] = useState<Comic[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
@@ -43,13 +44,26 @@ export default function ComicsPage() {
   
   // Collapse state
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    status: true,
-    genres: true,
+    status: false,
+    genres: false,
     sort: false,
   });
 
   const searchParams = useSearchParams();
   const q = searchParams?.get('q') || '';
+  const genreParam = searchParams?.get('genre') || '';
+
+  // Initialize selected genres from URL parameter
+  useEffect(() => {
+    if (genreParam) {
+      // Find category ID by genre name
+      const category = categories.find(cat => cat.name === genreParam);
+      if (category) {
+        setSelectedGenres([category._id]);
+        setPage(1);
+      }
+    }
+  }, [genreParam, categories]);
 
   // Load categories from backend
   useEffect(() => {
@@ -124,13 +138,13 @@ export default function ComicsPage() {
             setTotalPages(0);
           }
         } else {
-          const data = await getComics(page);
+          const data = await getComics(page, 30);
           console.log('Comics API response:', data);
 
           if (data?.items) {
             setComics(data.items);
             setTotal(data.total);
-            setTotalPages(Math.ceil(data.total / data.limit));
+            setTotalPages(Math.ceil(data.total / 30));
           } else {
             console.warn('Invalid response format:', data);
             setComics([]);
@@ -151,7 +165,9 @@ export default function ComicsPage() {
 
   // Apply client-side filters and sorting
   const visibleComics = React.useMemo(() => {
-    let items = comics.slice();
+    // Use allComics if filtering is active, otherwise use comics from current page
+    const source = (selectedGenres.length > 0 || searchQuery.trim() !== '') ? allComics : comics;
+    let items = source.slice();
     
     // Apply search query filter
     if (searchQuery.trim()) {
@@ -184,8 +200,17 @@ export default function ComicsPage() {
     } else if (sortBy === 'popular') {
       items.sort((a, b) => (b.views || 0) - (a.views || 0));
     }
+
+    // Only paginate if we're filtering (using allComics)
+    // If using comics from API, they're already paginated
+    if (selectedGenres.length > 0 || searchQuery.trim() !== '') {
+      const start = (page - 1) * 30;
+      const end = start + 30;
+      return items.slice(start, end);
+    }
+    
     return items;
-  }, [comics, selectedGenres, sortBy, categories, searchQuery]);
+  }, [comics, allComics, selectedGenres, sortBy, categories, searchQuery, page]);
 
   const handleResetFilters = () => {
     setSelectedGenres([]);
@@ -201,12 +226,91 @@ export default function ComicsPage() {
     );
   };
 
+  // Load all comics for filtering when filters change
+  useEffect(() => {
+    async function loadAllComicsForFiltering() {
+      if (selectedGenres.length === 0 && searchQuery.trim() === '') {
+        // No filters applied, load page normally
+        return;
+      }
+
+      try {
+        setLoading(true);
+        let accumulated: Comic[] = [];
+        let pageNum = 1;
+        let hasMore = true;
+
+        // Fetch all pages to get complete dataset for filtering
+        while (hasMore) {
+          const data = await getComics(pageNum, 30);
+          if (data?.items && data.items.length > 0) {
+            accumulated = accumulated.concat(data.items);
+            if (accumulated.length >= (data.total || 0)) {
+              hasMore = false;
+            }
+            pageNum++;
+          } else {
+            hasMore = false;
+          }
+        }
+
+        setAllComics(accumulated);
+        setTotal(accumulated.length);
+        setTotalPages(Math.ceil(accumulated.length / 30));
+        setPage(1);
+      } catch (err) {
+        console.error('Error loading all comics for filtering:', err);
+        setError('Không thể tải dữ liệu để lọc');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (selectedGenres.length > 0 || searchQuery.trim() !== '') {
+      loadAllComicsForFiltering();
+    }
+  }, [selectedGenres, searchQuery]);
+
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
       ...prev,
       [section]: !prev[section]
     }));
   };
+
+  // Calculate totalPages based on filtered results
+  const filteredTotalPages = React.useMemo(() => {
+    if (selectedGenres.length > 0 || searchQuery.trim() !== '') {
+      // When filtering, calculate from allComics
+      let filteredItems = allComics.slice();
+      
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        filteredItems = filteredItems.filter(c =>
+          (c.title || '').toLowerCase().includes(query) ||
+          (c.authors || []).some(a => a.toLowerCase().includes(query))
+        );
+      }
+      
+      if (selectedGenres.length > 0) {
+        filteredItems = filteredItems.filter(c => {
+          if (!c.genres || c.genres.length === 0) return false;
+          return selectedGenres.some(selectedId => {
+            const categoryName = categories.find(cat => cat._id === selectedId)?.name;
+            if (!categoryName) return false;
+            return c.genres.some((g: string) => 
+              g.toLowerCase() === categoryName.toLowerCase()
+            );
+          });
+        });
+      }
+      
+      return Math.ceil(filteredItems.length / 30) || 1;
+    }
+    return totalPages;
+  }, [allComics, selectedGenres, searchQuery, categories, totalPages]);
+
+  const displayTotalPages = (selectedGenres.length > 0 || searchQuery.trim() !== '') ? filteredTotalPages : totalPages;
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-white via-neutral-50 to-neutral-100 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-900">
@@ -215,15 +319,14 @@ export default function ComicsPage() {
         <div className="mx-auto max-w-7xl px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white">
+              <h1 className="text-2xl md:text-3xl font-bold text-neutral-900">
                 {q ? `Tìm kiếm: "${q}"` : 'Danh sách truyện'}
               </h1>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-                {q 
-                  ? `Tìm thấy ${visibleComics.length} truyện`
-                  : `${visibleComics.length} / ${total} truyện`
-                }
-              </p>
+              {q && (
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+                  Tìm thấy {visibleComics.length} truyện
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -234,7 +337,7 @@ export default function ComicsPage() {
         <div className="space-y-3">
           {/* Filter Header */}
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-neutral-900 dark:text-white">TÌM KIẾM</h2>
+            <h2 className="text-sm font-semibold text-neutral-900">TÌM KIẾM</h2>
             {(selectedGenres.length > 0 || sortBy !== 'new' || status !== 'all') && (
               <button
                 onClick={handleResetFilters}
@@ -252,7 +355,7 @@ export default function ComicsPage() {
               placeholder="Nhập từ khóa"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+              className="w-full px-4 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg text-neutral-900 placeholder-neutral-400 dark:placeholder-neutral-500 outline-none focus:ring-2 focus:ring-purple-500 transition-all"
             />
           </div>
 
@@ -264,7 +367,7 @@ export default function ComicsPage() {
                 onClick={() => toggleSection('status')}
                 className="w-full px-4 py-3 flex items-center justify-between bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-750 transition-colors"
               >
-                <span className="text-sm font-semibold text-neutral-900 dark:text-white">Trạng Thái</span>
+                <span className="text-sm font-semibold text-neutral-900">Trạng Thái</span>
                 <svg
                   className={`w-5 h-5 text-neutral-600 dark:text-neutral-400 transition-transform ${expandedSections.status ? 'rotate-180' : ''}`}
                   fill="none"
@@ -302,7 +405,7 @@ export default function ComicsPage() {
                 onClick={() => toggleSection('genres')}
                 className="w-full px-4 py-3 flex items-center justify-between bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-750 transition-colors"
               >
-                <span className="text-sm font-semibold text-neutral-900 dark:text-white">Thể Loại</span>
+                <span className="text-sm font-semibold text-neutral-900">Thể Loại</span>
                 <svg
                   className={`w-5 h-5 text-neutral-600 dark:text-neutral-400 transition-transform ${expandedSections.genres ? 'rotate-180' : ''}`}
                   fill="none"
@@ -341,7 +444,7 @@ export default function ComicsPage() {
                 onClick={() => toggleSection('sort')}
                 className="w-full px-4 py-3 flex items-center justify-between bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-750 transition-colors"
               >
-                <span className="text-sm font-semibold text-neutral-900 dark:text-white">Sắp Xếp</span>
+                <span className="text-sm font-semibold text-neutral-900">Sắp Xếp</span>
                 <svg
                   className={`w-5 h-5 text-neutral-600 dark:text-neutral-400 transition-transform ${expandedSections.sort ? 'rotate-180' : ''}`}
                   fill="none"
@@ -411,8 +514,8 @@ export default function ComicsPage() {
                   <div className="text-5xl mb-3">🔍</div>
                   {q ? (
                     <>
-                      <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-2">
-                        Không tìm thấy truyện cho "{q}"
+                      <h2 className="text-xl font-bold text-neutral-900 mb-2">
+                        Không tìm thấy truyện cho \"{q}\"
                       </h2>
                       <p className="text-neutral-600 dark:text-neutral-400">
                         Thử kiểm tra chính tả hoặc tìm với từ khóa khác.
@@ -420,7 +523,7 @@ export default function ComicsPage() {
                     </>
                   ) : (
                     <>
-                      <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-2">
+                      <h2 className="text-xl font-bold text-neutral-900 mb-2">
                         Không có truyện nào
                       </h2>
                       {selectedGenres.length > 0 && (
@@ -443,7 +546,7 @@ export default function ComicsPage() {
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
+                {displayTotalPages > 1 && (
                   <div className="mt-12 flex items-center justify-center">
                     <nav className="inline-flex items-center gap-1 rounded-xl bg-white dark:bg-neutral-900 p-2 shadow-lg border border-neutral-200 dark:border-neutral-800">
                       <button
@@ -455,7 +558,7 @@ export default function ComicsPage() {
                       </button>
 
                       <div className="flex items-center gap-1 mx-2">
-                        {Array.from({ length: totalPages }, (_, i) => i + 1)
+                        {Array.from({ length: displayTotalPages }, (_, i) => i + 1)
                           .filter(p => Math.abs(p - page) <= 2 || p === 1 || p === totalPages)
                           .map((p, i, arr) => (
                             <React.Fragment key={p}>
@@ -477,8 +580,8 @@ export default function ComicsPage() {
                       </div>
 
                       <button
-                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                        disabled={page === totalPages}
+                        onClick={() => setPage(p => Math.min(displayTotalPages, p + 1))}
+                        disabled={page === displayTotalPages}
                         className="px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                       >
                         Sau →

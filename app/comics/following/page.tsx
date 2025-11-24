@@ -61,7 +61,7 @@ export default function FollowingPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-semibold text-neutral-900 dark:text-white">Truyện đang theo dõi</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-neutral-900">Truyện đang theo dõi</h1>
       
       {comics.length === 0 ? (
         <div className="rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-8 text-center">

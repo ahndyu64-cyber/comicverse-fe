@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, forwardRef } from "react";
 import { useRouter } from "next/navigation";
+import SearchBox from "./SearchBox";
 
 // Small focusable menu button that forwards ref to the underlying button element
 const MenuNavButton = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(function MenuNavButton(
@@ -12,7 +13,7 @@ const MenuNavButton = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<H
     <button
       ref={ref}
       {...rest}
-      className={`w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 ${className ?? ""}`}
+      className={`w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:text-neutral-300 ${className ?? ""}`}
     >
       {children}
     </button>
@@ -34,7 +35,10 @@ const extractAvatarUrl = (avatarVal: any): string => {
 export default function Navbar() {
   const [dark, setDark] = useState<boolean>(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [showGenreMenu, setShowGenreMenu] = useState(false);
+  const [genres, setGenres] = useState<Array<{ _id: string; name: string }>>([]);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const genreMenuRef = useRef<HTMLDivElement | null>(null);
   const firstMenuItemRef = useRef<HTMLButtonElement | null>(null);
   const router = useRouter();
   const { user, logout, isAdmin } = useAuth();
@@ -60,6 +64,24 @@ export default function Navbar() {
 
   const effectiveUser = (user as any) || localUser;
   const avatarUrl = extractAvatarUrl((effectiveUser as any)?.avatar);
+
+  // Fetch genres on mount
+  useEffect(() => {
+    async function fetchGenres() {
+      try {
+        const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+        const response = await fetch(`${API_BASE}/genres`);
+        if (response.ok) {
+          const data = await response.json();
+          const genreList = data.data || data || [];
+          setGenres(genreList);
+        }
+      } catch (error) {
+        console.error('Error fetching genres:', error);
+      }
+    }
+    fetchGenres();
+  }, []);
 
   useEffect(() => {
     const stored = typeof window !== "undefined" && localStorage.getItem("cv-dark");
@@ -88,10 +110,17 @@ export default function Navbar() {
       if (e.target instanceof Node && !menuRef.current.contains(e.target)) {
         setShowMenu(false);
       }
+      if (!genreMenuRef.current) return;
+      if (e.target instanceof Node && !genreMenuRef.current.contains(e.target)) {
+        setShowGenreMenu(false);
+      }
     }
 
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setShowMenu(false);
+      if (e.key === "Escape") {
+        setShowMenu(false);
+        setShowGenreMenu(false);
+      }
     }
 
     if (showMenu) {
@@ -101,72 +130,18 @@ export default function Navbar() {
       setTimeout(() => firstMenuItemRef.current?.focus(), 0);
     }
 
+    if (showGenreMenu) {
+      document.addEventListener("mousedown", onDoc);
+      document.addEventListener("keydown", onKey);
+    }
+
     return () => {
       document.removeEventListener("mousedown", onDoc);
       document.removeEventListener("keydown", onKey);
     };
-  }, [showMenu]);
+  }, [showMenu, showGenreMenu]);
 
-  // Search toggle (icon -> show input)
-  function Search() {
-    const [visible, setVisible] = useState(false);
-    const [query, setQuery] = useState("");
-    const inputRef = useRef<HTMLInputElement | null>(null);
 
-    useEffect(() => {
-      if (visible) inputRef.current?.focus();
-    }, [visible]);
-
-    const submit = () => {
-      const q = (query || "").trim();
-      setVisible(false);
-      if (q) {
-        router.push(`/comics?q=${encodeURIComponent(q)}`);
-      }
-    };
-
-    return visible ? (
-      <div className="relative flex items-center">
-        <input
-          ref={inputRef}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') submit(); }}
-          className="rounded-md border border-white/30 bg-white/20 px-3 py-1 text-sm text-white placeholder-white/60 outline-none focus:bg-white/30 focus:border-white/50 transition-colors"
-          placeholder="Tìm kiếm truyện..."
-        />
-        <button
-          onClick={submit}
-          aria-label="Search"
-          className="ml-2 p-2 rounded hover:bg-white/20 transition-colors"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-4 w-4 text-white">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
-          </svg>
-        </button>
-        <button
-          onClick={() => { setVisible(false); setQuery(""); }}
-          aria-label="Close search"
-          className="ml-2 p-2 rounded hover:bg-white/20 transition-colors"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-4 w-4 text-white">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-    ) : (
-      <button
-        onClick={() => setVisible(true)}
-        aria-label="Open search"
-        title="Tìm kiếm"
-        className="p-2 rounded hover:bg-white/20 transition-colors"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
-        </svg>
-      </button>
-    );
-  }
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-800 dark:to-pink-800 shadow-lg border-b border-transparent backdrop-blur">
@@ -179,12 +154,52 @@ export default function Navbar() {
           <Link href="/comics" className="text-sm text-white/80 hover:text-white dark:text-white/80 dark:hover:text-white transition-colors">
             Danh sách truyện
           </Link>
+          
+          {/* Genre Dropdown */}
+          <div className="relative" ref={genreMenuRef}>
+            <button
+              onClick={() => setShowGenreMenu((s) => !s)}
+              className="flex items-center gap-2 text-sm text-white/80 hover:text-white dark:text-white/80 dark:hover:text-white transition-colors"
+              aria-haspopup="true"
+              aria-expanded={showGenreMenu}
+            >
+              Thể loại
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={`h-4 w-4 transition-transform ${showGenreMenu ? 'rotate-180' : ''}`}
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+
+            {showGenreMenu && genres.length > 0 && (
+              <div
+                role="menu"
+                aria-label="Genres menu"
+                className="absolute left-0 top-full mt-2 max-h-96 w-48 overflow-y-auto rounded-md border bg-white p-2 shadow-lg dark:bg-neutral-900 z-50"
+              >
+                {genres.map((genre) => (
+                  <button
+                    key={genre._id}
+                    onClick={() => {
+                      router.push(`/comics?genre=${encodeURIComponent(genre.name)}`);
+                      setShowGenreMenu(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:text-neutral-300 rounded transition-colors"
+                  >
+                    {genre.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-3">
           {/* Search: show icon by default, reveal input when active */}
-          {/** searchVisible controls whether the input is shown */}
-          <Search />
+          <SearchBox />
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setShowMenu((s) => !s)}

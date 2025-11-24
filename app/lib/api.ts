@@ -268,8 +268,9 @@ export async function deleteAdminUser(userId: string) {
   });
 }
 
-export async function getAdminComics() {
-  return fetchJSON(`/comics`);
+export async function getAdminComics(page: number = 1, limit: number = 30, search?: string) {
+  const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
+  return fetchJSON(`/comics?page=${page}&limit=${limit}${searchParam}`);
 }
 
 export async function getAdminComic(comicId: string) {

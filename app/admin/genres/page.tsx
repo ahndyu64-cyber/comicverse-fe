@@ -204,7 +204,7 @@ export default function AdminGenresPage() {
             <div className="flex items-center gap-3">
               <Link
                 href="/admin/comics"
-                className="inline-flex items-center gap-2 rounded-lg bg-neutral-600 dark:bg-neutral-700 px-4 py-2 text-sm font-semibold text-white hover:bg-neutral-700 dark:hover:bg-neutral-600 transition-all duration-300"
+                className="inline-flex items-center gap-2 rounded-lg bg-purple-600 dark:bg-purple-700 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700 dark:hover:bg-purple-600 transition-all duration-300"
               >
                 ← Quay lại
               </Link>

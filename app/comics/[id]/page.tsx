@@ -1,4 +1,5 @@
 import { use } from "react";
+import Link from "next/link";
 import ChapterList from "../../components/ChapterList";
 import ComicActions from "../../components/ComicActions";
 import { getComicById } from "../../lib/comics";
@@ -62,19 +63,21 @@ async function ComicDetailContent({ id }: { id: string }) {
               </div>
 
               {/* Tác giả */}
-              {comic.authors && comic.authors.length > 0 && (
+              {(comic.authors && comic.authors.length > 0) || comic.author ? (
                 <div className="flex flex-col gap-2">
                   <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Tác giả</span>
                   <p className="text-lg text-neutral-700 dark:text-neutral-300 font-semibold">
-                    {comic.authors.map((author, idx) => (
-                      <span key={idx}>
-                        {author}
-                        {idx < comic.authors.length - 1 && <span>, </span>}
-                      </span>
-                    ))}
+                    {comic.authors && comic.authors.length > 0
+                      ? comic.authors.map((author, idx) => (
+                          <span key={idx}>
+                            {author}
+                            {idx < comic.authors.length - 1 && <span>, </span>}
+                          </span>
+                        ))
+                      : comic.author}
                   </p>
                 </div>
-              )}
+              ) : null}
 
               {/* Thể loại */}
               {comic.genres && comic.genres.length > 0 && (
@@ -94,25 +97,16 @@ async function ComicDetailContent({ id }: { id: string }) {
                         // Lấy tên thể loại (có thể là string hoặc object)
                         const genreName = typeof genre === 'string' ? genre : (genre.name || genre._id || '');
                         return genreName ? (
-                          <span 
+                          <Link 
                             key={idx}
-                            className="px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-700 dark:text-purple-300 text-sm font-medium rounded-full"
+                            href={`/comics?genre=${encodeURIComponent(genreName)}`}
+                            className="px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-700 dark:text-purple-300 text-sm font-medium rounded-full hover:shadow-md hover:scale-105 transition-all duration-200 cursor-pointer"
                           >
                             {genreName}
-                          </span>
+                          </Link>
                         ) : null;
                       })}
                   </div>
-                </div>
-              )}
-
-              {/* Tác giả (hiển thị dưới thể loại) */}
-              {comic.authors && comic.authors.length > 0 && (
-                <div className="flex flex-col gap-2">
-                  <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Tác giả</span>
-                  <p className="text-base text-neutral-700 dark:text-neutral-300 font-medium">
-                    {comic.authors.join(", ")}
-                  </p>
                 </div>
               )}
 

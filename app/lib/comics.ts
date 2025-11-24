@@ -27,7 +27,7 @@ export type ComicsResponse = {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
 
-export const getComics = async (page: number = 1, limit: number = 20): Promise<ComicsResponse> => {
+export const getComics = async (page: number = 1, limit: number = 30): Promise<ComicsResponse> => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/comics?page=${page}&limit=${limit}`);
   if (!response.ok) {
     throw new Error('Failed to fetch comics');

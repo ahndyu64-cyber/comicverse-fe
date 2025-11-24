@@ -59,7 +59,7 @@ export default function ComicCard({ comic }: { comic: Comic }) {
       {/* Content */}
       <div className="flex flex-col flex-1 p-3 bg-white dark:bg-neutral-900 min-h-0">
         {/* Title */}
-        <Link href={`/comics/${comic._id}`} className="font-bold text-sm line-clamp-2 text-neutral-900 dark:text-white hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex-shrink-0">
+        <Link href={`/comics/${comic._id}`} className="font-bold text-sm line-clamp-2 text-neutral-900 hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex-shrink-0">
           {comic.title}
         </Link>
 

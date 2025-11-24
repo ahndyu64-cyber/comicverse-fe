@@ -1,5 +1,7 @@
 import { getComics, type Comic } from "./lib/comics";
 import ComicCard from "./components/ComicCard";
+import RecentFollowing from "./components/RecentFollowing";
+import BannerSlider from "./components/BannerSlider";
 
 // Mock data for development when backend is unavailable
 const mockComics: Comic[] = [
@@ -50,41 +52,11 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen bg-white dark:bg-neutral-950">
-      {/* Hero Section */}
-      <section style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-      }} className="relative overflow-hidden py-20 px-4">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl"></div>
-          <div className="absolute top-40 right-10 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl"></div>
-          <div className="absolute bottom-10 left-1/2 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl"></div>
-        </div>
-        
-        <div className="relative mx-auto max-w-7xl">
-          <div className="text-center text-white">
-            <h1 className="text-5xl md:text-6xl font-bold mb-4 tracking-tight">
-              ComicVerse
-            </h1>
-            <p className="text-xl md:text-2xl font-light mb-8 opacity-90">
-              Khám phá thế giới truyện tranh kỳ thú
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="/comics"
-                className="px-8 py-3 bg-white text-purple-600 font-bold rounded-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl"
-              >
-                Khám phá truyện
-              </a>
-              <a
-                href="#latest"
-                className="px-8 py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white hover:text-purple-600 transition-all duration-300"
-              >
-                Xem mới cập nhật
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Banner Slider */}
+      <BannerSlider />
+
+      {/* Recent Following Section */}
+      <RecentFollowing />
 
       {/* Latest Comics */}
       <section id="latest" className="mx-auto max-w-7xl px-4 py-16">
