@@ -62,23 +62,6 @@ async function ComicDetailContent({ id }: { id: string }) {
                 <div className="h-1 w-20 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full"></div>
               </div>
 
-              {/* Tác giả */}
-              {(comic.authors && comic.authors.length > 0) || comic.author ? (
-                <div className="flex flex-col gap-2">
-                  <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Tác giả</span>
-                  <p className="text-lg text-neutral-700 dark:text-neutral-300 font-semibold">
-                    {comic.authors && comic.authors.length > 0
-                      ? comic.authors.map((author, idx) => (
-                          <span key={idx}>
-                            {author}
-                            {idx < comic.authors.length - 1 && <span>, </span>}
-                          </span>
-                        ))
-                      : comic.author}
-                  </p>
-                </div>
-              ) : null}
-
               {/* Thể loại */}
               {comic.genres && comic.genres.length > 0 && (
                 <div className="flex flex-col gap-2">
@@ -109,6 +92,23 @@ async function ComicDetailContent({ id }: { id: string }) {
                   </div>
                 </div>
               )}
+
+              {/* Tác giả */}
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Tác giả</span>
+                <p className="text-lg text-neutral-700 dark:text-neutral-300 font-semibold">
+                  {(comic.authors && comic.authors.length > 0)
+                    ? comic.authors.map((author, idx) => (
+                        <span key={idx}>
+                          {author}
+                          {idx < comic.authors.length - 1 && <span>, </span>}
+                        </span>
+                      ))
+                    : comic.author
+                    ? comic.author
+                    : "Đang cập nhật"}
+                </p>
+              </div>
 
               {/* Trạng thái */}
               <div className="flex flex-col gap-2">

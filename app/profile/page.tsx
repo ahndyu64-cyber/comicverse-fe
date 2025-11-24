@@ -296,7 +296,7 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex gap-2">
-                <button type="submit" className="rounded bg-emerald-600 px-4 py-2 font-bold text-white shadow hover:bg-emerald-700 dark:bg-emerald-700 dark:hover:bg-emerald-600">Lưu thay đổi</button>
+                <button type="submit" className="rounded bg-black px-4 py-2 font-bold text-white shadow hover:bg-neutral-900 dark:bg-black dark:hover:bg-neutral-900">Lưu thay đổi</button>
                 <button type="button" onClick={() => { setIsEditing(false); setError(""); }} className="rounded border-2 border-neutral-300 dark:border-neutral-600 px-4 py-2 font-bold text-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800">Hủy</button>
               </div>
             </form>

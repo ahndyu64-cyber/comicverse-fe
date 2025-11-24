@@ -114,7 +114,7 @@ export default function LoginPage() {
                     Ghi nhớ đăng nhập
                   </label>
                   <a
-                    href="#"
+                    href="/auth/forgot-password"
                     className="font-medium text-blue-600 transition-colors hover:text-blue-800"
                   >
                     Quên mật khẩu?

@@ -63,13 +63,6 @@ export default function ComicCard({ comic }: { comic: Comic }) {
           {comic.title}
         </Link>
 
-        {/* Author */}
-        {comic.authors && comic.authors.length > 0 && (
-          <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1.5 line-clamp-1 flex-shrink-0">
-            {comic.authors.join(", ")}
-          </p>
-        )}
-
         {/* Latest Chapters List */}
         {comic.chapters && comic.chapters.length > 0 && (
           <div className="mt-auto pt-2 space-y-1 flex-shrink-0">

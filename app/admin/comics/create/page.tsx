@@ -11,6 +11,7 @@ import { useEffect } from "react";
 type Comic = {
   title: string;
   author?: string;
+  authors?: string[];
   description?: string;
   cover?: string;
   genres?: string[];
@@ -125,8 +126,11 @@ export default function CreateComicPage() {
     try {
       const data = {
         ...formData,
+        authors: formData.author ? [formData.author] : undefined,
         genres: selectedGenres.length > 0 ? selectedGenres : undefined,
       };
+
+      console.log('[CreateComic] Submitting data:', data);
 
       const res = await createAdminComic(data);
       if (res === null) {

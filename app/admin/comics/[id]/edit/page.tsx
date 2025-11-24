@@ -73,7 +73,15 @@ export default function EditComicPage() {
         return;
       }
 
-      setFormData(comicData);
+      // Chuyển đổi authors (mảng) thành author (string)
+      const formattedData = {
+        ...comicData,
+        author: Array.isArray(comicData.authors) && comicData.authors.length > 0 
+          ? comicData.authors[0] 
+          : (comicData.author || ""),
+      };
+
+      setFormData(formattedData);
       if (comicData.genres && Array.isArray(comicData.genres)) {
         setSelectedGenres(comicData.genres);
       }
@@ -167,6 +175,7 @@ export default function EditComicPage() {
     try {
       const data = {
         ...formData,
+        authors: formData.author ? [formData.author] : undefined,
         genres: selectedGenres.length > 0 ? selectedGenres : undefined,
       };
 
