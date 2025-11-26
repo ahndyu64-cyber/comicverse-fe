@@ -376,13 +376,6 @@ export default function ReaderPage({ params }: Props) {
                 </div>
               )}
 
-              <Link 
-                href={`/comics/${comicId}`}
-                className="px-6 py-3 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 rounded-lg text-neutral-300 dark:text-white font-medium transition"
-              >
-                Danh sách chương
-              </Link>
-
               {nextChapter ? (
                 <Link 
                   href={`/reader/${comicId}/${nextChapter._id}`}
