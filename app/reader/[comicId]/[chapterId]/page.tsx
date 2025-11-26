@@ -45,6 +45,7 @@ export default function ReaderPage({ params }: Props) {
   const [commentError, setCommentError] = useState<string | null>(null);
   const [authError, setAuthError] = useState(false);
   const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
+  const [showChapterDropdown, setShowChapterDropdown] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -154,7 +155,7 @@ export default function ReaderPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-950 to-neutral-900">
       {/* Header */}
-      <div className="sticky top-0 z-50 border-b border-neutral-800 bg-neutral-900/95 backdrop-blur">
+      <div className="relative z-10 border-b border-neutral-800 bg-neutral-900/95 backdrop-blur">
         <div className="mx-auto max-w-6xl px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -166,13 +167,77 @@ export default function ReaderPage({ params }: Props) {
               </Link>
               <div className="h-6 w-px bg-neutral-700"></div>
               <div className="flex flex-col">
-                <p className="text-xs text-neutral-500">Đọc truyện</p>
-                <p className="text-sm font-bold text-white">{comic?.title || 'Đang tải...'}</p>
+                <p className="text-sm font-bold text-black dark:text-white">{comic?.title || 'Đang tải...'}</p>
               </div>
             </div>
-            <div className="text-center">
-              <p className="text-xs text-neutral-500">Chương {chapterIndex + 1}</p>
-              <p className="text-sm font-bold text-purple-400">{currentChapter?.title || 'Đang tải...'}</p>
+            <div className="flex items-center gap-4">
+              {/* Chapter Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowChapterDropdown(!showChapterDropdown)}
+                  className="p-2 text-neutral-400 hover:text-purple-400 hover:bg-neutral-800 rounded-lg transition"
+                  title="Danh sách chương"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+                
+                {/* Dropdown Menu */}
+                {showChapterDropdown && (
+                  <div className="absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto rounded-lg bg-white border border-gray-200 shadow-xl z-50">
+                    <div className="p-3 border-b border-gray-200">
+                      <p className="text-sm font-bold text-gray-900">Danh sách chương ({comic?.chapters?.length || 0})</p>
+                    </div>
+                    <div className="space-y-1">
+                      {comic?.chapters?.map((chapter: any) => (
+                        <Link
+                          key={chapter._id}
+                          href={`/reader/${comicId}/${chapter._id}`}
+                          onClick={() => setShowChapterDropdown(false)}
+                          className={`block px-4 py-2 text-sm transition ${
+                            chapter._id === chapterId
+                              ? 'bg-purple-600 text-white font-semibold'
+                              : 'text-gray-700 hover:bg-gray-100'
+                          }`}
+                        >
+                          {chapter.title}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Previous Chapter Button */}
+              {previousChapter && (
+                <Link 
+                  href={`/reader/${comicId}/${previousChapter._id}`}
+                  className="p-2 text-neutral-400 hover:text-purple-400 hover:bg-neutral-800 rounded-lg transition"
+                  title="Chương trước"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </Link>
+              )}
+
+              <div className="text-center">
+                <p className="text-sm font-bold text-purple-400">{currentChapter?.title || 'Đang tải...'}</p>
+              </div>
+
+              {/* Next Chapter Button */}
+              {nextChapter && (
+                <Link 
+                  href={`/reader/${comicId}/${nextChapter._id}`}
+                  className="p-2 text-neutral-400 hover:text-purple-400 hover:bg-neutral-800 rounded-lg transition"
+                  title="Chương tiếp theo"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -222,6 +287,55 @@ export default function ReaderPage({ params }: Props) {
               <p className="text-sm text-neutral-400">
                 Trang <span className="font-bold text-purple-400">{images.length}</span> / <span className="font-bold text-purple-400">{images.length}</span>
               </p>
+            </div>
+
+            {/* Navigation Footer */}
+            <div className="mt-8 border-t border-neutral-800 bg-neutral-900/95 backdrop-blur pt-6">
+              <div className="flex items-center justify-between gap-4">
+                {previousChapter ? (
+                  <Link 
+                    href={`/reader/${comicId}/${previousChapter._id}`}
+                    className="flex-1 flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600/20 to-purple-600/20 hover:from-purple-600/40 hover:to-purple-600/40 border border-purple-600/50 rounded-lg text-purple-400 transition group"
+                  >
+                    <svg className="w-5 h-5 group-hover:-translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <div className="text-left">
+                      <p className="text-xs text-neutral-500">Chương trước</p>
+                      <p className="text-sm font-bold">{previousChapter.title}</p>
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="flex-1 px-4 py-3 bg-neutral-800/30 border border-neutral-700 rounded-lg text-neutral-600 dark:text-neutral-300 flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    <span className="text-sm dark:text-white">Đây là chương đầu tiên</span>
+                  </div>
+                )}
+
+                {nextChapter ? (
+                  <Link 
+                    href={`/reader/${comicId}/${nextChapter._id}`}
+                    className="flex-1 flex items-center justify-end gap-2 px-4 py-3 bg-gradient-to-r from-purple-600/20 to-purple-600/20 hover:from-purple-600/40 hover:to-purple-600/40 border border-purple-600/50 rounded-lg text-purple-400 transition group"
+                  >
+                    <div className="text-right">
+                      <p className="text-xs text-neutral-500">Chương tiếp theo</p>
+                      <p className="text-sm font-bold">{nextChapter.title}</p>
+                    </div>
+                    <svg className="w-5 h-5 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                ) : (
+                  <div className="flex-1 px-4 py-3 bg-neutral-800/30 border border-neutral-700 rounded-lg text-neutral-600 flex items-center justify-end gap-2">
+                    <span className="text-sm dark:text-white">Đây là chương cuối cùng</span>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Comments Section */}
@@ -348,59 +462,6 @@ export default function ReaderPage({ params }: Props) {
           </>
         )}
       </div>
-
-      {/* Navigation Footer */}
-      {!loading && !error && images.length > 0 && (
-        <div className="sticky bottom-0 border-t border-neutral-800 bg-neutral-900/95 backdrop-blur">
-          <div className="mx-auto max-w-6xl px-4 py-6">
-            <div className="flex items-center justify-between gap-4">
-              {previousChapter ? (
-                <Link 
-                  href={`/reader/${comicId}/${previousChapter._id}`}
-                  className="flex-1 flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600/20 to-purple-600/20 hover:from-purple-600/40 hover:to-purple-600/40 border border-purple-600/50 rounded-lg text-purple-400 transition group"
-                >
-                  <svg className="w-5 h-5 group-hover:-translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  <div className="text-left">
-                    <p className="text-xs text-neutral-500">Chương trước</p>
-                    <p className="text-sm font-bold">{previousChapter.title}</p>
-                  </div>
-                </Link>
-              ) : (
-                <div className="flex-1 px-4 py-3 bg-neutral-800/30 border border-neutral-700 rounded-lg text-neutral-600 dark:text-neutral-300 flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  <span className="text-sm dark:text-white">Đây là chương đầu tiên</span>
-                </div>
-              )}
-
-              {nextChapter ? (
-                <Link 
-                  href={`/reader/${comicId}/${nextChapter._id}`}
-                  className="flex-1 flex items-center justify-end gap-2 px-4 py-3 bg-gradient-to-r from-purple-600/20 to-purple-600/20 hover:from-purple-600/40 hover:to-purple-600/40 border border-purple-600/50 rounded-lg text-purple-400 transition group"
-                >
-                  <div className="text-right">
-                    <p className="text-xs text-neutral-500">Chương tiếp theo</p>
-                    <p className="text-sm font-bold">{nextChapter.title}</p>
-                  </div>
-                  <svg className="w-5 h-5 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-              ) : (
-                <div className="flex-1 px-4 py-3 bg-neutral-800/30 border border-neutral-700 rounded-lg text-neutral-600 flex items-center justify-end gap-2">
-                  <span className="text-sm dark:text-white">Đây là chương cuối cùng</span>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

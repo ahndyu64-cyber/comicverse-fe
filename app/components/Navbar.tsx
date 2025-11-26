@@ -37,6 +37,8 @@ export default function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
   const [showGenreMenu, setShowGenreMenu] = useState(false);
   const [genres, setGenres] = useState<Array<{ _id: string; name: string }>>([]);
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const genreMenuRef = useRef<HTMLDivElement | null>(null);
   const firstMenuItemRef = useRef<HTMLButtonElement | null>(null);
@@ -103,6 +105,26 @@ export default function Navbar() {
     localStorage.setItem("cv-dark", next ? "1" : "0");
   }
 
+  // Handle scroll to hide/show navbar
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        // Scrolling down and not at top
+        setIsNavbarVisible(false);
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up
+        setIsNavbarVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
+
   // Close menu on outside click or Escape; focus first item when opened
   useEffect(() => {
     function onDoc(e: MouseEvent) {
@@ -144,7 +166,7 @@ export default function Navbar() {
 
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-gradient-to-r from-teal-700 to-cyan-800 dark:from-teal-900 dark:to-cyan-950 shadow-lg border-b border-transparent backdrop-blur">
+    <nav className={`sticky top-0 z-50 w-full bg-white dark:bg-gradient-to-r dark:from-teal-900 dark:to-cyan-950 shadow-lg border-b border-gray-200 dark:border-transparent backdrop-blur transition-transform duration-300 ${isNavbarVisible ? 'translate-y-0' : '-translate-y-full'}`}>
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-3">
