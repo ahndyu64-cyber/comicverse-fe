@@ -84,11 +84,3 @@ Ví dụ kiểm tra token nhanh trong console:
 **Liên hệ / Ghi chú**
 - Nếu bạn gặp lỗi upload 401: gửi cho người phụ trách backend định dạng token mong muốn (Bearer vs cookies) và ví dụ request headers.
 - File upload helper: `app/lib/cloudinary.ts` — nơi tập trung logic upload và các debug log như `uploadFile -> { uploadUrl, willSendAuth }`.
-
-Nếu bạn muốn, tôi có thể:
-- Thêm bản README tiếng Anh.
-- Thêm phần cấu hình CI / deploy.
-- Thêm checklist khởi động backend cho dev (ví dụ port, seed data).
-
----
-Updated: README viết lại để tập trung vào thiết lập và gỡ lỗi upload/xác thực.
