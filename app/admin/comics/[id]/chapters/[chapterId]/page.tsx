@@ -334,43 +334,41 @@ export default function AdminChapterDetail() {
             </div>
 
             {/* Upload controls */}
-            <div className="mb-4 flex items-start gap-4">
-              <div>
+            <div className="mb-4">
+              <div className="mb-3">
                 <input id="file-input" multiple type="file" accept="image/*" onChange={onSelectFiles} className="hidden" />
                 <label htmlFor="file-input" className="inline-flex items-center gap-2 cursor-pointer rounded-md border px-3 py-2 text-sm bg-neutral-50">Thêm ảnh</label>
               </div>
-              <div className="flex-1">
-                {selectedFiles.length > 0 ? (
-                  <div className="mb-2">
-                    <div className="text-sm font-medium">Ảnh đã chọn ({selectedFiles.length})</div>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {selectedFiles.map((f, i) => (
-                        <div key={i} className="relative w-24 h-24 rounded overflow-hidden border">
-                          <img src={URL.createObjectURL(f)} alt={f.name} className="w-full h-full object-cover" />
-                          <button onClick={() => removeSelected(i)} className="absolute top-1 right-1 rounded bg-red-600 text-white text-xs px-1">X</button>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="mt-2">
-                      <button onClick={uploadSelected} disabled={uploading} className="px-3 py-1 rounded bg-green-600 text-white">{uploading ? 'Đang tải...' : 'Tải lên'}</button>
-                    </div>
+
+              {selectedFiles.length > 0 && (
+                <div className="mb-4 p-4 rounded-lg bg-neutral-50 dark:bg-neutral-800">
+                  <div className="text-sm font-medium mb-3">Ảnh đã chọn ({selectedFiles.length})</div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-3">
+                    {selectedFiles.map((f, i) => (
+                      <div key={i} className="relative w-full h-40 rounded overflow-hidden border dark:border-neutral-700">
+                        <img src={URL.createObjectURL(f)} alt={f.name} className="w-full h-full object-cover" />
+                        <button onClick={() => removeSelected(i)} className="absolute top-1 right-1 rounded bg-red-600 text-white text-xs px-1.5 py-0.5">×</button>
+                      </div>
+                    ))}
                   </div>
-                ) : (
-                  <div className="text-sm text-neutral-500">Chưa chọn ảnh để tải lên.</div>
-                )}
-              </div>
+                  <button onClick={uploadSelected} disabled={uploading} className="px-4 py-2 rounded bg-green-600 hover:bg-green-700 text-white font-medium transition">{uploading ? 'Đang tải...' : 'Tải lên'}</button>
+                </div>
+              )}
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {images && images.length > 0 ? (
-                images.map((src, i) => (
-                  <div key={i} className="overflow-hidden rounded border">
-                    <img src={src} alt={`img-${i}`} className="w-full h-40 object-cover" />
-                  </div>
-                ))
-              ) : (
-                <div className="text-sm text-neutral-500">Chưa có ảnh cho chương này.</div>
-              )}
+            <div className="border-t dark:border-neutral-700 pt-4">
+              <div className="text-sm font-medium mb-3">Ảnh đã tải lên ({images?.length || 0})</div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                {images && images.length > 0 ? (
+                  images.map((src, i) => (
+                    <div key={i} className="overflow-hidden rounded border dark:border-neutral-700">
+                      <img src={src} alt={`img-${i}`} className="w-full h-40 object-cover" />
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full text-sm text-neutral-500 dark:text-neutral-400 text-center py-8">Chưa có ảnh cho chương này.</div>
+                )}
+              </div>
             </div>
           </div>
         )}

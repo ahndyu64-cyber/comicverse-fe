@@ -230,7 +230,6 @@ export default function AdminChaptersPage() {
         {/* Create column */}
         <div className="lg:col-span-1 rounded-2xl bg-white dark:bg-neutral-900 p-6 shadow">
           <h2 className="text-lg font-semibold mb-3">Thêm chương mới</h2>
-          <p className="text-sm text-neutral-500 mb-4">Tạo chương rỗng trước, sau đó tải ảnh trong trang chỉnh sửa chương.</p>
           <div className="flex gap-3">
             <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Tiêu đề chương" className="flex-1 rounded-md border border-neutral-200 px-3 py-2 focus:ring-2 focus:ring-purple-200" />
             <button onClick={createChapter} disabled={creating} className="rounded-md bg-blue-600 hover:bg-blue-700 px-4 py-2 text-white font-semibold">{creating ? 'Đang tạo...' : 'Tạo'}</button>

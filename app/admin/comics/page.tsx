@@ -166,7 +166,7 @@ export default function AdminComicsPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Quản lý truyện</h1>
-              <p className="mt-1 text-gray-600 dark:text-neutral-400">Tổng cộng: <span className="font-semibold text-gray-900 dark:text-white">{total}</span> truyện</p>
+              <p className="mt-1 text-gray-600 dark:text-white">Tổng cộng: <span className="font-semibold text-gray-900 dark:text-white">{total}</span> truyện</p>
             </div>
             <div className="flex items-center gap-3">
               {hasAdminRole(authContext?.user) && (
@@ -204,7 +204,7 @@ export default function AdminComicsPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <label className="text-sm text-neutral-600 dark:text-neutral-300">Sắp xếp:</label>
+              <label className="text-sm text-neutral-600 dark:text-white">Sắp xếp:</label>
               <select 
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
@@ -307,7 +307,7 @@ export default function AdminComicsPage() {
                   {/* Content */}
                   <div className="flex flex-col flex-1 p-3 min-h-0">
                     {/* Title */}
-                    <h3 className="line-clamp-2 text-sm font-bold text-neutral-900 dark:text-white hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex-shrink-0 cursor-pointer"
+                    <h3 className="line-clamp-2 text-sm font-bold text-neutral-900 hover:text-purple-600 transition-colors flex-shrink-0 cursor-pointer"
                       onClick={() => comicId && router.push(`/comics/${comicId}`)}
                     >
                       {comic.title}
