@@ -11,14 +11,14 @@ export default function Footer(){
             </div>
           </div>
 
+          <span className="text-neutral-500 dark:text-white">© 2025 ComicVerse</span>
+
           <nav className="flex flex-wrap items-center justify-center gap-4 text-sm">
             <a href="/about" className="text-neutral-600 hover:text-sky-600 dark:text-white dark:hover:text-sky-400">Về chúng tôi</a>
             <a href="/contact" className="text-neutral-600 hover:text-sky-600 dark:text-white dark:hover:text-sky-400">Liên hệ</a>
             <a href="/terms" className="text-neutral-600 hover:text-sky-600 dark:text-white dark:hover:text-sky-400">Điều khoản</a>
           </nav>
         </div>
-
-        <div className="mt-6 text-center text-sm text-neutral-500 dark:text-neutral-200">© {new Date().getFullYear()} ComicVerse. All rights reserved.</div>
       </div>
     </footer>
   )

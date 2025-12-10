@@ -4,47 +4,105 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import styles from './BannerSlider.module.css'
 
-const BANNERS = [
-  { src: '/banner.jpg', comicId: '691a91aea632ed16b50391e1' },
-  { src: '/banner1.jpg', comicId: '691a968ea632ed16b5039484' },
-  { src: '/banner2.jpg', comicId: '691a963aa632ed16b503944b' },
-  { src: '/banner3.jpg', comicId: '691a95c3a632ed16b5039403' },
-  { src: '/banner4.jpg', comicId: '691a96dea632ed16b50394c5' },
-  { src: '/banner5.jpg', comicId: '691a954ba632ed16b50393da' },
-  { src: '/banner6.jpg', comicId: '691ace2a343f4c9f7ed205e6' }
-]
-
 const AUTO_SLIDE_INTERVAL = 5000 // 5 seconds
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001'
+
+interface Banner {
+  _id: string
+  src: string
+  comicId: string
+  comicTitle?: string
+}
 
 export default function BannerSlider() {
   const router = useRouter()
+  const [banners, setBanners] = useState<Banner[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Only auto-slide when not hovering
-    if (isHovered) return
+    loadBanners()
+  }, [])
+
+  const loadBanners = async () => {
+    try {
+      setLoading(true)
+      // Try to load from API first
+      try {
+        const res = await fetch(`${API_BASE}/banners`)
+        if (res.ok) {
+          const data = await res.json()
+          const apiBanners = Array.isArray(data) ? data : data.data || []
+          if (apiBanners.length > 0) {
+            setBanners(apiBanners)
+            return
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to load banners from API, falling back to localStorage', err)
+      }
+
+      // Fallback to localStorage
+      const savedBanners = localStorage.getItem('banners')
+      if (savedBanners) {
+        setBanners(JSON.parse(savedBanners))
+      }
+    } catch (err) {
+      console.error('Error loading banners:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    // Only auto-slide when not hovering and we have banners
+    if (isHovered || banners.length === 0) return
 
     const timer = setInterval(() => {
-      setCurrentIndex((current) => (current + 1) % BANNERS.length)
+      setCurrentIndex((current) => (current + 1) % banners.length)
     }, AUTO_SLIDE_INTERVAL)
 
     return () => clearInterval(timer)
-  }, [isHovered])
+  }, [isHovered, banners.length])
 
   const goToPrevious = () => {
-    setCurrentIndex((current) => (current - 1 + BANNERS.length) % BANNERS.length)
+    if (banners.length === 0) return
+    setCurrentIndex((current) => (current - 1 + banners.length) % banners.length)
   }
 
   const goToNext = () => {
-    setCurrentIndex((current) => (current + 1) % BANNERS.length)
+    if (banners.length === 0) return
+    setCurrentIndex((current) => (current + 1) % banners.length)
   }
 
   const handleBannerClick = () => {
-    const banner = BANNERS[currentIndex]
+    if (banners.length === 0) return
+    const banner = banners[currentIndex]
     if (banner.comicId) {
       router.push(`/comics/${banner.comicId}`)
     }
+  }
+
+  // Show loading state or empty state
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.slider} style={{ backgroundColor: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <p style={{ color: '#999' }}>Đang tải banner...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (banners.length === 0) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.slider} style={{ backgroundColor: '#f0f0f0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <p style={{ color: '#999' }}>Chưa có banner nào</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -54,9 +112,9 @@ export default function BannerSlider() {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className={styles.slider}>
-        {BANNERS.map((banner, index) => (
+        {banners.map((banner, index) => (
           <div
-            key={banner.src}
+            key={banner._id}
             className={`${styles.slide} ${index === currentIndex ? styles.active : ''}`}
             onClick={handleBannerClick}
             style={{
@@ -66,7 +124,7 @@ export default function BannerSlider() {
           >
             <Image 
               src={banner.src} 
-              alt={`Banner slide ${index + 1}`}
+              alt={banner.comicTitle || `Banner slide ${index + 1}`}
               fill
               className={styles.image}
               priority={index === 0}
@@ -99,7 +157,7 @@ export default function BannerSlider() {
       
       {/* Indicators */}
       <div className={styles.indicators}>
-        {BANNERS.map((_, index) => (
+        {banners.map((_, index) => (
           <button
             key={index}
             className={`${styles.indicator} ${index === currentIndex ? styles.active : ''}`}

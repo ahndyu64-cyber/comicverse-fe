@@ -78,10 +78,10 @@ export default function RecentFollowing() {
       <div className="mb-12">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-4xl font-bold text-neutral-900 mb-2">
+            <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
               Theo dõi gần đây
             </h2>
-            <p className="text-neutral-600 dark:text-neutral-400">
+            <p className="text-neutral-600 dark:text-white">
               Những truyện bạn theo dõi mới nhất
             </p>
           </div>

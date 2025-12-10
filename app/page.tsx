@@ -51,7 +51,7 @@ export default async function HomePage() {
   const latestComics = await getLatestComics();
 
   return (
-    <main className="min-h-screen bg-white dark:bg-neutral-950">
+    <main className="min-h-screen bg-white dark:bg-black">
       {/* Banner Slider */}
       <BannerSlider />
 
@@ -65,7 +65,7 @@ export default async function HomePage() {
             <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
               Truyện mới cập nhật
             </h2>
-            <p className="text-neutral-600 dark:text-neutral-400">
+            <p className="text-neutral-600 dark:text-white">
               Những bộ truyện mới nhất vừa được đăng tải
             </p>
           </div>
@@ -75,6 +75,42 @@ export default async function HomePage() {
           <div>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
               {latestComics.map((comic: Comic) => (
+                <ComicCard key={comic._id} comic={comic} />
+              ))}
+            </div>
+            <div className="flex justify-center mt-8">
+              <a
+                href="/comics"
+                className="px-6 py-2 bg-white text-black font-semibold rounded-lg hover:shadow-lg hover:bg-neutral-100 transition-all duration-300"
+              >
+                Xem thêm
+              </a>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-neutral-600 dark:text-neutral-400">Chưa có truyện nào</p>
+          </div>
+        )}
+      </section>
+
+      {/* Hot Comics */}
+      <section id="hot" className="mx-auto max-w-7xl px-4 py-16 border-t border-neutral-200 dark:border-neutral-800">
+        <div className="mb-12">
+          <div className="mb-4">
+            <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
+              Truyện Hot
+            </h2>
+            <p className="text-neutral-600 dark:text-white">
+              Những bộ truyện được yêu thích nhiều nhất
+            </p>
+          </div>
+        </div>
+        
+        {latestComics.length > 0 ? (
+          <div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+              {latestComics.slice(0, 6).map((comic: Comic) => (
                 <ComicCard key={comic._id} comic={comic} />
               ))}
             </div>

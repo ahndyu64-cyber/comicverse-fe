@@ -313,13 +313,13 @@ export default function ComicsPage() {
   const displayTotalPages = (selectedGenres.length > 0 || searchQuery.trim() !== '') ? filteredTotalPages : totalPages;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-white via-neutral-50 to-neutral-100 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-900">
+    <main className="min-h-screen bg-white dark:bg-black">
       {/* Page Header */}
-      <div className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950/50 backdrop-blur-sm">
+      <div className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black backdrop-blur-sm">
         <div className="mx-auto max-w-7xl px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold text-neutral-900">
+              <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white">
                 {q ? `Tìm kiếm: "${q}"` : 'Danh sách truyện'}
               </h1>
               {q && (
@@ -337,7 +337,7 @@ export default function ComicsPage() {
         <div className="space-y-3">
           {/* Filter Header */}
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-neutral-900">TÌM KIẾM</h2>
+            <h2 className="text-sm font-semibold text-neutral-900 dark:text-white">TÌM KIẾM</h2>
             {(selectedGenres.length > 0 || sortBy !== 'new' || status !== 'all') && (
               <button
                 onClick={handleResetFilters}
@@ -367,7 +367,7 @@ export default function ComicsPage() {
                 onClick={() => toggleSection('status')}
                 className="w-full px-4 py-3 flex items-center justify-between bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-750 transition-colors"
               >
-                <span className="text-sm font-semibold text-neutral-900">Trạng Thái</span>
+                <span className="text-sm font-semibold text-neutral-900 dark:text-white">Trạng Thái</span>
                 <svg
                   className={`w-5 h-5 text-neutral-600 dark:text-neutral-400 transition-transform ${expandedSections.status ? 'rotate-180' : ''}`}
                   fill="none"
@@ -405,7 +405,7 @@ export default function ComicsPage() {
                 onClick={() => toggleSection('genres')}
                 className="w-full px-4 py-3 flex items-center justify-between bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-750 transition-colors"
               >
-                <span className="text-sm font-semibold text-neutral-900">Thể Loại</span>
+                <span className="text-sm font-semibold text-neutral-900 dark:text-white">Thể Loại</span>
                 <svg
                   className={`w-5 h-5 text-neutral-600 dark:text-neutral-400 transition-transform ${expandedSections.genres ? 'rotate-180' : ''}`}
                   fill="none"
@@ -444,7 +444,7 @@ export default function ComicsPage() {
                 onClick={() => toggleSection('sort')}
                 className="w-full px-4 py-3 flex items-center justify-between bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-750 transition-colors"
               >
-                <span className="text-sm font-semibold text-neutral-900">Sắp Xếp</span>
+                <span className="text-sm font-semibold text-neutral-900 dark:text-white">Sắp Xếp</span>
                 <svg
                   className={`w-5 h-5 text-neutral-600 dark:text-neutral-400 transition-transform ${expandedSections.sort ? 'rotate-180' : ''}`}
                   fill="none"
@@ -514,7 +514,7 @@ export default function ComicsPage() {
                   <div className="text-5xl mb-3">🔍</div>
                   {q ? (
                     <>
-                      <h2 className="text-xl font-bold text-neutral-900 mb-2">
+                      <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-2">
                         Không tìm thấy truyện cho \"{q}\"
                       </h2>
                       <p className="text-neutral-600 dark:text-neutral-400">
@@ -523,7 +523,7 @@ export default function ComicsPage() {
                     </>
                   ) : (
                     <>
-                      <h2 className="text-xl font-bold text-neutral-900 mb-2">
+                      <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-2">
                         Không có truyện nào
                       </h2>
                       {selectedGenres.length > 0 && (
@@ -548,11 +548,11 @@ export default function ComicsPage() {
                 {/* Pagination */}
                 {displayTotalPages > 1 && (
                   <div className="mt-12 flex items-center justify-center">
-                    <nav className="inline-flex items-center gap-1 rounded-xl bg-white dark:bg-neutral-900 p-2 shadow-lg border border-neutral-200 dark:border-neutral-800">
+                    <nav className="inline-flex items-center gap-1 rounded-xl bg-white dark:bg-black p-2 shadow-lg border border-neutral-200 dark:border-neutral-800">
                       <button
                         onClick={() => setPage(p => Math.max(1, p - 1))}
                         disabled={page === 1}
-                        className="px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        className="px-3 py-2 text-sm font-medium text-neutral-700 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                       >
                         ← Trước
                       </button>
@@ -570,7 +570,7 @@ export default function ComicsPage() {
                                 className={`px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                                   page === p
                                     ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
-                                    : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                                    : 'text-neutral-700 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800'
                                 }`}
                               >
                                 {p}
@@ -582,7 +582,7 @@ export default function ComicsPage() {
                       <button
                         onClick={() => setPage(p => Math.min(displayTotalPages, p + 1))}
                         disabled={page === displayTotalPages}
-                        className="px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        className="px-3 py-2 text-sm font-medium text-neutral-700 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                       >
                         Sau →
                       </button>

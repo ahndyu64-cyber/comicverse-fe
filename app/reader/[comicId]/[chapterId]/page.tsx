@@ -36,6 +36,7 @@ export default function ReaderPage({ params }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   
   // Comments state
   const [comments, setComments] = useState<Comment[]>([]);
@@ -97,6 +98,24 @@ export default function ReaderPage({ params }: Props) {
       })
       .finally(() => setLoadingComments(false));
   }, [comicId]);
+
+  // Handle scroll to show/hide scroll top button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Scroll to top function
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -175,7 +194,7 @@ export default function ReaderPage({ params }: Props) {
               <div className="relative">
                 <button
                   onClick={() => setShowChapterDropdown(!showChapterDropdown)}
-                  className="p-2 text-neutral-400 hover:text-purple-400 hover:bg-neutral-800 rounded-lg transition"
+                  className="p-2 text-neutral-400 dark:text-white hover:text-purple-400 hover:bg-neutral-800 rounded-lg transition"
                   title="Danh sách chương"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -213,7 +232,7 @@ export default function ReaderPage({ params }: Props) {
               {previousChapter && (
                 <Link 
                   href={`/reader/${comicId}/${previousChapter._id}`}
-                  className="p-2 text-neutral-400 hover:text-purple-400 hover:bg-neutral-800 rounded-lg transition"
+                  className="p-2 text-neutral-400 dark:text-white hover:text-purple-400 hover:bg-neutral-800 rounded-lg transition"
                   title="Chương trước"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -230,7 +249,7 @@ export default function ReaderPage({ params }: Props) {
               {nextChapter && (
                 <Link 
                   href={`/reader/${comicId}/${nextChapter._id}`}
-                  className="p-2 text-neutral-400 hover:text-purple-400 hover:bg-neutral-800 rounded-lg transition"
+                  className="p-2 text-neutral-400 dark:text-white hover:text-purple-400 hover:bg-neutral-800 rounded-lg transition"
                   title="Chương tiếp theo"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -341,7 +360,7 @@ export default function ReaderPage({ params }: Props) {
             {/* Comments Section */}
             <div className="mt-12 space-y-6">
               <div className="border-t border-neutral-800 pt-8">
-                <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                <h2 className="text-2xl font-bold text-black dark:text-white mb-6 flex items-center gap-3">
                   <svg className="w-6 h-6 text-purple-400 dark:text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5z"></path>
                     <path d="M15 13H5m10 0v2a2 2 0 01-2 2H7a2 2 0 01-2-2v-2m10 0H5"></path>
@@ -462,6 +481,20 @@ export default function ReaderPage({ params }: Props) {
           </>
         )}
       </div>
+
+      {/* Scroll to Top Button */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-8 right-8 p-3 bg-white hover:bg-gray-100 rounded-full shadow-lg transition-all duration-300 hover:scale-110 z-40 flex items-center justify-center"
+          title="Lên đầu trang"
+          aria-label="Scroll to top"
+        >
+          <svg className="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M7 14l5-5 5 5z" />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }

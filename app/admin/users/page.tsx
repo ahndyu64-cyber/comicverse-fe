@@ -193,8 +193,8 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-semibold">Quản lý người dùng</h1>
+    <div className="min-h-screen bg-white dark:bg-black mx-auto max-w-6xl px-4 py-8">
+      <h1 className="mb-6 text-2xl font-semibold text-neutral-900 dark:text-white">Quản lý người dùng</h1>
       {/* Search */}
       <div className="mb-4 flex items-center gap-3 w-full max-w-md">
         <input
@@ -203,7 +203,7 @@ export default function AdminUsersPage() {
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(searchQuery)}
           placeholder="Tìm theo tên hoặc email"
-          className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white outline-none shadow-sm"
+          className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-black outline-none shadow-sm"
         />
       </div>
       {error && (
@@ -213,24 +213,24 @@ export default function AdminUsersPage() {
       )}
       
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+          <thead className="bg-gray-50 dark:bg-black">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-white">
                 Tên người dùng
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-white">
                 Quyền
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-white">
                 Thao tác
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 bg-white">
+          <tbody className="divide-y divide-gray-200 dark:divide-neutral-700 bg-white dark:bg-black">
             {filteredUsers.length === 0 ? (
               <tr>
-                <td colSpan={3} className="px-6 py-8 text-center text-gray-500">
+                <td colSpan={3} className="px-6 py-8 text-center text-gray-500 dark:text-neutral-400">
                   {searchQuery ? `Không tìm thấy người dùng với từ khóa "${searchQuery}"` : (error ? "Không có quyền truy cập hoặc có lỗi." : "Không có người dùng để hiển thị.")}
                 </td>
               </tr>
@@ -245,8 +245,8 @@ export default function AdminUsersPage() {
                         <div className="mr-3 h-10 w-10 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-500">{user.username?.[0]?.toUpperCase() || '?'}</div>
                       )}
                       <div className="flex flex-col">
-                        <span className="font-medium text-neutral-900">{user.username}</span>
-                        <span className="text-xs text-neutral-500">{user.email}</span>
+                        <span className="font-medium text-neutral-900 dark:text-white">{user.username}</span>
+                        <span className="text-xs text-neutral-500 dark:text-white">{user.email}</span>
                       </div>
                     </div>
                   </td>
@@ -255,13 +255,13 @@ export default function AdminUsersPage() {
                       <select
                         value={user.role || "user"}
                         onChange={(e) => handleRoleChange(user._id!, e.target.value)}
-                        className="rounded-md border border-neutral-200 dark:border-neutral-700 px-2 py-1 text-sm bg-white dark:bg-neutral-800 text-neutral-900"
+                        className="rounded-md border border-neutral-200 dark:border-neutral-700 px-2 py-1 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-black"
                       >
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
                         <option value="uploader">Uploader</option>
                       </select>
-                      <span className="text-xs px-2 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">{user.role || 'user'}</span>
+                      <span className="text-xs px-2 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-white">{user.role || 'user'}</span>
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-6 py-4">

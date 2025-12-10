@@ -207,29 +207,29 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="bg-white p-6">
-          {error && <div className="mb-4 rounded bg-red-50 p-3 text-red-600">{error}</div>}
-          {success && <div className="mb-4 rounded bg-green-50 p-3 text-green-700">{success}</div>}
+        <div className="bg-white dark:bg-black p-6">
+          {error && <div className="mb-4 rounded bg-red-50 dark:bg-red-900/30 p-3 text-red-600 dark:text-red-400">{error}</div>}
+          {success && <div className="mb-4 rounded bg-green-50 dark:bg-green-900/30 p-3 text-green-700 dark:text-green-400">{success}</div>}
 
           {!isEditing ? (
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold">Hồ sơ của tôi</h2>
-              <p className="text-neutral-700">Đây là trang thông tin cá nhân. Bạn có thể cập nhật tên hiển thị và avatar.</p>
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">Hồ sơ của tôi</h2>
+              <p className="text-neutral-700 dark:text-white">Đây là trang thông tin cá nhân. Bạn có thể cập nhật tên hiển thị và avatar.</p>
 
-              <div className="mt-4 rounded-md border bg-neutral-50 dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 p-4">
-                <h3 className="mb-2 text-sm font-medium text-neutral-800 dark:text-neutral-100">Thông tin chi tiết</h3>
+              <div className="mt-4 rounded-md border bg-neutral-50 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 p-4">
+                <h3 className="mb-2 text-sm font-medium text-neutral-800 dark:text-white">Thông tin chi tiết</h3>
                 <div className="grid grid-cols-1 gap-2 text-sm text-neutral-700 dark:text-neutral-300 md:grid-cols-1">
                   <div className="flex items-start gap-2">
-                    <div className="w-32 text-neutral-500 dark:text-neutral-400">Tên</div>
-                    <div className="font-medium text-neutral-900">{user?.username || "-"}</div>
+                    <div className="w-32 text-neutral-500 dark:text-white">Tên</div>
+                    <div className="font-medium text-neutral-900 dark:text-white">{user?.username || "-"}</div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <div className="w-32 text-neutral-500 dark:text-neutral-400">Email</div>
-                    <div className="font-medium text-neutral-900">{user?.email || "-"}</div>
+                    <div className="w-32 text-neutral-500 dark:text-white">Email</div>
+                    <div className="font-medium text-neutral-900 dark:text-white">{user?.email || "-"}</div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <div className="w-32 text-neutral-500 dark:text-neutral-400">Tham gia</div>
-                    <div className="font-medium text-neutral-900">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "-"}</div>
+                    <div className="w-32 text-neutral-500 dark:text-white">Tham gia</div>
+                    <div className="font-medium text-neutral-900 dark:text-white">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "-"}</div>
                   </div>
                 </div>
               </div>
@@ -238,28 +238,28 @@ export default function ProfilePage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Tên người dùng</label>
+                  <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-white">Tên người dùng</label>
                   <input
                     type="text"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                    className="w-full rounded border border-neutral-300 dark:border-neutral-600 px-3 py-2 bg-white dark:bg-neutral-800 text-neutral-900 outline-none focus:ring-2 focus:ring-sky-300"
+                    className="w-full rounded border border-neutral-300 dark:border-neutral-600 px-3 py-2 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-black outline-none focus:ring-2 focus:ring-sky-300"
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Email</label>
+                  <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-white">Email</label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full rounded border border-neutral-300 dark:border-neutral-600 px-3 py-2 bg-neutral-50 dark:bg-neutral-800 text-neutral-900"
+                    className="w-full rounded border border-neutral-300 dark:border-neutral-600 px-3 py-2 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-black"
                     disabled
                   />
                 </div>
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">Avatar</label>
+                <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-white">Avatar</label>
                 <div className="flex items-center gap-3">
                   {avatarPreview || formData.avatar ? (
                     <img
@@ -279,25 +279,17 @@ export default function ProfilePage() {
                     />
                     <label
                       htmlFor="avatar-file"
-                      className="inline-block cursor-pointer rounded bg-sky-100 dark:bg-sky-900/30 px-3 py-2 text-sm font-medium text-sky-700 dark:text-sky-300 hover:bg-sky-200 dark:hover:bg-sky-900/50 disabled:opacity-50"
+                      className="inline-block cursor-pointer rounded bg-sky-100 dark:bg-sky-900/30 px-3 py-2 text-sm font-medium text-sky-700 dark:text-white hover:bg-sky-200 dark:hover:bg-sky-900/50 disabled:opacity-50"
                     >
                       {isUploading ? "Đang tải..." : "Chọn ảnh"}
                     </label>
                   </div>
                 </div>
-                <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">Hoặc dán URL ảnh avatar dưới đây:</p>
-                <input
-                  type="text"
-                  value={formData.avatar}
-                  onChange={(e) => setFormData({ ...formData, avatar: e.target.value })}
-                  className="mt-2 w-full rounded border border-neutral-300 dark:border-neutral-600 px-3 py-2 bg-white dark:bg-neutral-800 text-neutral-900 outline-none focus:ring-2 focus:ring-sky-300"
-                  placeholder="https://.../avatar.jpg"
-                />
               </div>
 
               <div className="flex gap-2">
                 <button type="submit" className="rounded bg-black px-4 py-2 font-bold text-white shadow hover:bg-neutral-900 dark:bg-black dark:hover:bg-neutral-900">Lưu thay đổi</button>
-                <button type="button" onClick={() => { setIsEditing(false); setError(""); }} className="rounded border-2 border-neutral-300 dark:border-neutral-600 px-4 py-2 font-bold text-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-800">Hủy</button>
+                <button type="button" onClick={() => { setIsEditing(false); setError(""); }} className="rounded border-2 border-neutral-300 dark:border-neutral-600 px-4 py-2 font-bold text-neutral-900 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800">Hủy</button>
               </div>
             </form>
           )}

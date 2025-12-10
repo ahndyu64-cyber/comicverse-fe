@@ -159,16 +159,24 @@ export default function AdminComicsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-black">
       <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Quản lý truyện</h1>
-              <p className="mt-1 text-gray-600">Tổng cộng: <span className="font-semibold text-gray-900">{total}</span> truyện</p>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Quản lý truyện</h1>
+              <p className="mt-1 text-gray-600 dark:text-neutral-400">Tổng cộng: <span className="font-semibold text-gray-900 dark:text-white">{total}</span> truyện</p>
             </div>
             <div className="flex items-center gap-3">
+              {hasAdminRole(authContext?.user) && (
+                <Link
+                  href="/admin/banners"
+                  className="inline-flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700 transition shadow-md"
+                >
+                  🖼 Quản lý banner
+                </Link>
+              )}
               <Link
                 href="/admin/genres"
                 className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition shadow-md"
@@ -191,7 +199,7 @@ export default function AdminComicsPage() {
                 placeholder="Tìm theo tiêu đề hoặc tác giả"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 outline-none shadow-sm focus:ring-2 focus:ring-purple-500 transition"
+                className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-black outline-none shadow-sm focus:ring-2 focus:ring-purple-500 transition"
               />
             </div>
 
@@ -200,7 +208,7 @@ export default function AdminComicsPage() {
               <select 
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="rounded-md border border-neutral-200 dark:border-neutral-700 px-3 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 outline-none focus:ring-2 focus:ring-purple-500 transition">
+                className="rounded-md border border-neutral-200 dark:border-neutral-700 px-3 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-black outline-none focus:ring-2 focus:ring-purple-500 transition">
                 <option value="new">Mới cập nhật</option>
                 <option value="alpha">A → Z</option>
                 <option value="popular">Nổi bật</option>
@@ -220,14 +228,14 @@ export default function AdminComicsPage() {
         {sortedComics.length === 0 ? (
             <div className="rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-neutral-900 p-12 text-center">
             <div className="mb-4 flex justify-center">
-              <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                <span className="text-3xl text-gray-400">—</span>
+              <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800">
+                <span className="text-3xl text-gray-400 dark:text-neutral-500">—</span>
               </div>
             </div>
-            <h3 className="text-lg font-medium text-gray-900">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">
               {searchQuery ? "Không tìm thấy truyện" : "Không có truyện nào"}
             </h3>
-            <p className="mt-1 text-gray-600">
+            <p className="mt-1 text-gray-600 dark:text-neutral-400">
               {searchQuery ? "Thử thay đổi từ khóa tìm kiếm" : "Bắt đầu bằng cách thêm truyện đầu tiên của bạn"}
             </p>
             {!searchQuery && (
@@ -286,9 +294,9 @@ export default function AdminComicsPage() {
                     {/* Status Badge */}
                     <div className="absolute right-3 top-3">
                       <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold shadow-sm ${
-                        comic.status === 'ongoing' ? 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 dark:from-blue-900/30 dark:to-blue-900/20 dark:text-blue-200' :
-                        comic.status === 'completed' ? 'bg-gradient-to-r from-green-50 to-green-100 text-green-800 dark:from-green-900/30 dark:to-green-900/20 dark:text-green-200' :
-                        'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-300'
+                        comic.status === 'ongoing' ? 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800' :
+                        comic.status === 'completed' ? 'bg-gradient-to-r from-green-50 to-green-100 text-green-800' :
+                        'bg-neutral-100 text-neutral-800'
                       }`}>
                         <span className={`w-2 h-2 rounded-full ${comic.status === 'ongoing' ? 'bg-blue-600' : 'bg-green-600'}`}></span>
                         {statusBadge.label}
@@ -299,7 +307,7 @@ export default function AdminComicsPage() {
                   {/* Content */}
                   <div className="flex flex-col flex-1 p-3 min-h-0">
                     {/* Title */}
-                    <h3 className="line-clamp-2 text-sm font-bold text-neutral-900 hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex-shrink-0 cursor-pointer"
+                    <h3 className="line-clamp-2 text-sm font-bold text-neutral-900 dark:text-white hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex-shrink-0 cursor-pointer"
                       onClick={() => comicId && router.push(`/comics/${comicId}`)}
                     >
                       {comic.title}
@@ -324,14 +332,14 @@ export default function AdminComicsPage() {
                         <>
                           <button
                             onClick={(e) => { e.stopPropagation(); router.push(`/admin/comics/${comic._id}/edit`); }}
-                            className="flex-1 inline-flex items-center justify-center gap-1 rounded px-2 py-1.5 text-xs font-semibold bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-200 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition"
+                            className="flex-1 inline-flex items-center justify-center gap-1 rounded px-2 py-1.5 text-xs font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 transition"
                           >
                             Sửa
                           </button>
 
                           <button
                             onClick={(e) => { e.stopPropagation(); router.push(`/admin/comics/${comic._id}/chapters`); }}
-                            className="flex-1 inline-flex items-center justify-center gap-1 rounded px-2 py-1.5 text-xs font-semibold bg-sky-50 dark:bg-sky-900/20 text-sky-700 dark:text-sky-200 hover:bg-sky-100 dark:hover:bg-sky-900/30 transition"
+                            className="flex-1 inline-flex items-center justify-center gap-1 rounded px-2 py-1.5 text-xs font-semibold bg-sky-50 text-sky-700 hover:bg-sky-100 transition"
                           >
                             Thêm chương
                           </button>
@@ -343,7 +351,7 @@ export default function AdminComicsPage() {
                         <button
                           onClick={(e) => { e.stopPropagation(); handleDelete(comic._id); }}
                           disabled={deleteLoading === comic._id}
-                          className="flex-1 inline-flex items-center justify-center gap-1 rounded px-2 py-1.5 text-xs font-semibold bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-200 hover:bg-red-100 dark:hover:bg-red-900/30 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="flex-1 inline-flex items-center justify-center gap-1 rounded px-2 py-1.5 text-xs font-semibold bg-red-50 text-red-700 hover:bg-red-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {deleteLoading === comic._id ? "Xóa..." : "Xóa"}
                         </button>

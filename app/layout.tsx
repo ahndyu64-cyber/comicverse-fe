@@ -22,7 +22,7 @@ export default function RootLayout({
       <body className={inter.className}>
          <AuthProvider>
         <Navbar />
-        <main className="site-container mt-6 pt-16">
+        <main className="site-container">
           {children}
         </main>
         <Footer />
