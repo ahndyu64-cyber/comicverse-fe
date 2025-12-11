@@ -30,6 +30,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Function to check if token is expired
+  const isTokenExpired = (jwtToken: string): boolean => {
+    try {
+      const parts = jwtToken.split('.');
+      if (parts.length !== 3) return true;
+      
+      const decoded = JSON.parse(atob(parts[1]));
+      const expirationTime = decoded.exp * 1000; // Convert to milliseconds
+      const currentTime = Date.now();
+      
+      return currentTime > expirationTime;
+    } catch (error) {
+      console.error('Error checking token expiration:', error);
+      return true;
+    }
+  };
+
   const refreshUserData = async (authToken: string): Promise<void> => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000'}/users/profile`, {
@@ -79,6 +96,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // If we have a stored user and token, restore them; refresh token is optional.
     if (storedUser && storedToken) {
+      // Check if token is expired
+      if (isTokenExpired(storedToken)) {
+        // Token is expired, clear all auth data
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        setIsLoading(false);
+        return;
+      }
+
       try {
         const parsed = JSON.parse(storedUser);
         // Ensure role normalization on load from localStorage
@@ -109,6 +136,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
     }
   }, []);
+
+  // Check token expiration periodically
+  useEffect(() => {
+    if (!token) return;
+
+    const checkTokenExpiration = () => {
+      if (isTokenExpired(token)) {
+        console.warn('Token has expired, logging out...');
+        const logout = () => {
+          setUser(null);
+          setToken(null);
+          setRefreshToken(null);
+          localStorage.removeItem('user');
+          localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
+        };
+        logout();
+      }
+    };
+
+    // Check token expiration every 60 seconds
+    const interval = setInterval(checkTokenExpiration, 60000);
+
+    return () => clearInterval(interval);
+  }, [token]);
 
   const login = (response: AuthResponse) => {
     // Normalize incoming user shape to ensure `role` is set

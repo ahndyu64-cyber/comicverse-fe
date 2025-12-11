@@ -167,7 +167,7 @@ export default function Navbar() {
 
   return (
     <nav className={`sticky top-0 z-50 w-full bg-white dark:bg-black shadow-lg border-b border-gray-200 dark:border-neutral-800 backdrop-blur transition-transform duration-300 ${isNavbarVisible ? 'translate-y-0' : '-translate-y-full'}`}>
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
+      <div className="mx-auto flex w-full items-center justify-between gap-4 px-4 py-3">
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-3">
             <span className="inline-block h-8 w-8 rounded-full bg-white/20" />

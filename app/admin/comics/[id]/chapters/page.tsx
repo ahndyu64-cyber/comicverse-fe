@@ -218,7 +218,7 @@ export default function AdminChaptersPage() {
       <div className="mb-6 rounded-2xl bg-black p-6 text-white shadow-lg flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Quản lý chương</h1>
-          <p className="text-sm opacity-90">{comicTitle || '—'} · ID: {comicId}</p>
+          <p className="text-sm opacity-90">{comicTitle || '—'}</p>
         </div>
         <div className="flex items-center gap-3">
           <button onClick={() => router.push('/admin/comics')} className="rounded-md bg-white/20 px-3 py-2 text-sm">Quay lại</button>
@@ -258,7 +258,6 @@ export default function AdminChaptersPage() {
                       ) : (
                         <div className="font-medium text-sm">{ch.title}</div>
                       )}
-                      <div className="text-xs text-neutral-400 mt-1">{ch._id} {ch.createdAt ? `• ${new Date(ch.createdAt).toLocaleString()}` : ''}</div>
                     </div>
 
                     <div className="flex items-center gap-2 ml-4">

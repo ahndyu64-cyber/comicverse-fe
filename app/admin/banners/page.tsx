@@ -271,31 +271,41 @@ export default function AdminBannersPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">Chọn truyện</label>
-              <input
-                type="text"
-                placeholder="Tìm tên truyện..."
-                value={comicSearch}
-                onChange={(e) => setComicSearch(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 px-4 py-2 text-gray-900 dark:text-black bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-              />
-              <select
-                value={newComicId}
-                onChange={(e) => {
-                  setNewComicId(e.target.value);
-                  setComicSearch('');
-                }}
-                className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 px-4 py-2 text-gray-900 dark:text-black bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                size={5}
-              >
-                <option value="">-- Chọn truyện --</option>
-                {comics
-                  .filter(c => c.title && c.title.toLowerCase().includes(comicSearch.toLowerCase()))
-                  .map((comic) => (
-                    <option key={comic._id} value={comic._id}>
-                      {comic.title}
-                    </option>
-                  ))}
-              </select>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Tìm tên truyện..."
+                  value={comicSearch}
+                  onChange={(e) => setComicSearch(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 px-4 py-2 text-gray-900 dark:text-black bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {comicSearch && (
+                  <div className="absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-lg z-10">
+                    {comics
+                      .filter(c => c.title && c.title.toLowerCase().includes(comicSearch.toLowerCase()))
+                      .map((comic) => (
+                        <button
+                          key={comic._id}
+                          type="button"
+                          onClick={() => {
+                            setNewComicId(comic._id);
+                            setComicSearch('');
+                          }}
+                          className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-700 text-gray-900 dark:text-white transition-colors"
+                        >
+                          {comic.title}
+                        </button>
+                      ))}
+                  </div>
+                )}
+                {newComicId && (
+                  <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      Đã chọn: {comics.find(c => c._id === newComicId)?.title || newComicId}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
             <button
               type="submit"
@@ -330,31 +340,41 @@ export default function AdminBannersPage() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">Chọn truyện</label>
-                        <input
-                          type="text"
-                          placeholder="Tìm tên truyện..."
-                          value={editComicSearch}
-                          onChange={(e) => setEditComicSearch(e.target.value)}
-                          className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 px-4 py-2 text-gray-900 dark:text-black bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
-                        />
-                        <select
-                          value={editComicId}
-                          onChange={(e) => {
-                            setEditComicId(e.target.value);
-                            setEditComicSearch('');
-                          }}
-                          className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 px-4 py-2 text-gray-900 dark:text-black bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          size={5}
-                        >
-                          <option value="">-- Chọn truyện --</option>
-                          {comics
-                            .filter(c => c.title && c.title.toLowerCase().includes(editComicSearch.toLowerCase()))
-                            .map((comic) => (
-                              <option key={comic._id} value={comic._id}>
-                                {comic.title}
-                              </option>
-                            ))}
-                        </select>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            placeholder="Tìm tên truyện..."
+                            value={editComicSearch}
+                            onChange={(e) => setEditComicSearch(e.target.value)}
+                            className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 px-4 py-2 text-gray-900 dark:text-black bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                          {editComicSearch && (
+                            <div className="absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-lg z-10">
+                              {comics
+                                .filter(c => c.title && c.title.toLowerCase().includes(editComicSearch.toLowerCase()))
+                                .map((comic) => (
+                                  <button
+                                    key={comic._id}
+                                    type="button"
+                                    onClick={() => {
+                                      setEditComicId(comic._id);
+                                      setEditComicSearch('');
+                                    }}
+                                    className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-neutral-700 text-gray-900 dark:text-white transition-colors"
+                                  >
+                                    {comic.title}
+                                  </button>
+                                ))}
+                            </div>
+                          )}
+                          {editComicId && (
+                            <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+                              <p className="text-sm text-blue-800 dark:text-blue-200">
+                                Đã chọn: {comics.find(c => c._id === editComicId)?.title || editComicId}
+                              </p>
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <div className="flex gap-2">
                         <button
@@ -376,9 +396,6 @@ export default function AdminBannersPage() {
                     <div className="flex items-center gap-4">
                       <img src={banner.src} alt="banner" className="h-24 w-40 object-cover rounded-lg" />
                       <div className="flex-1">
-                        <p className="text-sm text-gray-600 dark:text-neutral-400">
-                          <span className="font-semibold text-gray-900 dark:text-white">ID:</span> {banner._id}
-                        </p>
                         <p className="text-sm text-gray-600 dark:text-neutral-400">
                           <span className="font-semibold text-gray-900 dark:text-white">Truyện:</span> {banner.comicTitle || banner.comicId}
                         </p>

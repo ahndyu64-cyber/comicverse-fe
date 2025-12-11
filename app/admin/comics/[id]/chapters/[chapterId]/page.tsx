@@ -13,6 +13,7 @@ export default function AdminChapterDetail() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [comicTitle, setComicTitle] = useState("");
   const [title, setTitle] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -35,15 +36,18 @@ export default function AdminChapterDetail() {
       const data: any = await (await import("../../../../../lib/api")).getAdminComic(comicId);
       if (!data) {
         setError("Không thể tải chương (cần đăng nhập hoặc truyện không tồn tại)");
+        setComicTitle("");
         setTitle("");
         setImages([]);
       } else {
         const ch = (data.chapters || []).find((c: any) => String(c._id || c.id) === String(chapterId));
         if (!ch) {
           setError("Chương không tìm thấy trong truyện này.");
+          setComicTitle("");
           setTitle("");
           setImages([]);
         } else {
+          setComicTitle(data.title || "");
           setTitle(ch.title || "");
           setImages(ch.images || []);
         }
@@ -300,7 +304,7 @@ export default function AdminChapterDetail() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold dark:text-white">Chương</h1>
-          <div className="text-sm text-neutral-500 dark:text-white">Truyện: {comicId} · Chương: {chapterId}</div>
+          <div className="text-sm text-neutral-500 dark:text-white">{comicTitle || '—'} · {title || '—'}</div>
         </div>
         <div className="flex gap-2">
           <button onClick={() => router.push(`/admin/comics/${comicId}/chapters`)} className="rounded bg-neutral-100 dark:bg-neutral-800 dark:text-white px-3 py-2">Quay lại</button>
