@@ -47,6 +47,8 @@ export default function ReaderPage({ params }: Props) {
   const [authError, setAuthError] = useState(false);
   const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
   const [showChapterDropdown, setShowChapterDropdown] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteCommentId, setDeleteCommentId] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -150,18 +152,24 @@ export default function ReaderPage({ params }: Props) {
   };
 
   const handleDeleteComment = async (commentId: string) => {
-    if (!confirm('Bạn có chắc muốn xóa bình luận này?')) {
-      return;
-    }
+    setDeleteCommentId(commentId);
+    setShowDeleteModal(true);
+  };
 
-    setDeletingCommentId(commentId);
+  const confirmDeleteComment = async () => {
+    if (!deleteCommentId) return;
+
+    setDeletingCommentId(deleteCommentId);
     try {
-      await deleteComment(commentId);
+      await deleteComment(deleteCommentId);
       // Remove comment from list
-      setComments(comments.filter(c => c._id !== commentId));
+      setComments(comments.filter(c => c._id !== deleteCommentId));
+      setShowDeleteModal(false);
+      setDeleteCommentId(null);
     } catch (err: any) {
       console.error('Error deleting comment:', err);
-      alert('Không thể xóa bình luận. Vui lòng thử lại.');
+      setShowDeleteModal(false);
+      setDeleteCommentId(null);
     } finally {
       setDeletingCommentId(null);
     }
@@ -494,6 +502,65 @@ export default function ReaderPage({ params }: Props) {
             <path d="M7 14l5-5 5 5z" />
           </svg>
         </button>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-lg shadow-2xl max-w-xs w-full mx-4 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="px-4 py-3 border-b border-neutral-800 bg-gradient-to-r from-red-900/30 to-orange-900/30">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <h3 className="text-base font-bold text-white">Xóa bình luận</h3>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="px-4 py-4">
+              <p className="text-neutral-300 text-center text-sm mb-1">Bạn có chắc muốn xóa bình luận này?</p>
+              <p className="text-neutral-500 text-xs text-center">Hành động này không thể hoàn tác.</p>
+            </div>
+
+            {/* Footer */}
+            <div className="px-4 py-3 border-t border-neutral-800 flex gap-2">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setDeleteCommentId(null);
+                }}
+                disabled={deletingCommentId !== null}
+                className="flex-1 px-3 py-2 bg-neutral-800 hover:bg-neutral-700 disabled:bg-neutral-800 disabled:cursor-not-allowed text-neutral-300 hover:text-white font-medium rounded text-sm transition border border-neutral-700"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={confirmDeleteComment}
+                disabled={deletingCommentId !== null}
+                className="flex-1 px-3 py-2 bg-red-600 hover:bg-red-700 disabled:bg-neutral-700 disabled:cursor-not-allowed text-white font-medium rounded text-sm transition flex items-center justify-center gap-1.5"
+              >
+                {deletingCommentId ? (
+                  <>
+                    <svg className="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Xóa
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    Xóa
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

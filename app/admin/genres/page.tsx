@@ -192,14 +192,14 @@ export default function AdminGenresPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-neutral-950 dark:to-neutral-900">
+    <div className="min-h-screen bg-white dark:bg-black">
       <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Quản lý thể loại</h1>
-              <p className="mt-1 text-gray-600 dark:text-neutral-400">Quản lý tất cả các thể loại truyện tranh</p>
+              <p className="mt-1 text-gray-600 dark:text-white">Quản lý tất cả các thể loại truyện tranh</p>
             </div>
             <div className="flex items-center gap-3">
               <Link
@@ -294,9 +294,9 @@ export default function AdminGenresPage() {
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2">{genre.name}</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-900 line-clamp-2">{genre.name}</h3>
                     {genre.description && (
-                      <p className="mt-2 text-sm text-gray-600 dark:text-neutral-400 line-clamp-2">
+                      <p className="mt-2 text-sm text-gray-600 dark:text-white line-clamp-2">
                         {genre.description}
                       </p>
                     )}
