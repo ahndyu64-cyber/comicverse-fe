@@ -268,7 +268,12 @@ export default function AdminChaptersPage() {
                         </>
                       ) : (
                         <>
-                          <button onClick={() => startEdit(ch)} className="px-3 py-1 rounded-md bg-amber-50 text-amber-700">Sửa</button>
+                          <button onClick={() => startEdit(ch)} className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-50 text-amber-700">
+                            <svg className="w-3.5 h-3.5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 20l7.5-1.5L20 9.5 15.232 5.232 4 20z" />
+                            </svg>
+                            <span className="text-sm">Sửa</span>
+                          </button>
                           <button onClick={() => router.push(`/admin/comics/${comicId}/chapters/${ch._id}`)} className="px-3 py-1 rounded-md bg-sky-50 text-sky-700">Mở</button>
                           <button onClick={() => removeChapter(ch._id!)} className="px-3 py-1 rounded-md bg-red-50 text-red-700">Xóa</button>
                         </>

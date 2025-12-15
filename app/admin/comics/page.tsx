@@ -332,16 +332,22 @@ export default function AdminComicsPage() {
                         <>
                           <button
                             onClick={(e) => { e.stopPropagation(); router.push(`/admin/comics/${comic._id}/edit`); }}
-                            className="flex-1 inline-flex items-center justify-center gap-1 rounded px-2 py-1.5 text-xs font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 transition"
+                            className="flex-1 inline-flex items-center justify-center gap-2 rounded px-2 py-1.5 text-xs font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 transition"
                           >
-                            Sửa
+                            <svg className="w-3.5 h-3.5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 20l7.5-1.5L20 9.5 15.232 5.232 4 20z" />
+                            </svg>
+                            <span>Sửa</span>
                           </button>
 
                           <button
                             onClick={(e) => { e.stopPropagation(); router.push(`/admin/comics/${comic._id}/chapters`); }}
-                            className="flex-1 inline-flex items-center justify-center gap-1 rounded px-2 py-1.5 text-xs font-semibold bg-sky-50 text-sky-700 hover:bg-sky-100 transition"
+                            className="flex-1 inline-flex items-center justify-center gap-2 rounded px-2 py-1.5 text-xs font-semibold bg-sky-50 text-sky-700 hover:bg-sky-100 transition"
                           >
-                            Thêm chương
+                            <svg className="w-3.5 h-3.5 text-sky-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                            </svg>
+                            <span>Thêm chương</span>
                           </button>
                         </>
                       ) : null}
