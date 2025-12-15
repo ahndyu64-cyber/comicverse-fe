@@ -266,7 +266,10 @@ export default function AdminUsersPage() {
                   </td>
                   <td className="whitespace-nowrap px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <button onClick={() => handleDelete(user._id!)} className="px-3 py-1 rounded-md bg-red-100 text-red-700 text-sm hover:bg-red-200 transition">
+                      <button onClick={() => handleDelete(user._id!)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gradient-to-br from-red-100 to-red-50 text-red-700 text-sm font-semibold hover:from-red-200 hover:to-red-100 transition shadow-sm hover:shadow-md">
+                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                          <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
                         Xóa
                       </button>
                     </div>

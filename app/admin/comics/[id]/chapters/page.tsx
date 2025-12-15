@@ -263,19 +263,30 @@ export default function AdminChaptersPage() {
                     <div className="flex items-center gap-2 ml-4">
                       {editingId === ch._id ? (
                         <>
-                          <button onClick={() => saveEdit(ch._id!)} className="px-3 py-1 rounded-md bg-amber-50 text-amber-700">Lưu</button>
-                          <button onClick={() => { setEditingId(null); setEditingTitle(""); }} className="px-3 py-1 rounded-md bg-neutral-100">Hủy</button>
+                          <button onClick={() => saveEdit(ch._id!)} className="px-3 py-1.5 rounded-md bg-gradient-to-br from-green-100 to-green-50 text-green-700 text-sm font-semibold hover:from-green-200 hover:to-green-100 transition shadow-sm hover:shadow-md">Lưu</button>
+                          <button onClick={() => { setEditingId(null); setEditingTitle(""); }} className="px-3 py-1.5 rounded-md bg-gradient-to-br from-neutral-100 to-neutral-50 text-neutral-700 text-sm font-semibold hover:from-neutral-200 hover:to-neutral-100 transition shadow-sm hover:shadow-md">Hủy</button>
                         </>
                       ) : (
                         <>
-                          <button onClick={() => startEdit(ch)} className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-50 text-amber-700">
-                            <svg className="w-3.5 h-3.5 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 20l7.5-1.5L20 9.5 15.232 5.232 4 20z" />
+                          <button onClick={() => startEdit(ch)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gradient-to-br from-amber-100 to-amber-50 text-amber-700 text-sm font-semibold hover:from-amber-200 hover:to-amber-100 transition shadow-sm hover:shadow-md">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                             </svg>
-                            <span className="text-sm">Sửa</span>
+                            <span>Sửa</span>
                           </button>
-                          <button onClick={() => router.push(`/admin/comics/${comicId}/chapters/${ch._id}`)} className="px-3 py-1 rounded-md bg-sky-50 text-sky-700">Mở</button>
-                          <button onClick={() => removeChapter(ch._id!)} className="px-3 py-1 rounded-md bg-red-50 text-red-700">Xóa</button>
+                          <button onClick={() => router.push(`/admin/comics/${comicId}/chapters/${ch._id}`)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gradient-to-br from-sky-100 to-sky-50 text-sky-700 text-sm font-semibold hover:from-sky-200 hover:to-sky-100 transition shadow-sm hover:shadow-md">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                            </svg>
+                            <span>Mở</span>
+                          </button>
+                          <button onClick={() => removeChapter(ch._id!)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gradient-to-br from-red-100 to-red-50 text-red-700 text-sm font-semibold hover:from-red-200 hover:to-red-100 transition shadow-sm hover:shadow-md">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                            <span>Xóa</span>
+                          </button>
                         </>
                       )}
                     </div>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#d946ef;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="200" height="200" fill="#ffffff" rx="20"/>
+  
+  <!-- Main icon circle with gradient -->
+  <circle cx="100" cy="100" r="70" fill="url(#mainGradient)" filter="url(#shadow)"/>
+  
+  <!-- Comic book panel grid inside -->
+  <g>
+    <!-- Panel 1 - Top Left (Purple) -->
+    <rect x="45" y="50" width="35" height="35" fill="#ffffff" stroke="#ec4899" stroke-width="2" rx="4"/>
+    <text x="62.5" y="73" font-size="20" font-weight="bold" fill="#a855f7" text-anchor="middle">C</text>
+    
+    <!-- Panel 2 - Top Right (Pink) -->
+    <rect x="120" y="50" width="35" height="35" fill="#ffffff" stroke="#a855f7" stroke-width="2" rx="4"/>
+    <text x="137.5" y="73" font-size="20" font-weight="bold" fill="#ec4899" text-anchor="middle">V</text>
+    
+    <!-- Center action lines -->
+    <line x1="50" y1="90" x2="150" y2="90" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+    <line x1="55" y1="100" x2="145" y2="100" stroke="#ffffff" stroke-width="1" opacity="0.4"/>
+    
+    <!-- Panel 3 - Bottom Left (Magenta) -->
+    <rect x="45" y="115" width="35" height="35" fill="#ffffff" stroke="#ec4899" stroke-width="2" rx="4"/>
+    <text x="62.5" y="138" font-size="18" font-weight="bold" fill="#d946ef" text-anchor="middle">M</text>
+    
+    <!-- Panel 4 - Bottom Right (Purple) -->
+    <rect x="120" y="115" width="35" height="35" fill="#ffffff" stroke="#a855f7" stroke-width="2" rx="4"/>
+    <text x="137.5" y="138" font-size="18" font-weight="bold" fill="#ec4899" text-anchor="middle">V</text>
+  </g>
+  
+  <!-- Comic effect dots -->
+  <circle cx="40" cy="45" r="3" fill="#fbbf24" opacity="0.8"/>
+  <circle cx="160" cy="155" r="2" fill="#fbbf24" opacity="0.6"/>
+  
+  <!-- Comic-style text below -->
+  <text x="100" y="180" font-size="24" font-weight="900" fill="#1f2937" text-anchor="middle" font-family="Arial, sans-serif">
+    COMICVERSE
+  </text>
+</svg>
