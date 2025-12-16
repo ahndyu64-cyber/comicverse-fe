@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { followComic, unfollowComic, getFollowingComics } from '../lib/api';
+import { followComic, unfollowComic, getFollowingComics, getComicFollowersCount } from '../lib/api';
 
 type FollowButtonProps = {
   comicId: string;
@@ -18,33 +18,39 @@ export default function FollowButton({ comicId, initialFollows = 0, onFollowChan
   const [isCheckingStatus, setIsCheckingStatus] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Check if user is following this comic on mount
+  // Check if user is following this comic and fetch followers count on mount
   useEffect(() => {
     const checkFollowStatus = async () => {
       const userId = (user && ((user as any).id || (user as any)._id)) as string | undefined;
       const storedToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-      if (!userId || (!token && !storedToken)) {
-        setIsCheckingStatus(false);
-        return;
-      }
-
+      
       try {
+        // Always fetch the current followers count from API
+        const response = await getComicFollowersCount(comicId);
+        const count = Math.max(0, response?.followersCount || response?.count || response || 0);
+        setFollowCount(count);
+        console.log('[FollowButton] Fetched followers count:', count);
+
+        // Only check follow status if user is logged in
+        if (!userId || (!token && !storedToken)) {
+          setIsCheckingStatus(false);
+          return;
+        }
+
         const followingComics = await getFollowingComics(userId || '');
         const isUserFollowing = followingComics?.some((comic: any) => comic._id === comicId);
         setIsFollowing(isUserFollowing || false);
       } catch (err) {
         console.error('Error checking follow status:', err);
+        // Fallback to initialFollows if API fails
+        setFollowCount(Math.max(0, initialFollows || 0));
       } finally {
         setIsCheckingStatus(false);
       }
     };
 
     checkFollowStatus();
-  }, [user?.id, token, comicId]);
-
-  useEffect(() => {
-    setFollowCount(initialFollows);
-  }, [initialFollows]);
+  }, [comicId, initialFollows, token, user?.id]);
 
   const handleFollow = async () => {
     const storedToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
@@ -65,15 +71,69 @@ export default function FollowButton({ comicId, initialFollows = 0, onFollowChan
       }
 
       // Refetch the follow status to ensure accuracy
+      let newFollowingStatus = !isFollowing;
       try {
         const followingComics = await getFollowingComics(userId || '');
         const isUserFollowing = followingComics?.some((comic: any) => comic._id === comicId);
-        setIsFollowing(isUserFollowing || false);
+        newFollowingStatus = isUserFollowing || false;
+        setIsFollowing(newFollowingStatus);
       } catch (err) {
         console.error('Error refetching follow status:', err);
         // If refetch fails, just toggle the state optimistically
-        setIsFollowing(!isFollowing);
+        newFollowingStatus = !isFollowing;
+        setIsFollowing(newFollowingStatus);
       }
+
+      // Fetch updated followers count from API
+      try {
+        const response = await getComicFollowersCount(comicId);
+        console.log('[FollowButton] API response:', response);
+        
+        // Handle different response formats
+        let count = 0;
+        if (typeof response === 'number') {
+          count = response;
+        } else if (response?.followersCount !== undefined) {
+          count = response.followersCount;
+        } else if (response?.count !== undefined) {
+          count = response.count;
+        } else if (response?.data?.followersCount !== undefined) {
+          count = response.data.followersCount;
+        }
+        
+        count = Math.max(0, count || 0);
+        setFollowCount(count);
+        console.log('[FollowButton] Updated followers count:', count);
+      } catch (err) {
+        console.warn('[FollowButton] Error fetching followers count, using optimistic update:', err);
+        // Optimistic update if API fails
+        setFollowCount(prev => newFollowingStatus ? Math.max(prev + 1, 1) : Math.max(0, prev - 1));
+      }
+
+      // Only dispatch event for pages that are actually mounted and listening
+      // To prevent unnecessary page reloads
+      if (typeof window !== 'undefined') {
+        const currentPath = window.location.pathname;
+        console.log('[FollowButton] Current path:', currentPath);
+        
+        // Dispatch event for homepage to update both RecentFollowing and HotComicsList
+        if (currentPath === '/') {
+          console.log('[FollowButton] Dispatching events for homepage');
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('recentFollowingRefresh'));
+            window.dispatchEvent(new CustomEvent('hotComicsRefresh'));
+          }, 100);
+        }
+        // Dispatch event for following page
+        else if (currentPath === '/comics/following') {
+          console.log('[FollowButton] Dispatching event for following page');
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('recentFollowingRefresh'));
+          }, 100);
+        }
+      }
+
+
     } catch (err) {
       setError(isFollowing ? 'Không thể bỏ theo dõi' : 'Không thể theo dõi truyện');
       console.error('Follow error:', err);
@@ -114,26 +174,26 @@ export default function FollowButton({ comicId, initialFollows = 0, onFollowChan
 
   return (
     <div className="flex flex-col gap-2">
-      <button
-        onClick={handleFollow}
-        disabled={isLoading || isCheckingStatus}
-        className={`inline-flex items-center justify-center gap-2 px-6 py-3 font-bold rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl ${
-          isFollowing
-            ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white'
-            : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white'
-        } ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
-      >
-        <svg className="w-5 h-5" fill={isFollowing ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h6a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V5z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5a1 1 0 011-1h4a1 1 0 011 1v1H9V5z" />
-        </svg>
-        {isLoading ? 'Đang xử lý...' : isFollowing ? 'Đã theo dõi' : 'Theo dõi'}
-      </button>
-      {followCount > 0 && (
-        <p className="text-sm text-neutral-600 dark:text-neutral-400 text-center">
-          {followCount} {followCount === 1 ? 'người' : 'người'} đang theo dõi
+      <div className="flex flex-col sm:flex-row items-center gap-3">
+        <button
+          onClick={handleFollow}
+          disabled={isLoading || isCheckingStatus}
+          className={`inline-flex items-center justify-center gap-2 px-6 py-3 font-bold rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl flex-1 sm:flex-initial ${
+            isFollowing
+              ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white'
+              : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white'
+          } ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+        >
+          <svg className="w-5 h-5" fill={isFollowing ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h6a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V5z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5a1 1 0 011-1h4a1 1 0 011 1v1H9V5z" />
+          </svg>
+          {isLoading ? 'Đang xử lý...' : isFollowing ? 'Đã theo dõi' : 'Theo dõi'}
+        </button>
+        <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 whitespace-nowrap">
+          <span className="text-blue-600 dark:text-blue-400">{followCount.toLocaleString('vi-VN')}</span> người theo dõi
         </p>
-      )}
+      </div>
       {error && (
         <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
       )}

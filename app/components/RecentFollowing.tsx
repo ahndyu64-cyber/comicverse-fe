@@ -8,64 +8,91 @@ export default function RecentFollowing() {
   const [comics, setComics] = useState<Comic[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchRecentFollowing() {
-      try {
-        const token = localStorage.getItem('token');
-        const user = localStorage.getItem('user');
+  const fetchRecentFollowing = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const user = localStorage.getItem('user');
 
-        // If no token or user, return empty
-        if (!token || !user) {
-          setIsLoading(false);
-          return;
-        }
-
-        const userData = JSON.parse(user);
-        const userId = userData.id || userData._id;
-
-        if (!userId) {
-          setIsLoading(false);
-          return;
-        }
-
-        const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
-
-        // Get following comics
-        const response = await fetch(`${API_BASE}/users/${userId}/following`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-        });
-
-        if (!response.ok) {
-          setIsLoading(false);
-          return;
-        }
-
-        const data = await response.json();
-        const followingComics = data.data || data || [];
-
-        // Sort by creation date (newest first) and get top 4
-        const recent = followingComics
-          .sort((a: Comic, b: Comic) => {
-            const dateA = new Date(a.createdAt || 0).getTime();
-            const dateB = new Date(b.createdAt || 0).getTime();
-            return dateB - dateA;
-          })
-          .slice(0, 4);
-
-        setComics(recent);
-      } catch (error) {
-        console.error('Error fetching recent following comics:', error);
-      } finally {
+      // If no token or user, return empty
+      if (!token || !user) {
         setIsLoading(false);
+        return;
       }
-    }
 
+      const userData = JSON.parse(user);
+      const userId = userData.id || userData._id;
+
+      if (!userId) {
+        setIsLoading(false);
+        return;
+      }
+
+      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+
+      // Get following comics
+      const response = await fetch(`${API_BASE}/users/${userId}/following`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        setIsLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+      const followingComics = data.data || data || [];
+
+      // Sort by following date (newest follow first)
+      // If followedAt exists, use it; otherwise use reverse order (assuming latest follow is last in array)
+      const recent = followingComics
+        .sort((a: Comic, b: Comic) => {
+          // If backend provides followedAt, use it
+          if ((a as any).followedAt && (b as any).followedAt) {
+            const dateA = new Date((a as any).followedAt).getTime();
+            const dateB = new Date((b as any).followedAt).getTime();
+            return dateB - dateA;
+          }
+          // Otherwise, keep the order from API (assuming it's sorted by follow time)
+          return 0;
+        })
+        .slice(0, 4);
+
+      setComics(recent);
+    } catch (error) {
+      console.error('Error fetching recent following comics:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchRecentFollowing();
+  }, []);
+
+  useEffect(() => {
+    // Listen for follow/unfollow events to update "Theo dõi gần đây" section
+    let debounceTimer: NodeJS.Timeout;
+    
+    const handleFollowChange = () => {
+      console.log('RecentFollowing: Follow event detected, will refresh in 1000ms');
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        console.log('RecentFollowing: Executing refresh callback');
+        fetchRecentFollowing();
+      }, 1000);
+    };
+
+    window.addEventListener('recentFollowingRefresh', handleFollowChange);
+
+    return () => {
+      window.removeEventListener('recentFollowingRefresh', handleFollowChange);
+      clearTimeout(debounceTimer);
+    };
   }, []);
 
   // Don't render if no comics

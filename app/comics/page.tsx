@@ -27,6 +27,9 @@ const SORT_OPTIONS = [
 ];
 
 export default function ComicsPage() {
+  // NOTE: This component intentionally does NOT listen to follow events
+  // to avoid unnecessary refreshes when users follow/unfollow comics.
+  // The /comics/following page handles follow event refreshes.
   const [comics, setComics] = useState<Comic[]>([]);
   const [allComics, setAllComics] = useState<Comic[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,6 +89,9 @@ export default function ComicsPage() {
     async function loadComics() {
       try {
         setError('');
+        const timestamp = new Date().toLocaleTimeString();
+        console.log(`[${timestamp}] /comics: loadComics called with page=${page}, q=${q}`);
+        console.trace('[/comics] loadComics stack trace:'); // Show where call comes from
 
         if (q) {
           // perform search
@@ -161,6 +167,11 @@ export default function ComicsPage() {
     }
 
     loadComics();
+  }, [page, q]);
+
+  // Debug: Log when dependencies change
+  useEffect(() => {
+    console.log('[/comics] Dependencies changed - page:', page, 'q:', q);
   }, [page, q]);
 
   // Apply client-side filters and sorting

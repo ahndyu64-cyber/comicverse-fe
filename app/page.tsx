@@ -1,7 +1,11 @@
+import Link from "next/link";
+import Image from "next/image";
 import { getComics, type Comic } from "./lib/comics";
 import ComicCard from "./components/ComicCard";
 import RecentFollowing from "./components/RecentFollowing";
 import BannerSlider from "./components/BannerSlider";
+import HotComicsList from "./components/HotComicsList";
+import LatestComicsList from "./components/LatestComicsList";
 
 // Mock data for development when backend is unavailable
 const mockComics: Comic[] = [
@@ -35,7 +39,7 @@ const mockComics: Comic[] = [
 
 async function getLatestComics() {
   try {
-    const data = await getComics(1, 30); // 5 hàng × 6 cột = 30 truyện
+    const data = await getComics(1, 30, 'latest'); // Sort by latest updates
     return data?.items || [];
   } catch (error) {
     console.error("Error fetching latest comics:", error);
@@ -49,6 +53,16 @@ async function getLatestComics() {
 
 export default async function HomePage() {
   const latestComics = await getLatestComics();
+  
+  // Filter and sort comics by followers count for hot comics (only comics with followers)
+  // This is used as initial data for HotComicsList component
+  const hotComics = [...latestComics]
+    .filter((comic) => (comic.followersCount || 0) > 0)
+    .sort((a, b) => {
+      const aFollowers = a.followersCount || 0;
+      const bFollowers = b.followersCount || 0;
+      return bFollowers - aFollowers;
+    });
 
   return (
     <main className="min-h-screen bg-white dark:bg-black">
@@ -58,76 +72,15 @@ export default async function HomePage() {
       {/* Recent Following Section */}
       <RecentFollowing />
 
-      {/* Latest Comics */}
-      <section id="latest" className="mx-auto max-w-7xl px-4 py-16">
-        <div className="mb-12">
-          <div className="mb-4">
-            <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
-              Truyện mới cập nhật
-            </h2>
-            <p className="text-neutral-600 dark:text-white">
-              Những bộ truyện mới nhất vừa được đăng tải
-            </p>
-          </div>
-        </div>
-        
-        {latestComics.length > 0 ? (
-          <div>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-              {latestComics.map((comic: Comic) => (
-                <ComicCard key={comic._id} comic={comic} />
-              ))}
-            </div>
-            <div className="flex justify-center mt-8">
-              <a
-                href="/comics"
-                className="px-6 py-2 bg-white text-black font-semibold rounded-lg hover:shadow-lg hover:bg-neutral-100 transition-all duration-300"
-              >
-                Xem thêm
-              </a>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-neutral-600 dark:text-neutral-400">Chưa có truyện nào</p>
-          </div>
-        )}
-      </section>
+      {/* Latest Comics and Hot Comics */}
+      <section id="latest-and-hot" className="mx-auto max-w-7xl px-4 py-16">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          {/* Latest Comics - 2/3 width */}
+          <LatestComicsList initialComics={latestComics} />
 
-      {/* Hot Comics */}
-      <section id="hot" className="mx-auto max-w-7xl px-4 py-16 border-t border-neutral-200 dark:border-neutral-800">
-        <div className="mb-12">
-          <div className="mb-4">
-            <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
-              Truyện Hot
-            </h2>
-            <p className="text-neutral-600 dark:text-white">
-              Những bộ truyện được yêu thích nhiều nhất
-            </p>
-          </div>
+          {/* Hot Comics - 1/3 width */}
+          <HotComicsList initialComics={hotComics.length > 0 ? hotComics : latestComics} />
         </div>
-        
-        {latestComics.length > 0 ? (
-          <div>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-              {latestComics.slice(0, 6).map((comic: Comic) => (
-                <ComicCard key={comic._id} comic={comic} />
-              ))}
-            </div>
-            <div className="flex justify-center mt-8">
-              <a
-                href="/comics"
-                className="px-6 py-2 bg-white text-black font-semibold rounded-lg hover:shadow-lg hover:bg-neutral-100 transition-all duration-300"
-              >
-                Xem thêm
-              </a>
-            </div>
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-neutral-600 dark:text-neutral-400">Chưa có truyện nào</p>
-          </div>
-        )}
       </section>
 
       {/* Call to Action removed per request */}

@@ -220,6 +220,10 @@ export async function getFollowingComics(userId: string) {
   return fetchJSON(`/users/${userId}/following`);
 }
 
+export async function getComicFollowersCount(comicId: string) {
+  return fetchJSON(`/comics/${comicId}/followers-count`);
+}
+
 // Comments APIs
 export async function getComments(comicId: string) {
   return fetchJSON(`/comments?comicId=${comicId}`);

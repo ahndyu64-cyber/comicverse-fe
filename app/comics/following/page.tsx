@@ -9,34 +9,52 @@ export default function FollowingPage() {
   const [comics, setComics] = useState<Comic[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadFollowingComics = async () => {
-      try {
-        // Wait for auth to finish loading
-        if (authLoading) {
-          return;
-        }
-
-        const userId = user?.id || (user as any)?._id;
-        if (!userId) {
-          setLoading(false);
-          return;
-        }
-        
-        setLoading(true);
-        const data = await getFollowingComics(userId);
-        setComics(data || []);
-      } catch (err) {
-        console.error("Error loading following comics:", err);
-      } finally {
+  const loadFollowingComics = async () => {
+    try {
+      const userId = user?.id || (user as any)?._id;
+      if (!userId) {
         setLoading(false);
+        return;
       }
-    };
+      
+      setLoading(true);
+      const data = await getFollowingComics(userId);
+      setComics(data || []);
+    } catch (err) {
+      console.error("Error loading following comics:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    if (!authLoading) {
+  useEffect(() => {
+    if (!authLoading && user?.id) {
       loadFollowingComics();
     }
   }, [user?.id, authLoading]);
+
+  // Listen for follow/unfollow events to refresh the list
+  useEffect(() => {
+    let debounceTimer: NodeJS.Timeout;
+
+    const handleFollowChange = () => {
+      console.log('FollowingPage: Follow event detected, will refresh in 1000ms');
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        console.log('FollowingPage: Executing refresh callback');
+        loadFollowingComics();
+      }, 1000);
+    };
+
+    console.log('FollowingPage: Setting up event listener for recentFollowingRefresh');
+    window.addEventListener('recentFollowingRefresh', handleFollowChange);
+
+    return () => {
+      console.log('FollowingPage: Removing event listener');
+      window.removeEventListener('recentFollowingRefresh', handleFollowChange);
+      clearTimeout(debounceTimer);
+    };
+  }, []);
 
   if (loading || authLoading) {
     return <div className="p-8 text-neutral-900">Loading...</div>;

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { memo } from "react";
 import type { Comic } from "../lib/comics";
 
 function formatChapterDate(dateString?: string) {
@@ -34,7 +35,7 @@ function formatChapterDate(dateString?: string) {
   return `${day}/${month}/${year}`;
 }
 
-export default function ComicCard({ comic }: { comic: Comic }) {
+function ComicCard({ comic }: { comic: Comic }) {
   return (
     <article className="group flex flex-col h-full rounded-lg overflow-hidden bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-lg transition-shadow">
       {/* Cover Image */}
@@ -86,3 +87,5 @@ export default function ComicCard({ comic }: { comic: Comic }) {
     </article>
   );
 }
+
+export default memo(ComicCard);
