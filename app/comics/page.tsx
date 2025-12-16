@@ -55,18 +55,35 @@ export default function ComicsPage() {
   const searchParams = useSearchParams();
   const q = searchParams?.get('q') || '';
   const genreParam = searchParams?.get('genre') || '';
+  const genresArrayString = searchParams?.get('genres[]') || '';
 
   // Initialize selected genres from URL parameter
   useEffect(() => {
-    if (genreParam) {
-      // Find category ID by genre name
+    // Check for genres[] array parameter
+    const genresArray = searchParams?.getAll('genres[]') || [];
+    
+    if (genresArray.length > 0) {
+      // Handle genres[] array parameter (e.g., from ManhuaComicsList)
+      const selectedGenreIds: string[] = [];
+      genresArray.forEach(genreName => {
+        const category = categories.find(cat => cat.name === genreName);
+        if (category) {
+          selectedGenreIds.push(category._id);
+        }
+      });
+      if (selectedGenreIds.length > 0) {
+        setSelectedGenres(selectedGenreIds);
+        setPage(1);
+      }
+    } else if (genreParam) {
+      // Handle genre parameter (e.g., ?genre=Manhua)
       const category = categories.find(cat => cat.name === genreParam);
       if (category) {
         setSelectedGenres([category._id]);
         setPage(1);
       }
     }
-  }, [genreParam, categories]);
+  }, [genreParam, genresArrayString, categories]);
 
   // Load categories from backend
   useEffect(() => {
