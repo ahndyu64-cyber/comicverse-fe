@@ -6,6 +6,8 @@ import RecentFollowing from "./components/RecentFollowing";
 import BannerSlider from "./components/BannerSlider";
 import HotComicsList from "./components/HotComicsList";
 import LatestComicsList from "./components/LatestComicsList";
+import ManhuaComicsList from "./components/ManhuaComicsList";
+import ManhwaComicsList from "./components/ManhwaComicsList";
 
 // Mock data for development when backend is unavailable
 const mockComics: Comic[] = [
@@ -82,6 +84,12 @@ export default async function HomePage() {
           <HotComicsList initialComics={hotComics.length > 0 ? hotComics : latestComics} />
         </div>
       </section>
+
+      {/* Manhua Section */}
+      <ManhuaComicsList />
+
+      {/* Manhwa Section */}
+      <ManhwaComicsList />
 
       {/* Call to Action removed per request */}
     </main>
