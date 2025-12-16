@@ -319,7 +319,7 @@ export default function Navbar() {
       <div className="flex w-full items-center justify-between gap-4 px-0 py-0">
         <div className="flex items-center gap-4">
           <Logo />
-          <Link href="/comics" className="text-sm text-black/70 hover:text-black dark:text-white dark:hover:text-white transition-colors uppercase">
+          <Link href="/comics" className="text-base text-black/70 hover:text-black dark:text-white dark:hover:text-white transition-colors uppercase">
             Danh sách
           </Link>
           
@@ -327,7 +327,7 @@ export default function Navbar() {
           <div className="relative" ref={genreMenuRef}>
             <button
               onClick={() => setShowGenreMenu((s) => !s)}
-              className="flex items-center gap-2 text-sm text-black/70 hover:text-black dark:text-white dark:hover:text-white transition-colors uppercase"
+              className="flex items-center gap-2 text-base text-black/70 hover:text-black dark:text-white dark:hover:text-white transition-colors uppercase"
               aria-haspopup="true"
               aria-expanded={showGenreMenu}
             >
@@ -488,14 +488,14 @@ export default function Navbar() {
                     <img
                       src={avatarUrl}
                       alt={effectiveUser.username || effectiveUser.userName}
-                      className="h-8 w-8 rounded-full object-cover"
+                      className="h-10 w-10 rounded-full object-cover"
                     />
                   ) : (
-                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-black/30 dark:bg-white/30 text-sm font-semibold text-black dark:text-white">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/30 dark:bg-white/30 text-sm font-semibold text-black dark:text-white">
                       {(effectiveUser.username || effectiveUser.userName || "?")?.slice(0,1).toUpperCase()}
                     </span>
                   )}
-                  <span className="hidden sm:inline text-sm text-black dark:text-white">{effectiveUser.username || effectiveUser.userName}</span>
+                  <span className="hidden sm:inline text-base text-black dark:text-white">{effectiveUser.username || effectiveUser.userName}</span>
                 </>
               ) : (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-black dark:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">

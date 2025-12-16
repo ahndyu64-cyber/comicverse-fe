@@ -149,7 +149,7 @@ export default function SearchBox() {
         title="Tìm kiếm"
         className="p-2 rounded hover:bg-white/20 transition-colors"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-black dark:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-black dark:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
         </svg>
       </button>
@@ -171,7 +171,7 @@ export default function SearchBox() {
             setResults([]);
           }
         }}
-        className="rounded-md border border-black/30 dark:border-white/30 bg-black/20 dark:bg-black/50 px-3 py-1 text-sm !text-black dark:!text-white placeholder-black/50 dark:placeholder-white/50 outline-none focus:bg-black/30 dark:focus:bg-black/60 focus:border-black/50 dark:focus:border-white/50 transition-colors w-64"
+        className="rounded-md border border-black/30 dark:border-white/30 bg-black/20 dark:bg-black/50 px-4 py-2 text-sm !text-black dark:!text-white placeholder-black/50 dark:placeholder-white/50 outline-none focus:bg-black/30 dark:focus:bg-black/60 focus:border-black/50 dark:focus:border-white/50 transition-colors w-80"
         placeholder="Tìm kiếm truyện..."
       />
 
