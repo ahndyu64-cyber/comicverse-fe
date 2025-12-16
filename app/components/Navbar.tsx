@@ -387,7 +387,7 @@ export default function Navbar() {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-black dark:text-white"
+                  className="h-6 w-6 text-black dark:text-white"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -498,7 +498,7 @@ export default function Navbar() {
                   <span className="hidden sm:inline text-sm text-black dark:text-white">{effectiveUser.username || effectiveUser.userName}</span>
                 </>
               ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-black dark:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-black dark:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}
@@ -617,12 +617,12 @@ export default function Navbar() {
           >
             {dark ? (
               // Sun icon (light mode)
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-yellow-400">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6 text-yellow-400">
                 <path d="M12 4.5a1 1 0 011 1V7a1 1 0 11-2 0V5.5a1 1 0 011-1zM12 17a5 5 0 100-10 5 5 0 000 10zm7-5a1 1 0 011 1h1.5a1 1 0 110 2H20a1 1 0 01-1-1 1 1 0 011-1zM4 12a1 1 0 011-1H6.5a1 1 0 110 2H5a1 1 0 01-1-1zM18.364 6.636a1 1 0 011.414 0l1.06 1.06a1 1 0 11-1.414 1.414l-1.06-1.06a1 1 0 010-1.414zM6.636 17.364a1 1 0 011.414 0l1.06 1.06a1 1 0 11-1.414 1.414l-1.06-1.06a1 1 0 010-1.414zM18.364 17.364a1 1 0 010 1.414l-1.06 1.06a1 1 0 11-1.414-1.414l1.06-1.06a1 1 0 011.414 0zM6.636 6.636a1 1 0 010 1.414L5.576 9.11A1 1 0 114.162 7.696l1.06-1.06a1 1 0 011.414 0z" />
               </svg>
             ) : (
               // Moon icon (dark mode)
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-slate-700 dark:text-slate-200">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6 text-slate-700 dark:text-slate-200">
                 <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
               </svg>
             )}
