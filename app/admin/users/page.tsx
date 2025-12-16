@@ -194,7 +194,7 @@ export default function AdminUsersPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black mx-auto max-w-6xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-semibold text-neutral-900 dark:text-white">Quản lý người dùng</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-neutral-900 dark:text-white uppercase pb-3 border-b-4 border-red-600 inline-block">Quản lý người dùng</h1>
       {/* Search */}
       <div className="mb-4 flex items-center gap-3 w-full max-w-md">
         <input

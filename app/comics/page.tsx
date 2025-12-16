@@ -349,7 +349,7 @@ export default function ComicsPage() {
         <div className="mx-auto max-w-7xl px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white">
+              <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white pb-3 border-b-4 border-red-600 inline-block uppercase">
                 {q ? `Tìm kiếm: "${q}"` : 'Danh sách truyện'}
               </h1>
               {q && (

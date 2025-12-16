@@ -66,7 +66,7 @@ export default function ManhuaComicsList() {
       <div className="mb-4">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2 pb-3 border-b-4 border-red-600 inline-block">
+            <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2 pb-3 border-b-4 border-red-600 inline-block uppercase">
               Manhua
             </h2>
             <p className="text-neutral-600 dark:text-white">

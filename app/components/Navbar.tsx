@@ -316,18 +316,18 @@ export default function Navbar() {
 
   return (
     <nav className={`sticky top-0 z-50 w-full bg-white dark:bg-black shadow-lg border-b border-gray-200 dark:border-neutral-800 backdrop-blur transition-transform duration-300 ${isNavbarVisible ? 'translate-y-0' : '-translate-y-full'}`}>
-      <div className="flex w-full items-center justify-between gap-4 px-4 py-3">
+      <div className="flex w-full items-center justify-between gap-4 px-0 py-0">
         <div className="flex items-center gap-4">
           <Logo />
-          <Link href="/comics" className="text-sm text-black/70 hover:text-black dark:text-white dark:hover:text-white transition-colors">
-            Danh sách truyện
+          <Link href="/comics" className="text-sm text-black/70 hover:text-black dark:text-white dark:hover:text-white transition-colors uppercase">
+            Danh sách
           </Link>
           
           {/* Genre Dropdown */}
           <div className="relative" ref={genreMenuRef}>
             <button
               onClick={() => setShowGenreMenu((s) => !s)}
-              className="flex items-center gap-2 text-sm text-black/70 hover:text-black dark:text-white dark:hover:text-white transition-colors"
+              className="flex items-center gap-2 text-sm text-black/70 hover:text-black dark:text-white dark:hover:text-white transition-colors uppercase"
               aria-haspopup="true"
               aria-expanded={showGenreMenu}
             >
@@ -572,13 +572,13 @@ export default function Navbar() {
                                 
                                 if (isAdminUser(u)) {
                                   return (
-                                    <MenuNavButton onClick={() => { router.push("/admin/users"); setShowMenu(false); }}>
+                                    <MenuNavButton onClick={() => { router.push("/admin/users"); setShowMenu(false); }} className="border-b border-neutral-200 dark:border-neutral-700">
                                       Quản lý người dùng
                                     </MenuNavButton>
                                   );
                                 }
                               })()}
-                              <MenuNavButton onClick={() => { router.push("/admin/comics"); setShowMenu(false); }}>
+                              <MenuNavButton onClick={() => { router.push("/admin/comics"); setShowMenu(false); }} className="border-b border-neutral-200 dark:border-neutral-700">
                                 Quản lý truyện
                               </MenuNavButton>
                             </>
@@ -592,10 +592,11 @@ export default function Navbar() {
                     <MenuNavButton
                       ref={firstMenuItemRef}
                       onClick={() => { router.push("/profile"); setShowMenu(false); }}
+                      className="border-b border-neutral-200 dark:border-neutral-700"
                     >
                       Hồ sơ của tôi
                     </MenuNavButton>
-                    <MenuNavButton onClick={() => { router.push("/comics/following"); setShowMenu(false); }}>Truyện đã theo dõi</MenuNavButton>
+                    <MenuNavButton onClick={() => { router.push("/comics/following"); setShowMenu(false); }} className="border-b border-neutral-200 dark:border-neutral-700">Truyện đã theo dõi</MenuNavButton>
                     <button
                       onClick={() => { logout(); setShowMenu(false); }}
                       className="w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300"

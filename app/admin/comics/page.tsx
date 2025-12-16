@@ -165,7 +165,7 @@ export default function AdminComicsPage() {
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Quản lý truyện</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white uppercase pb-3 border-b-4 border-red-600 inline-block">Quản lý truyện</h1>
               <p className="mt-1 text-gray-600 dark:text-white">Tổng cộng: <span className="font-semibold text-gray-900 dark:text-white">{total}</span> truyện</p>
             </div>
             <div className="flex items-center gap-3">
