@@ -488,10 +488,10 @@ export default function Navbar() {
                     <img
                       src={avatarUrl}
                       alt={effectiveUser.username || effectiveUser.userName}
-                      className="h-10 w-10 rounded-full object-cover"
+                      className="h-10 w-10 rounded-full border-2 border-red-600 object-cover"
                     />
                   ) : (
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-black/30 dark:bg-white/30 text-sm font-semibold text-black dark:text-white">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border-2 border-red-600 bg-black/30 dark:bg-white/30 text-sm font-semibold text-black dark:text-white">
                       {(effectiveUser.username || effectiveUser.userName || "?")?.slice(0,1).toUpperCase()}
                     </span>
                   )}

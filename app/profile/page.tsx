@@ -186,10 +186,10 @@ export default function ProfilePage() {
                 <img
                   src={user.avatar}
                   alt={user.username}
-                  className="h-28 w-28 rounded-full border-4 border-white object-cover shadow-lg"
+                  className="h-28 w-28 rounded-full border-4 border-red-600 object-cover shadow-lg"
                 />
               ) : (
-                <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-white bg-neutral-100 text-2xl font-semibold text-neutral-800 shadow-lg">
+                <div className="flex h-28 w-28 items-center justify-center rounded-full border-4 border-red-600 bg-neutral-100 text-2xl font-semibold text-neutral-800 shadow-lg">
                   {user?.username?.slice(0,1).toUpperCase()}
                 </div>
               )}
@@ -213,7 +213,7 @@ export default function ProfilePage() {
 
           {!isEditing ? (
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-neutral-900 dark:text-white">Hồ sơ của tôi</h2>
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-white uppercase pb-2 border-b-4 border-red-600">Hồ sơ của tôi</h2>
               <p className="text-neutral-700 dark:text-white">Đây là trang thông tin cá nhân. Bạn có thể cập nhật tên hiển thị và avatar.</p>
 
               <div className="mt-4 rounded-md border bg-neutral-50 dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 p-4">
