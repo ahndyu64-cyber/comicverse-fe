@@ -120,10 +120,10 @@ export default function HotComicsList({ initialComics }: HotComicsListProps) {
                   </h3>
                   <div className="flex items-center gap-1.5 mt-1.5">
                     <span className="text-yellow-400 text-sm">★</span>
-                    <span className="text-sm text-neutral-600 dark:text-neutral-400">5</span>
+                    <span className="text-sm text-neutral-600 dark:text-white">5</span>
                   </div>
                   {comic.chapters && comic.chapters.length > 0 && (
-                    <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                    <p className="text-sm text-neutral-500 dark:text-white mt-1">
                       {comic.chapters[comic.chapters.length - 1].title}
                     </p>
                   )}
