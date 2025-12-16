@@ -43,6 +43,7 @@ export default function Navbar() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [readNotificationIds, setReadNotificationIds] = useState<Set<string>>(new Set());
   const menuRef = useRef<HTMLDivElement | null>(null);
   const genreMenuRef = useRef<HTMLDivElement | null>(null);
   const notificationsRef = useRef<HTMLDivElement | null>(null);
@@ -54,6 +55,36 @@ export default function Navbar() {
   
   const effectiveUser = (user as any) || localUser;
   const avatarUrl = extractAvatarUrl((effectiveUser as any)?.avatar);
+
+  // Initialize readNotificationIds from localStorage (per user)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && effectiveUser) {
+      const userId = (effectiveUser as any)._id || (effectiveUser as any).id;
+      if (!userId) return;
+      
+      const key = `readNotifications_${userId}`;
+      const stored = localStorage.getItem(key);
+      if (stored) {
+        try {
+          const ids = JSON.parse(stored);
+          setReadNotificationIds(new Set(ids));
+        } catch (e) {
+          // Invalid JSON, ignore
+        }
+      }
+    }
+  }, [effectiveUser]);
+
+  // Save readNotificationIds to localStorage whenever it changes (per user)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && effectiveUser) {
+      const userId = (effectiveUser as any)._id || (effectiveUser as any).id;
+      if (!userId) return;
+      
+      const key = `readNotifications_${userId}`;
+      localStorage.setItem(key, JSON.stringify(Array.from(readNotificationIds)));
+    }
+  }, [readNotificationIds, effectiveUser]);
 
   useEffect(() => {
     try {
@@ -117,7 +148,31 @@ export default function Navbar() {
           });
           
           setNotifications(recentUpdates);
-          setUnreadCount(recentUpdates.length);
+          
+          // Auto-remove read status for comics with new recent updates
+          // This ensures that when a comic gets a new chapter, it shows as unread
+          const currentReadIds = new Set(readNotificationIds);
+          let hasChanges = false;
+          
+          recentUpdates.forEach((comic: any) => {
+            // If this comic is in recent updates and was marked as read,
+            // it means there's a new update, so remove it from read set
+            if (currentReadIds.has(comic._id)) {
+              currentReadIds.delete(comic._id);
+              hasChanges = true;
+            }
+          });
+          
+          // Update read status if there were changes
+          if (hasChanges) {
+            setReadNotificationIds(currentReadIds);
+          }
+          
+          // Only count unread notifications
+          const unreadNotifications = recentUpdates.filter(
+            (comic: any) => !currentReadIds.has(comic._id)
+          );
+          setUnreadCount(unreadNotifications.length);
         }
       } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -139,7 +194,25 @@ export default function Navbar() {
       clearInterval(interval);
       window.removeEventListener('recentFollowingRefresh', handleFollowChange);
     };
-  }, [effectiveUser]);
+  }, [effectiveUser, readNotificationIds, notifications]);
+
+  // Update unread count when readNotificationIds changes
+  useEffect(() => {
+    const unreadNotifications = notifications.filter(
+      (comic: any) => !readNotificationIds.has(comic._id)
+    );
+    setUnreadCount(unreadNotifications.length);
+  }, [readNotificationIds, notifications]);
+
+  // Handle marking a notification as read
+  const handleNotificationClick = (comicId: string) => {
+    // Mark as read
+    setReadNotificationIds((prev) => new Set([...prev, comicId]));
+    
+    // Navigate to comic
+    router.push(`/comics/${comicId}`);
+    setShowNotifications(false);
+  };
 
   // Fetch genres on mount
   useEffect(() => {
@@ -273,7 +346,12 @@ export default function Navbar() {
               <div
                 role="menu"
                 aria-label="Genres menu"
-                className="absolute left-0 top-full mt-2 max-h-96 w-48 overflow-y-auto rounded-md border bg-white p-2 shadow-lg dark:bg-neutral-900 z-50"
+                className="absolute left-0 top-full mt-2 rounded-md border bg-white p-4 shadow-lg dark:bg-neutral-900 z-50"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: `repeat(${Math.ceil(genres.length / 10)}, minmax(200px, auto))`,
+                  gap: '0.5rem'
+                }}
               >
                 {genres.map((genre) => (
                   <button
@@ -282,7 +360,7 @@ export default function Navbar() {
                       router.push(`/comics?genre=${encodeURIComponent(genre.name)}`);
                       setShowGenreMenu(false);
                     }}
-                    className="w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:text-neutral-300 rounded transition-colors"
+                    className="text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:text-neutral-300 rounded transition-colors"
                   >
                     {genre.name}
                   </button>
@@ -345,11 +423,12 @@ export default function Navbar() {
                         return (
                           <button
                             key={comic._id}
-                            onClick={() => {
-                              router.push(`/comics/${comic._id}`);
-                              setShowNotifications(false);
-                            }}
-                            className="w-full text-left px-3 py-3 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors border-b dark:border-neutral-700 last:border-b-0"
+                            onClick={() => handleNotificationClick(comic._id)}
+                            className={`w-full text-left px-3 py-3 rounded transition-colors border-b dark:border-neutral-700 last:border-b-0 ${
+                              readNotificationIds.has(comic._id)
+                                ? 'opacity-60 hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
+                                : 'hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                            }`}
                           >
                             <div className="flex gap-2">
                               {comic.cover && (

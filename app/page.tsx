@@ -75,7 +75,7 @@ export default async function HomePage() {
       <RecentFollowing />
 
       {/* Latest Comics and Hot Comics */}
-      <section id="latest-and-hot" className="mx-auto max-w-7xl px-4 py-16">
+      <section id="latest-and-hot" className="mx-auto max-w-7xl px-4 py-8">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Latest Comics - 2/3 width */}
           <LatestComicsList initialComics={latestComics} />

@@ -42,7 +42,7 @@ async function ComicDetailContent({ id }: { id: string }) {
                   <img 
                     src={comic.cover} 
                     alt={comic.title} 
-                    className="w-full rounded-xl shadow-xl object-cover aspect-[3/4] group-hover:shadow-2xl transition-shadow duration-300"
+                    className="w-full rounded-xl shadow-xl object-cover aspect-[3/4] group-hover:shadow-2xl transition-shadow duration-300 border-4 border-purple-600"
                   />
                 ) : (
                   <div className="w-full rounded-xl bg-gradient-to-br from-neutral-200 to-neutral-300 dark:from-neutral-700 dark:to-neutral-800 aspect-[3/4] flex items-center justify-center">

@@ -62,11 +62,11 @@ export default function ManhuaComicsList() {
   }, []);
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16">
-      <div className="mb-12">
+    <section className="mx-auto max-w-7xl px-4 py-8">
+      <div className="mb-4">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
+            <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2 pb-3 border-b-4 border-red-600 inline-block">
               Manhua
             </h2>
             <p className="text-neutral-600 dark:text-white">

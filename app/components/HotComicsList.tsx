@@ -112,9 +112,9 @@ export default function HotComicsList({ initialComics }: HotComicsListProps) {
 
   return (
     <div>
-      <div className="mb-12">
+      <div className="mb-4">
         <div className="mb-4">
-          <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2">
+          <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2 pb-3 border-b-4 border-red-600 inline-block">
             Top theo dõi
           </h2>
           <p className="text-neutral-600 dark:text-white">
