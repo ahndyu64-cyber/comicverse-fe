@@ -157,7 +157,7 @@ export default function SearchBox() {
   }
 
   return (
-    <div className="relative flex items-center w-full">
+    <div className="relative">
       <input
         ref={inputRef}
         type="text"
@@ -171,7 +171,7 @@ export default function SearchBox() {
             setResults([]);
           }
         }}
-        className="rounded-md border border-black/30 dark:border-white/30 bg-black/20 dark:bg-black/50 px-3 py-1 text-sm !text-black dark:!text-white placeholder-black/50 dark:placeholder-white/50 outline-none focus:bg-black/30 dark:focus:bg-black/60 focus:border-black/50 dark:focus:border-white/50 transition-colors flex-1"
+        className="rounded-md border border-black/30 dark:border-white/30 bg-black/20 dark:bg-black/50 px-3 py-1 text-sm !text-black dark:!text-white placeholder-black/50 dark:placeholder-white/50 outline-none focus:bg-black/30 dark:focus:bg-black/60 focus:border-black/50 dark:focus:border-white/50 transition-colors w-64"
         placeholder="Tìm kiếm truyện..."
       />
 
@@ -179,7 +179,7 @@ export default function SearchBox() {
       {query.trim() && (
         <div
           ref={dropdownRef}
-          className="absolute top-full mt-2 left-0 right-0 min-w-[750px] max-h-[600px] overflow-y-auto rounded-md border border-black/20 dark:border-white/20 bg-white dark:bg-neutral-900 shadow-lg z-50"
+          className="absolute top-full mt-2 left-0 w-96 max-h-[600px] overflow-y-auto rounded-md border border-black/20 dark:border-white/20 bg-white dark:bg-neutral-900 shadow-lg z-50"
         >
           {isSearching ? (
             <div className="p-8 text-center text-lg text-neutral-500 dark:text-neutral-400">
@@ -218,22 +218,13 @@ export default function SearchBox() {
       )}
 
       <button
-        onClick={() => handleSearch()}
-        aria-label="Search"
-        className="ml-2 p-2 rounded hover:bg-white/20 transition-colors"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-4 w-4 text-black dark:text-white">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" />
-        </svg>
-      </button>
-      <button
         onClick={() => {
           setVisible(false);
           setQuery("");
           setResults([]);
         }}
         aria-label="Close search"
-        className="ml-2 p-2 rounded hover:bg-white/20 transition-colors"
+        className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 rounded hover:bg-white/20 transition-colors"
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-4 w-4 text-black dark:text-white">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
