@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import type { Comic } from '../lib/comics';
 import ComicCard from './ComicCard';
 
@@ -9,11 +9,72 @@ type LatestComicsListProps = {
 };
 
 export default function LatestComicsList({ initialComics }: LatestComicsListProps) {
-  // Memoize the initial comics to prevent re-render on parent updates
-  const frozenComics = useMemo(() => initialComics, []);
-  
-  // This component ONLY displays latest comics, does not update on follow/unfollow
-  // The data is frozen on first render
+  const [latestComics, setLatestComics] = useState<Comic[]>(initialComics);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Function to fetch latest comics from backend
+  const fetchLatestComics = async () => {
+    try {
+      setIsLoading(true);
+      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+      
+      // Fetch latest comics sorted by update time
+      const response = await fetch(`${API_BASE}/comics?page=1&limit=30&sortBy=updated`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        console.warn('Failed to fetch latest comics');
+        setIsLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+      const comics = data.data || data.items || [];
+      
+      setLatestComics(comics.length > 0 ? comics : initialComics);
+      console.log('LatestComicsList: Fetched latest comics', comics.length);
+    } catch (error) {
+      console.error('Error fetching latest comics:', error);
+      setLatestComics(initialComics);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch latest comics on component mount
+    fetchLatestComics();
+    
+    // Refresh every 1 minute to get updated data
+    const refreshInterval = setInterval(fetchLatestComics, 1 * 60 * 1000);
+    
+    return () => clearInterval(refreshInterval);
+  }, []);
+
+  useEffect(() => {
+    // Listen for chapter update events to refresh immediately
+    let debounceTimer: NodeJS.Timeout;
+    
+    const handleChapterUpdate = () => {
+      console.log('LatestComicsList: Chapter update detected, will refresh in 500ms');
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        console.log('LatestComicsList: Executing refresh callback');
+        fetchLatestComics();
+      }, 500);
+    };
+
+    window.addEventListener('chapterAdded', handleChapterUpdate);
+
+    return () => {
+      window.removeEventListener('chapterAdded', handleChapterUpdate);
+      clearTimeout(debounceTimer);
+    };
+  }, []);
   
   return (
     <div className="lg:col-span-2">
@@ -28,10 +89,10 @@ export default function LatestComicsList({ initialComics }: LatestComicsListProp
         </div>
       </div>
       
-      {frozenComics.length > 0 ? (
+      {latestComics.length > 0 ? (
         <div>
           <div className="grid grid-cols-3 gap-6">
-            {frozenComics.slice(0, 9).map((comic: Comic) => (
+            {latestComics.slice(0, 9).map((comic: Comic) => (
               <ComicCard key={comic._id} comic={comic} />
             ))}
           </div>

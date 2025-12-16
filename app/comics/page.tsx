@@ -161,7 +161,7 @@ export default function ComicsPage() {
             setTotalPages(0);
           }
         } else {
-          const data = await getComics(page, 30);
+          const data = await getComics(page, 30, sortBy);
           console.log('Comics API response:', data);
 
           if (data?.items) {
@@ -184,7 +184,7 @@ export default function ComicsPage() {
     }
 
     loadComics();
-  }, [page, q]);
+  }, [page, q, sortBy]);
 
   // Debug: Log when dependencies change
   useEffect(() => {
@@ -227,6 +227,8 @@ export default function ComicsPage() {
       items.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
     } else if (sortBy === 'popular') {
       items.sort((a, b) => (b.views || 0) - (a.views || 0));
+    } else if (sortBy === 'new') {
+      items.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
     }
 
     // Only paginate if we're filtering (using allComics)

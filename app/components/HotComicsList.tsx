@@ -19,8 +19,8 @@ export default function HotComicsList({ initialComics }: HotComicsListProps) {
       setIsLoading(true);
       const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
       
-      // Call the dedicated hot comics endpoint from backend
-      const response = await fetch(`${API_BASE}/comics/hot?limit=10`, {
+      // Fetch all comics and sort by followers
+      const response = await fetch(`${API_BASE}/comics?page=1&limit=100`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -34,12 +34,23 @@ export default function HotComicsList({ initialComics }: HotComicsListProps) {
       }
 
       const data = await response.json();
-      const hotComicsData = data.data || data || [];
+      let allComics = data.data || data.items || [];
+      
+      // Sort by followers count (highest first)
+      const hotComicsData = allComics
+        .filter((comic: Comic) => (comic.followersCount || 0) > 0)
+        .sort((a: Comic, b: Comic) => {
+          const aFollowers = a.followersCount || 0;
+          const bFollowers = b.followersCount || 0;
+          return bFollowers - aFollowers;
+        })
+        .slice(0, 10);
 
-      setHotComics(hotComicsData);
+      setHotComics(hotComicsData.length > 0 ? hotComicsData : initialComics);
       console.log('HotComicsList: Fetched hot comics from backend', hotComicsData.length);
     } catch (error) {
       console.error('Error fetching hot comics:', error);
+      setHotComics(initialComics);
     } finally {
       setIsLoading(false);
     }
@@ -48,6 +59,32 @@ export default function HotComicsList({ initialComics }: HotComicsListProps) {
   useEffect(() => {
     // Fetch hot comics on component mount
     fetchHotComics();
+    
+    // Refresh every 1 minute to get updated data
+    const refreshInterval = setInterval(fetchHotComics, 1 * 60 * 1000);
+    
+    return () => clearInterval(refreshInterval);
+  }, []);
+
+  useEffect(() => {
+    // Listen for chapter update events to refresh immediately
+    let debounceTimer: NodeJS.Timeout;
+    
+    const handleChapterUpdate = () => {
+      console.log('HotComicsList: Chapter update detected, will refresh in 500ms');
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        console.log('HotComicsList: Executing refresh callback');
+        fetchHotComics();
+      }, 500);
+    };
+
+    window.addEventListener('chapterAdded', handleChapterUpdate);
+
+    return () => {
+      window.removeEventListener('chapterAdded', handleChapterUpdate);
+      clearTimeout(debounceTimer);
+    };
   }, []);
 
   useEffect(() => {

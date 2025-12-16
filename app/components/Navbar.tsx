@@ -37,16 +37,24 @@ export default function Navbar() {
   const [dark, setDark] = useState<boolean>(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showGenreMenu, setShowGenreMenu] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [genres, setGenres] = useState<Array<{ _id: string; name: string }>>([]);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const genreMenuRef = useRef<HTMLDivElement | null>(null);
+  const notificationsRef = useRef<HTMLDivElement | null>(null);
   const firstMenuItemRef = useRef<HTMLButtonElement | null>(null);
   const router = useRouter();
   const { user, logout, isAdmin } = useAuth();
   // read localStorage only after mount to avoid hydration mismatch
   const [localUser, setLocalUser] = useState<any | null>(null);
+  
+  const effectiveUser = (user as any) || localUser;
+  const avatarUrl = extractAvatarUrl((effectiveUser as any)?.avatar);
+
   useEffect(() => {
     try {
       const raw = typeof window !== "undefined" ? localStorage.getItem("user") : null;
@@ -65,8 +73,73 @@ export default function Navbar() {
     }
   }, [user]);
 
-  const effectiveUser = (user as any) || localUser;
-  const avatarUrl = extractAvatarUrl((effectiveUser as any)?.avatar);
+  // Fetch notifications for logged-in user
+  useEffect(() => {
+    if (!effectiveUser) return;
+
+    const userId = (effectiveUser as any)._id || (effectiveUser as any).id;
+    if (!userId) return;
+
+    const fetchNotifications = async () => {
+      try {
+        const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+        // Fetch followed comics to check for new chapters
+        const followingResponse = await fetch(`${API_BASE}/users/${userId}/following`);
+        
+        if (followingResponse.ok) {
+          const followingData = await followingResponse.json();
+          // Handle various response formats
+          let followedComics = followingData.data || followingData.items || followingData || [];
+          if (!Array.isArray(followedComics)) {
+            followedComics = [];
+          }
+          
+          // Check for recent updates (within last 24 hours)
+          const recentUpdates = followedComics.filter((comic: any) => {
+            if (!comic) return false;
+            
+            // Get the most recent chapter date
+            let lastUpdateTime = null;
+            
+            if (comic.chapters && Array.isArray(comic.chapters) && comic.chapters.length > 0) {
+              const lastChapter = comic.chapters[comic.chapters.length - 1];
+              lastUpdateTime = new Date(lastChapter.createdAt || lastChapter.date || 0);
+            } else if (comic.updatedAt) {
+              lastUpdateTime = new Date(comic.updatedAt);
+            } else if (comic.createdAt) {
+              lastUpdateTime = new Date(comic.createdAt);
+            }
+            
+            if (!lastUpdateTime) return false;
+            
+            const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+            return lastUpdateTime > dayAgo;
+          });
+          
+          setNotifications(recentUpdates);
+          setUnreadCount(recentUpdates.length);
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    fetchNotifications();
+    // Refresh notifications every 2 minutes
+    const interval = setInterval(fetchNotifications, 2 * 60 * 1000);
+    
+    // Listen for follow/unfollow events to refresh notifications
+    const handleFollowChange = () => {
+      fetchNotifications();
+    };
+    
+    window.addEventListener('recentFollowingRefresh', handleFollowChange);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('recentFollowingRefresh', handleFollowChange);
+    };
+  }, [effectiveUser]);
 
   // Fetch genres on mount
   useEffect(() => {
@@ -137,32 +210,34 @@ export default function Navbar() {
       if (e.target instanceof Node && !genreMenuRef.current.contains(e.target)) {
         setShowGenreMenu(false);
       }
+      if (!notificationsRef.current) return;
+      if (e.target instanceof Node && !notificationsRef.current.contains(e.target)) {
+        setShowNotifications(false);
+      }
     }
 
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
         setShowMenu(false);
         setShowGenreMenu(false);
+        setShowNotifications(false);
       }
     }
 
-    if (showMenu) {
+    if (showMenu || showGenreMenu || showNotifications) {
       document.addEventListener("mousedown", onDoc);
       document.addEventListener("keydown", onKey);
       // focus the first focusable menu item
-      setTimeout(() => firstMenuItemRef.current?.focus(), 0);
-    }
-
-    if (showGenreMenu) {
-      document.addEventListener("mousedown", onDoc);
-      document.addEventListener("keydown", onKey);
+      if (showMenu) {
+        setTimeout(() => firstMenuItemRef.current?.focus(), 0);
+      }
     }
 
     return () => {
       document.removeEventListener("mousedown", onDoc);
       document.removeEventListener("keydown", onKey);
     };
-  }, [showMenu, showGenreMenu]);
+  }, [showMenu, showGenreMenu, showNotifications]);
 
 
 
@@ -220,6 +295,107 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           {/* Search: show icon by default, reveal input when active */}
           <SearchBox />
+          
+          {/* Notification Button - only show for logged-in users */}
+          {effectiveUser && (
+            <div className="relative" ref={notificationsRef}>
+              <button
+                onClick={() => setShowNotifications((s) => !s)}
+                className="relative rounded px-2 py-1 hover:bg-white/20 dark:hover:bg-white/20 transition-colors"
+                aria-label="Notifications"
+                aria-haspopup="true"
+                aria-expanded={showNotifications}
+                title={unreadCount > 0 ? `${unreadCount} truyện mới` : 'Không có thông báo'}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-black dark:text-white"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
+                {unreadCount > 0 && (
+                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {showNotifications && (
+                <div
+                  role="menu"
+                  aria-label="Notifications menu"
+                  className="absolute right-0 top-full mt-2 w-80 max-h-96 overflow-y-auto rounded-md border bg-white p-2 shadow-lg dark:bg-neutral-900 z-50"
+                >
+                  {notifications.length > 0 ? (
+                    <>
+                      {notifications.map((comic: any) => {
+                        // Get the latest chapter info
+                        let latestChapter = null;
+                        if (comic.chapters && Array.isArray(comic.chapters) && comic.chapters.length > 0) {
+                          latestChapter = comic.chapters[comic.chapters.length - 1];
+                        }
+                        
+                        return (
+                          <button
+                            key={comic._id}
+                            onClick={() => {
+                              router.push(`/comics/${comic._id}`);
+                              setShowNotifications(false);
+                            }}
+                            className="w-full text-left px-3 py-3 rounded hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors border-b dark:border-neutral-700 last:border-b-0"
+                          >
+                            <div className="flex gap-2">
+                              {comic.cover && (
+                                <img
+                                  src={comic.cover}
+                                  alt={comic.title}
+                                  className="h-14 w-10 object-cover rounded flex-shrink-0"
+                                />
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className="font-semibold text-sm text-neutral-900 dark:text-white truncate">
+                                  {comic.title}
+                                </p>
+                                {latestChapter && (
+                                  <>
+                                    <p className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-1">
+                                      Cập nhật: {latestChapter.title || `Chapter ${latestChapter.chapterNumber || ''}`}
+                                    </p>
+                                    {latestChapter.date && (
+                                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                                        {new Date(latestChapter.date).toLocaleDateString('vi-VN', {
+                                          year: 'numeric',
+                                          month: 'long',
+                                          day: 'numeric'
+                                        })}
+                                      </p>
+                                    )}
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+
+                    </>
+                  ) : (
+                    <div className="px-3 py-4 text-center text-sm text-neutral-600 dark:text-neutral-400">
+                      Không có thông báo mới
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+          
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setShowMenu((s) => !s)}
