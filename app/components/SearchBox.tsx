@@ -18,6 +18,7 @@ export default function SearchBox() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Comic[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [dark, setDark] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
@@ -103,6 +104,25 @@ export default function SearchBox() {
     }
   }, [visible]);
 
+  // Listen to dark mode changes
+  useEffect(() => {
+    const stored = typeof window !== "undefined" && localStorage.getItem("cv-dark");
+    if (stored !== null) {
+      setDark(stored === "1");
+    } else {
+      const prefers = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setDark(prefers);
+    }
+
+    // Listen for dark mode toggle
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setDark(isDark);
+    });
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -173,6 +193,11 @@ export default function SearchBox() {
         }}
         className="rounded-md border border-black/30 dark:border-white/30 bg-black/20 dark:bg-black/50 px-4 py-2 text-sm !text-black dark:!text-white placeholder-black/50 dark:placeholder-white/50 outline-none focus:bg-black/30 dark:focus:bg-black/60 focus:border-black/50 dark:focus:border-white/50 transition-colors w-80"
         placeholder="Tìm kiếm truyện..."
+        style={{
+          backgroundColor: dark ? '#1a1a1a' : 'rgba(0,0,0,0.1)',
+          color: dark ? 'white' : 'black',
+          borderColor: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'
+        }}
       />
 
       {/* Dropdown Results */}
@@ -180,6 +205,10 @@ export default function SearchBox() {
         <div
           ref={dropdownRef}
           className="absolute top-full mt-2 left-0 w-96 max-h-[600px] overflow-y-auto rounded-md border border-black/20 dark:border-white/20 bg-white dark:bg-neutral-900 shadow-lg z-50"
+          style={{
+            backgroundColor: dark ? '#171717' : 'white',
+            borderColor: dark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
+          }}
         >
           {isSearching ? (
             <div className="p-8 text-center text-lg text-neutral-500 dark:text-neutral-400">

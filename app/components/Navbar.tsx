@@ -6,16 +6,17 @@ import SearchBox from "./SearchBox";
 import Logo from "./Logo";
 
 // Small focusable menu button that forwards ref to the underlying button element
-const MenuNavButton = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(function MenuNavButton(
-  { children, className, ...rest },
+const MenuNavButton = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement> & { icon?: React.ReactNode }>(function MenuNavButton(
+  { children, className, icon, ...rest },
   ref
 ) {
   return (
     <button
       ref={ref}
       {...rest}
-      className={`w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:text-neutral-300 ${className ?? ""}`}
+      className={`w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:text-white flex items-center gap-2 ${className ?? ""}`}
     >
+      {icon && <span className="w-4 h-4 flex-shrink-0">{icon}</span>}
       {children}
     </button>
   );
@@ -364,11 +365,12 @@ export default function Navbar() {
               <div
                 role="menu"
                 aria-label="Genres menu"
-                className="absolute left-0 top-full mt-2 rounded-md border bg-white p-4 shadow-lg dark:bg-neutral-900 z-50 pointer-events-auto"
+                className="absolute left-0 top-full mt-2 rounded-md border bg-white dark:!bg-neutral-900 border-neutral-200 dark:border-neutral-800 p-4 shadow-lg z-50 pointer-events-auto"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: `repeat(${Math.ceil(genres.length / 10)}, minmax(200px, auto))`,
-                  gap: '0.5rem'
+                  gap: '0.5rem',
+                  backgroundColor: dark ? '#171717' : 'white'
                 }}
               >
                 {genres.map((genre, idx) => (
@@ -378,7 +380,7 @@ export default function Navbar() {
                       router.push(`/comics?genre=${encodeURIComponent(genre.name)}`);
                       setShowGenreMenu(false);
                     }}
-                    className="text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:text-neutral-300 rounded transition-colors border border-neutral-200 dark:border-neutral-700"
+                    className="text-left px-3 py-2 text-sm text-neutral-700 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors border border-neutral-200 dark:border-neutral-700"
                   >
                     {genre.name}
                   </button>
@@ -427,7 +429,11 @@ export default function Navbar() {
                 <div
                   role="menu"
                   aria-label="Notifications menu"
-                  className="absolute right-0 top-full mt-2 w-80 max-h-96 overflow-y-auto rounded-md border bg-white p-2 shadow-lg dark:bg-neutral-900 z-50"
+                  className="absolute right-0 top-full mt-2 w-80 max-h-96 overflow-y-auto rounded-md border bg-white p-2 shadow-lg dark:bg-neutral-900 dark:border-neutral-800 z-50"
+                  style={{
+                    backgroundColor: dark ? '#171717' : 'white',
+                    borderColor: dark ? '#27272a' : 'rgb(229, 231, 235)'
+                  }}
                 >
                   {notifications.length > 0 ? (
                     <>
@@ -526,7 +532,11 @@ export default function Navbar() {
               <div
                 role="menu"
                 aria-label="Site menu"
-                className="absolute right-0 top-full mt-2 w-48 rounded-md border bg-white p-2 shadow-lg dark:bg-neutral-900"
+                className="absolute right-0 top-full mt-2 w-48 rounded-md border bg-white p-2 shadow-lg dark:bg-neutral-900 dark:border-neutral-800"
+                style={{
+                  backgroundColor: dark ? '#171717' : 'white',
+                  borderColor: dark ? '#27272a' : 'rgb(229, 231, 235)'
+                }}
               >
                 {!effectiveUser ? (
                   <>
@@ -536,7 +546,11 @@ export default function Navbar() {
                     >
                       Đăng nhập
                     </MenuNavButton>
-                    <MenuNavButton onClick={() => { router.push("/auth/register"); setShowMenu(false); }}>Đăng ký</MenuNavButton>
+                    <MenuNavButton 
+                      onClick={() => { router.push("/auth/register"); setShowMenu(false); }}
+                    >
+                      Đăng ký
+                    </MenuNavButton>
                   </>
                 ) : (
                   <>
@@ -590,13 +604,19 @@ export default function Navbar() {
                                 
                                 if (isAdminUser(u)) {
                                   return (
-                                    <MenuNavButton onClick={() => { router.push("/admin/users"); setShowMenu(false); }} className="border-b border-neutral-200 dark:border-neutral-700">
+                                    <MenuNavButton 
+                                      onClick={() => { router.push("/admin/users"); setShowMenu(false); }} 
+                                      className="border-b border-neutral-200 dark:border-neutral-700"
+                                    >
                                       Quản lý người dùng
                                     </MenuNavButton>
                                   );
                                 }
                               })()}
-                              <MenuNavButton onClick={() => { router.push("/admin/comics"); setShowMenu(false); }} className="border-b border-neutral-200 dark:border-neutral-700">
+                              <MenuNavButton 
+                                onClick={() => { router.push("/admin/comics"); setShowMenu(false); }} 
+                                className="border-b border-neutral-200 dark:border-neutral-700"
+                              >
                                 Quản lý truyện
                               </MenuNavButton>
                             </>
@@ -614,10 +634,15 @@ export default function Navbar() {
                     >
                       Hồ sơ của tôi
                     </MenuNavButton>
-                    <MenuNavButton onClick={() => { router.push("/comics/following"); setShowMenu(false); }} className="border-b border-neutral-200 dark:border-neutral-700">Truyện đã theo dõi</MenuNavButton>
+                    <MenuNavButton 
+                      onClick={() => { router.push("/comics/following"); setShowMenu(false); }} 
+                      className="border-b border-neutral-200 dark:border-neutral-700"
+                    >
+                      Truyện đã theo dõi
+                    </MenuNavButton>
                     <button
                       onClick={() => { logout(); setShowMenu(false); }}
-                      className="w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300"
+                      className="w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-white dark:hover:bg-neutral-800"
                     >
                       Đăng xuất
                     </button>

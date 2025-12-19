@@ -32,11 +32,11 @@ export default function ContactPage() {
   };
 
   return (
-    <main className="min-h-screen bg-white dark:bg-neutral-950">
+    <main className="min-h-screen bg-white dark:bg-black">
       <div className="mx-auto max-w-2xl px-4 py-16">
-        <h1 className="text-4xl font-bold text-neutral-900 mb-4">Liên hệ với chúng tôi</h1>
-        <p className="text-neutral-600 dark:text-neutral-400 mb-8">
-          Có câu hỏi hoặc đề xuất? Chúng tôi rất muốn nghe từ bạn. Hãy điền vào biểu mẫu dưới đây và chúng tôi sẽ liên hệ với bạn soonest.
+        <h1 className="text-4xl font-bold text-neutral-900 dark:text-white mb-4">Liên hệ với chúng tôi</h1>
+        <p className="text-neutral-600 dark:text-white mb-8">
+          Có câu hỏi hoặc đề xuất? Chúng tôi rất muốn nghe từ bạn. Hãy điền vào biểu mẫu dưới đây và chúng tôi sẽ liên hệ với bạn sớm nhất.
         </p>
 
         {submitted && (
@@ -47,7 +47,7 @@ export default function ContactPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-neutral-900 mb-2">
+            <label htmlFor="name" className="block text-sm font-medium text-neutral-900 dark:text-white mb-2">
               Tên của bạn
             </label>
             <input
@@ -57,13 +57,12 @@ export default function ContactPage() {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
-              placeholder="Nhập tên của bạn"
+              className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-black text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-neutral-900 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-neutral-900 dark:text-white mb-2">
               Email của bạn
             </label>
             <input
@@ -73,13 +72,12 @@ export default function ContactPage() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
-              placeholder="Nhập email của bạn"
+              className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-black text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
           <div>
-            <label htmlFor="subject" className="block text-sm font-medium text-neutral-900 mb-2">
+            <label htmlFor="subject" className="block text-sm font-medium text-neutral-900 dark:text-white mb-2">
               Chủ đề
             </label>
             <input
@@ -89,13 +87,12 @@ export default function ContactPage() {
               value={formData.subject}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
-              placeholder="Nhập chủ đề"
+              className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-black text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
           <div>
-            <label htmlFor="message" className="block text-sm font-medium text-neutral-900 mb-2">
+            <label htmlFor="message" className="block text-sm font-medium text-neutral-900 dark:text-white mb-2">
               Tin nhắn
             </label>
             <textarea
@@ -105,27 +102,26 @@ export default function ContactPage() {
               onChange={handleChange}
               required
               rows={6}
-              className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
-              placeholder="Nhập tin nhắn của bạn..."
+              className="w-full px-4 py-2 border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-black text-neutral-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full px-6 py-3 bg-sky-600 hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-600 text-white font-semibold rounded-lg transition-colors duration-200"
+            className="w-full px-6 py-3 bg-sky-600 hover:bg-sky-700 dark:bg-sky-500 dark:hover:bg-sky-600 text-black dark:text-white font-semibold rounded-lg transition-colors duration-200"
           >
             Gửi tin nhắn
           </button>
         </form>
 
         <div className="mt-12 pt-8 border-t border-neutral-200 dark:border-neutral-800">
-          <h2 className="text-2xl font-bold text-neutral-900 mb-6">Thông tin liên hệ khác</h2>
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-white mb-6">Thông tin liên hệ khác</h2>
           <div className="space-y-4">
-            <p className="text-neutral-700 dark:text-neutral-300">
-              <span className="font-semibold text-neutral-900">Email:</span> support@comicverse.com
+            <p className="text-neutral-700 dark:text-white">
+              <span className="font-semibold text-neutral-900 dark:text-white">Email:</span> support@comicverse.com
             </p>
-            <p className="text-neutral-700 dark:text-neutral-300">
-              <span className="font-semibold text-neutral-900">Địa chỉ:</span> ComicVerse Inc., Vietnam
+            <p className="text-neutral-700 dark:text-white">
+              <span className="font-semibold text-neutral-900 dark:text-white">Địa chỉ:</span> ComicVerse Inc., Vietnam
             </p>
           </div>
         </div>

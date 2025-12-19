@@ -24,6 +24,7 @@ export default function EditComicPage() {
   const isAuthorized = hasAdminOrModeratorRole(authContext?.user);
   const isAuthLoading = authContext?.isLoading ?? true;
 
+  const [isDark, setIsDark] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -50,7 +51,63 @@ export default function EditComicPage() {
       setLoading(false);
       return;
     }
+
+    // Dynamic style tag for dark mode CSS variables
+    const styleId = 'comic-edit-dark-vars';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.textContent = `
+        :root {
+          --input-bg: #ffffff !important;
+          --input-text: #111827 !important;
+          --input-border: #e5e7eb !important;
+          --label-text: #374151 !important;
+          --genre-bg: #f9fafb !important;
+          --genre-bg-selected: #dbeafe !important;
+          --genre-text: #374151 !important;
+        }
+        html.dark {
+          --input-bg: #000000 !important;
+          --input-text: #f3f4f6 !important;
+          --input-border: #374151 !important;
+          --label-text: #f3f4f6 !important;
+          --genre-bg: #1f2937 !important;
+          --genre-bg-selected: #1e3a8a !important;
+          --genre-text: #f3f4f6 !important;
+        }
+        @media (prefers-color-scheme: dark) {
+          :root {
+            --input-bg: #000000 !important;
+            --input-text: #f3f4f6 !important;
+            --input-border: #374151 !important;
+            --label-text: #f3f4f6 !important;
+            --genre-bg: #1f2937 !important;
+            --genre-bg-selected: #1e3a8a !important;
+            --genre-text: #f3f4f6 !important;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // Listen for dark mode changes
+    const observer = new MutationObserver(() => {
+      const hasDarkClass = document.documentElement.classList.contains('dark');
+      setIsDark(hasDarkClass);
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    // Set initial state
+    setIsDark(document.documentElement.classList.contains('dark'));
+
     loadComicAndGenres();
+
+    return () => observer.disconnect();
   }, [comicId, isAuthorized, isAuthLoading]);
 
   const loadComicAndGenres = async () => {
@@ -238,7 +295,7 @@ export default function EditComicPage() {
     <div style={{
       minHeight: '100vh',
       background: 'linear-gradient(to bottom right, #f9fafb, #f3f4f6)'
-    }} className="dark:bg-gradient-to-br dark:from-neutral-950 dark:to-neutral-900">
+    }} className="dark:from-black dark:to-black dark:bg-gradient-to-br">
       <div style={{
         margin: '0 auto',
         maxWidth: '1280px',
@@ -261,14 +318,15 @@ export default function EditComicPage() {
             }}
             onMouseEnter={(e) => e.currentTarget.style.color = '#0369a1'}
             onMouseLeave={(e) => e.currentTarget.style.color = '#0284c7'}
+            className="dark:text-sky-400 dark:hover:text-sky-300"
           >
             <span>←</span>
             <span>Quay lại danh sách</span>
           </Link>
-          <h1 style={{ fontSize: '32px', fontWeight: '700', color: 'var(--text)', marginTop: '16px' }}>
+          <h1 style={{ fontSize: '32px', fontWeight: '700', marginTop: '16px' }} className="text-gray-900 dark:text-white">
             Chỉnh sửa truyện
           </h1>
-          <p style={{ marginTop: '8px', fontSize: '18px', color: 'var(--muted)' }}>
+          <p style={{ marginTop: '8px', fontSize: '18px' }} className="text-gray-600 dark:text-gray-300">
             Cập nhật thông tin truyện của bạn
           </p>
         </div>
@@ -469,12 +527,13 @@ export default function EditComicPage() {
                             cursor: 'pointer',
                             padding: '10px 12px',
                             borderRadius: '8px',
-                            backgroundColor: selectedGenres.includes(genre) ? '#dbeafe' : '#f9fafb',
+                            backgroundColor: selectedGenres.includes(genre) ? 'var(--genre-bg-selected)' : 'var(--genre-bg)',
+                            color: 'var(--genre-text)',
                             transition: 'all 0.2s'
                           }}
-                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#dbeafe'}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--genre-bg-selected)'}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = selectedGenres.includes(genre) ? '#dbeafe' : '#f9fafb';
+                            e.currentTarget.style.backgroundColor = selectedGenres.includes(genre) ? 'var(--genre-bg-selected)' : 'var(--genre-bg)';
                           }}
                         >
                           <input
@@ -489,7 +548,7 @@ export default function EditComicPage() {
                               accentColor: '#0ea5e9'
                             }}
                           />
-                          <span style={{ fontSize: '14px', color: '#374151', fontWeight: '500' }}>{genre}</span>
+                          <span style={{ fontSize: '14px', color: 'var(--genre-text)', fontWeight: '500' }}>{genre}</span>
                         </label>
                       ))}
                     </div>

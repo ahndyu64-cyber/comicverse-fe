@@ -312,41 +312,41 @@ export default function AdminChapterDetail() {
         </div>
       </div>
 
-      <div className="rounded-2xl bg-white dark:bg-neutral-900 p-6 shadow">
+      <div className="rounded-2xl bg-white dark:bg-black p-6 shadow">
         {loading ? (
-          <div>Đang tải...</div>
+          <div className="dark:text-white">Đang tải...</div>
         ) : error ? (
-          <div className="text-red-600">{error}</div>
+          <div className="text-red-600 dark:text-red-400">{error}</div>
         ) : (
           <div>
             <div className="mb-4 flex items-center justify-between">
               <div>
                 {editing ? (
                   <div className="flex gap-2">
-                    <input value={title} onChange={(e) => setTitle(e.target.value)} className="rounded border px-2 py-1" />
-                    <button onClick={saveTitle} disabled={saving} className="px-3 py-1 rounded bg-amber-50 text-amber-700">{saving ? 'Đang lưu...' : 'Lưu'}</button>
-                    <button onClick={() => { setEditing(false); load(); }} className="px-3 py-1 rounded bg-neutral-100">Hủy</button>
+                    <input value={title} onChange={(e) => setTitle(e.target.value)} className="rounded border px-2 py-1 bg-white dark:bg-black dark:text-white dark:border-neutral-600" />
+                    <button onClick={saveTitle} disabled={saving} className="px-3 py-1 rounded bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-white">{saving ? 'Đang lưu...' : 'Lưu'}</button>
+                    <button onClick={() => { setEditing(false); load(); }} className="px-3 py-1 rounded bg-neutral-100 dark:bg-neutral-800 dark:text-white">Hủy</button>
                   </div>
                 ) : (
                   <div className="flex items-center gap-4">
-                    <h2 className="text-lg font-semibold">{title || '—'}</h2>
-                    <button onClick={() => setEditing(true)} className="px-3 py-1 rounded bg-amber-50 text-amber-700">Sửa tiêu đề</button>
+                    <h2 className="text-lg font-semibold dark:text-white">{title || '—'}</h2>
+                    <button onClick={() => setEditing(true)} className="px-3 py-1 rounded bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-white">Sửa tiêu đề</button>
                   </div>
                 )}
               </div>
-              <div className="text-sm text-neutral-400">{images?.length || 0} ảnh</div>
+              <div className="text-sm text-neutral-400 dark:text-white">{images?.length || 0} ảnh</div>
             </div>
 
             {/* Upload controls */}
             <div className="mb-4">
               <div className="mb-3">
                 <input id="file-input" multiple type="file" accept="image/*" onChange={onSelectFiles} className="hidden" />
-                <label htmlFor="file-input" className="inline-flex items-center gap-2 cursor-pointer rounded-md border px-3 py-2 text-sm bg-neutral-50">Thêm ảnh</label>
+                <label htmlFor="file-input" className="inline-flex items-center gap-2 cursor-pointer rounded-md border px-3 py-2 text-sm bg-neutral-50 dark:bg-neutral-800 dark:border-neutral-600 dark:text-white">Thêm ảnh</label>
               </div>
 
               {selectedFiles.length > 0 && (
                 <div className="mb-4 p-4 rounded-lg bg-neutral-50 dark:bg-neutral-800">
-                  <div className="text-sm font-medium mb-3">Ảnh đã chọn ({selectedFiles.length})</div>
+                  <div className="text-sm font-medium mb-3 dark:text-white">Ảnh đã chọn ({selectedFiles.length})</div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-3">
                     {selectedFiles.map((f, i) => (
                       <div key={i} className="relative w-full h-40 rounded overflow-hidden border dark:border-neutral-700">
@@ -361,7 +361,7 @@ export default function AdminChapterDetail() {
             </div>
 
             <div className="border-t dark:border-neutral-700 pt-4">
-              <div className="text-sm font-medium mb-3">Ảnh đã tải lên ({images?.length || 0})</div>
+              <div className="text-sm font-medium mb-3 dark:text-white">Ảnh đã tải lên ({images?.length || 0})</div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {images && images.length > 0 ? (
                   images.map((src, i) => (
@@ -370,7 +370,7 @@ export default function AdminChapterDetail() {
                     </div>
                   ))
                 ) : (
-                  <div className="col-span-full text-sm text-neutral-500 dark:text-neutral-400 text-center py-8">Chưa có ảnh cho chương này.</div>
+                  <div className="col-span-full text-sm text-neutral-500 dark:text-white text-center py-8">Chưa có ảnh cho chương này.</div>
                 )}
               </div>
             </div>

@@ -37,6 +37,7 @@ export default function ComicsPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
+  const [dark, setDark] = useState(false);
   
   // Filters
   const [categories, setCategories] = useState<Category[]>([]);
@@ -56,6 +57,25 @@ export default function ComicsPage() {
   const q = searchParams?.get('q') || '';
   const genreParam = searchParams?.get('genre') || '';
   const genresArrayString = searchParams?.get('genres[]') || '';
+
+  // Listen to dark mode changes
+  useEffect(() => {
+    const stored = typeof window !== "undefined" && localStorage.getItem("cv-dark");
+    if (stored !== null) {
+      setDark(stored === "1");
+    } else {
+      const prefers = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setDark(prefers);
+    }
+
+    // Listen for dark mode toggle
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setDark(isDark);
+    });
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
 
   // Initialize selected genres from URL parameter
   useEffect(() => {
@@ -403,7 +423,12 @@ export default function ComicsPage() {
               placeholder="Nhập từ khóa"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg text-neutral-900 placeholder-neutral-400 dark:placeholder-neutral-500 outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+              className="w-full px-4 py-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-lg text-neutral-900 placeholder-neutral-400 dark:placeholder-neutral-500 outline-none focus:ring-2 focus:ring-purple-500 transition-all dark:text-white"
+              style={{
+                backgroundColor: dark ? '#27272a' : 'white',
+                borderColor: dark ? '#404040' : 'rgb(209, 213, 219)',
+                color: dark ? 'white' : 'rgb(17, 24, 39)',
+              }}
             />
           </div>
 

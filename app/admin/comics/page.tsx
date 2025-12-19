@@ -1,4 +1,4 @@
-"use client";
+                                                                                                                                                                                                                                                                                                                                                                                                                                                        "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -36,6 +36,7 @@ export default function AdminComicsPage() {
   const [total, setTotal] = useState(0);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [deleteComicTitle, setDeleteComicTitle] = useState("");
+  const [dark, setDark] = useState(false);
 
   // Debounce search - delay API call by 1000ms
   useEffect(() => {
@@ -46,6 +47,25 @@ export default function AdminComicsPage() {
     }, 1000);
     return () => clearTimeout(timer);
   }, [searchQuery]);
+
+  // Listen to dark mode changes
+  useEffect(() => {
+    const stored = typeof window !== "undefined" && localStorage.getItem("cv-dark");
+    if (stored !== null) {
+      setDark(stored === "1");
+    } else {
+      const prefers = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setDark(prefers);
+    }
+
+    // Listen for dark mode toggle
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setDark(isDark);
+    });
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
 
   // Load comics when auth, page, or debounced search changes
   useEffect(() => {
@@ -206,7 +226,12 @@ export default function AdminComicsPage() {
                 placeholder="Tìm theo tiêu đề hoặc tác giả"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-black outline-none shadow-sm focus:ring-2 focus:ring-purple-500 transition"
+                className="w-full rounded-lg border border-neutral-200 dark:border-neutral-700 px-4 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white outline-none shadow-sm focus:ring-2 focus:ring-purple-500 transition"
+                style={{
+                  backgroundColor: dark ? '#27272a' : 'white',
+                  borderColor: dark ? '#404040' : 'rgb(229, 231, 235)',
+                  color: dark ? 'white' : 'rgb(17, 24, 39)',
+                }}
               />
             </div>
 
@@ -215,7 +240,13 @@ export default function AdminComicsPage() {
               <select 
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="rounded-md border border-neutral-200 dark:border-neutral-700 px-3 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-black outline-none focus:ring-2 focus:ring-purple-500 transition">
+                className="rounded-md border border-neutral-200 dark:border-neutral-700 px-3 py-2 text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white outline-none focus:ring-2 focus:ring-purple-500 transition"
+                style={{
+                  backgroundColor: dark ? '#27272a' : 'white',
+                  borderColor: dark ? '#404040' : 'rgb(229, 231, 235)',
+                  color: dark ? 'white' : 'rgb(17, 24, 39)',
+                }}
+              >
                 <option value="new">Mới cập nhật</option>
                 <option value="alpha">A → Z</option>
                 <option value="popular">Nổi bật</option>

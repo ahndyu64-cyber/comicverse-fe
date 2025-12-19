@@ -315,25 +315,25 @@ export default function AdminGenresPage() {
             {genres.map((genre) => (
               <div
                 key={genre._id}
-                className="group rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-neutral-800 p-4 shadow-sm hover:shadow-md transition-all duration-300"
+                className="group rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-black p-4 shadow-sm hover:shadow-md transition-all duration-300"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-900 line-clamp-2">{genre.name}</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2">{genre.name}</h3>
                     {genre.description && (
-                      <p className="mt-2 text-sm text-gray-600 dark:text-white line-clamp-2">
+                      <p className="mt-2 text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
                         {genre.description}
                       </p>
                     )}
                   </div>
                 </div>
                 <div className="mt-4 flex items-center justify-between">
-                  <span className="inline-block rounded-full bg-blue-100 dark:bg-blue-900/30 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-400">
+                  <span className="inline-block rounded-full bg-blue-100 dark:bg-blue-900/40 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-700">
                     Thể loại
                   </span>
                   <button
                     onClick={() => handleDelete(genre._id)}
-                    className="inline-flex items-center gap-1.5 rounded-md bg-gradient-to-br from-red-100 to-red-50 text-red-700 px-3 py-1.5 text-xs font-semibold hover:from-red-200 hover:to-red-100 transition shadow-sm hover:shadow-md"
+                    className="inline-flex items-center gap-1.5 rounded-md bg-gradient-to-br from-red-100 to-red-50 dark:from-red-900/40 dark:to-red-900/20 text-red-700 dark:text-red-700 px-3 py-1.5 text-xs font-semibold hover:from-red-200 hover:to-red-100 dark:hover:from-red-900/50 dark:hover:to-red-900/30 transition shadow-sm hover:shadow-md"
                   >
                     <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                       <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -348,7 +348,7 @@ export default function AdminGenresPage() {
 
         {showDeleteConfirm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="w-full max-w-xs rounded-xl bg-white dark:bg-neutral-900 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+            <div className="w-full max-w-xs rounded-xl bg-white dark:bg-black shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
               {/* Header */}
               <div className="bg-gradient-to-r from-red-500 to-red-600 px-5 py-3">
                 <h2 className="text-base font-bold text-white flex items-center gap-2">
@@ -361,16 +361,16 @@ export default function AdminGenresPage() {
 
               {/* Body */}
               <div className="px-5 py-4">
-                <p className="text-neutral-700 dark:text-neutral-300 text-sm">
+                <p className="text-neutral-700 dark:text-white text-sm">
                   Bạn có chắc chắn muốn xóa thể loại <span className="font-bold text-red-600 dark:text-red-400">"{deleteGenreName}"</span>?
                 </p>
-                <p className="text-neutral-500 dark:text-neutral-400 text-xs mt-2">
+                <p className="text-neutral-500 dark:text-white text-xs mt-2">
                   Hành động này không thể hoàn tác.
                 </p>
               </div>
 
               {/* Footer */}
-              <div className="flex gap-2 px-5 py-3 bg-neutral-50 dark:bg-neutral-800/50 border-t border-neutral-200 dark:border-neutral-700">
+              <div className="flex gap-2 px-5 py-3 bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800">
                 <button
                   onClick={() => setShowDeleteConfirm(null)}
                   className="flex-1 px-3 py-2 rounded-lg bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-900 dark:text-white font-medium text-sm transition-colors"

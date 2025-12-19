@@ -37,6 +37,7 @@ export default function AdminBannersPage() {
   const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
   const [comicSearch, setComicSearch] = useState('');
   const [editComicSearch, setEditComicSearch] = useState('');
+  const [dark, setDark] = useState(false);
 
   useEffect(() => {
     if (isAuthLoading) return;
@@ -48,6 +49,25 @@ export default function AdminBannersPage() {
     loadBanners();
     loadComics();
   }, [isAuthorized, isAuthLoading]);
+
+  // Listen to dark mode changes
+  useEffect(() => {
+    const stored = typeof window !== "undefined" && localStorage.getItem("cv-dark");
+    if (stored !== null) {
+      setDark(stored === "1");
+    } else {
+      const prefers = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setDark(prefers);
+    }
+
+    // Listen for dark mode toggle
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains("dark");
+      setDark(isDark);
+    });
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
 
   const loadBanners = async () => {
     try {
@@ -254,7 +274,12 @@ export default function AdminBannersPage() {
         )}
 
         {/* Add New Banner Form */}
-        <div className="mb-8 rounded-lg bg-white dark:bg-neutral-900 p-6 shadow">
+        <div 
+          className="mb-8 rounded-lg bg-white dark:bg-neutral-900 p-6 shadow"
+          style={{
+            backgroundColor: dark ? '#1a1a1a' : 'white',
+          }}
+        >
           <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Thêm banner mới</h2>
           <form onSubmit={handleAddBanner} className="space-y-4">
             <div>
@@ -263,7 +288,12 @@ export default function AdminBannersPage() {
                 type="file"
                 accept="image/*"
                 onChange={(e) => setNewBannerFile(e.target.files?.[0] || null)}
-                className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 px-4 py-2 text-gray-900 dark:text-black bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 px-4 py-2 text-gray-900 dark:text-white bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{
+                  backgroundColor: dark ? '#27272a' : 'white',
+                  borderColor: dark ? '#404040' : 'rgb(209, 213, 219)',
+                  color: dark ? 'white' : 'rgb(17, 24, 39)',
+                }}
               />
               {newBannerFile && (
                 <p className="mt-2 text-sm text-gray-600 dark:text-neutral-400">Tệp được chọn: {newBannerFile.name}</p>
@@ -277,10 +307,20 @@ export default function AdminBannersPage() {
                   placeholder="Tìm tên truyện..."
                   value={comicSearch}
                   onChange={(e) => setComicSearch(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 px-4 py-2 text-gray-900 dark:text-black bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 px-4 py-2 text-gray-900 dark:text-white bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  style={{
+                    backgroundColor: dark ? '#27272a' : 'white',
+                    borderColor: dark ? '#404040' : 'rgb(209, 213, 219)',
+                    color: dark ? 'white' : 'rgb(17, 24, 39)',
+                  }}
                 />
                 {comicSearch && (
-                  <div className="absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-lg z-10">
+                  <div className="absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-lg z-10"
+                    style={{
+                      backgroundColor: dark ? '#27272a' : 'white',
+                      borderColor: dark ? '#404040' : 'rgb(209, 213, 219)',
+                    }}
+                  >
                     {comics
                       .filter(c => c.title && c.title.toLowerCase().includes(comicSearch.toLowerCase()))
                       .map((comic) => (
@@ -318,7 +358,12 @@ export default function AdminBannersPage() {
         </div>
 
         {/* Banners List */}
-        <div className="rounded-lg bg-white dark:bg-neutral-900 shadow overflow-hidden">
+        <div 
+          className="rounded-lg bg-white dark:bg-neutral-900 shadow overflow-hidden"
+          style={{
+            backgroundColor: dark ? '#1a1a1a' : 'white',
+          }}
+        >
           {banners.length === 0 ? (
             <div className="p-6 text-center text-gray-500 dark:text-neutral-400">
               <p>Chưa có banner nào. Hãy thêm banner mới.</p>
@@ -335,7 +380,12 @@ export default function AdminBannersPage() {
                           type="file"
                           accept="image/*"
                           onChange={(e) => setEditFile(e.target.files?.[0] || null)}
-                          className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 px-4 py-2 text-gray-900 dark:text-black bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 px-4 py-2 text-gray-900 dark:text-white bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          style={{
+                            backgroundColor: dark ? '#27272a' : 'white',
+                            borderColor: dark ? '#404040' : 'rgb(209, 213, 219)',
+                            color: dark ? 'white' : 'rgb(17, 24, 39)',
+                          }}
                         />
                       </div>
                       <div>
@@ -346,10 +396,20 @@ export default function AdminBannersPage() {
                             placeholder="Tìm tên truyện..."
                             value={editComicSearch}
                             onChange={(e) => setEditComicSearch(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 px-4 py-2 text-gray-900 dark:text-black bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 px-4 py-2 text-gray-900 dark:text-white bg-white dark:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            style={{
+                              backgroundColor: dark ? '#27272a' : 'white',
+                              borderColor: dark ? '#404040' : 'rgb(209, 213, 219)',
+                              color: dark ? 'white' : 'rgb(17, 24, 39)',
+                            }}
                           />
                           {editComicSearch && (
-                            <div className="absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-lg z-10">
+                            <div className="absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-lg z-10"
+                              style={{
+                                backgroundColor: dark ? '#27272a' : 'white',
+                                borderColor: dark ? '#404040' : 'rgb(209, 213, 219)',
+                              }}
+                            >
                               {comics
                                 .filter(c => c.title && c.title.toLowerCase().includes(editComicSearch.toLowerCase()))
                                 .map((comic) => (
@@ -406,7 +466,7 @@ export default function AdminBannersPage() {
                             setEditingId(banner._id);
                             setEditComicId(banner.comicId);
                           }}
-                          className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 text-amber-700 px-3 py-1.5 text-sm font-semibold hover:from-amber-200 hover:to-amber-100 transition shadow-sm hover:shadow-md"
+                          className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 text-amber-700 dark:text-white px-3 py-1.5 text-sm font-semibold hover:from-amber-200 hover:to-amber-100 dark:hover:from-amber-600 dark:hover:to-amber-700 transition shadow-sm hover:shadow-md dark:bg-gradient-to-br dark:from-amber-700 dark:to-amber-800"
                         >
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                             <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
