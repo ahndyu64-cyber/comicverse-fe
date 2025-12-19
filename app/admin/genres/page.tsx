@@ -16,6 +16,9 @@ export default function AdminGenresPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [deleteGenreName, setDeleteGenreName] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null);
 
   useEffect(() => {
     loadGenres();
@@ -132,8 +135,14 @@ export default function AdminGenresPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Bạn có chắc muốn xóa thể loại này?")) return;
+    const genre = genres.find(g => g._id === id);
+    setDeleteGenreName(genre?.name || "thể loại");
+    setShowDeleteConfirm(id);
+  };
 
+  const confirmDelete = async (id: string) => {
+    setShowDeleteConfirm(null);
+    setDeleteLoading(id);
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
@@ -175,6 +184,8 @@ export default function AdminGenresPage() {
       const errorMessage = err instanceof Error ? err.message : "Không thể xóa thể loại";
       console.error("Error deleting genre:", err);
       setError(errorMessage);
+    } finally {
+      setDeleteLoading(null);
     }
   };
 
@@ -322,7 +333,7 @@ export default function AdminGenresPage() {
                   </span>
                   <button
                     onClick={() => handleDelete(genre._id)}
-                    className="inline-flex items-center gap-1.5 rounded-md bg-gradient-to-br from-red-100 to-red-50 text-red-700 px-2 py-1 text-xs font-semibold hover:from-red-200 hover:to-red-100 transition shadow-sm hover:shadow-md"
+                    className="inline-flex items-center gap-1.5 rounded-md bg-gradient-to-br from-red-100 to-red-50 text-red-700 px-3 py-1.5 text-xs font-semibold hover:from-red-200 hover:to-red-100 transition shadow-sm hover:shadow-md"
                   >
                     <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                       <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -332,6 +343,59 @@ export default function AdminGenresPage() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div className="w-full max-w-xs rounded-xl bg-white dark:bg-neutral-900 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-red-500 to-red-600 px-5 py-3">
+                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  Xác nhận xóa
+                </h2>
+              </div>
+
+              {/* Body */}
+              <div className="px-5 py-4">
+                <p className="text-neutral-700 dark:text-neutral-300 text-sm">
+                  Bạn có chắc chắn muốn xóa thể loại <span className="font-bold text-red-600 dark:text-red-400">"{deleteGenreName}"</span>?
+                </p>
+                <p className="text-neutral-500 dark:text-neutral-400 text-xs mt-2">
+                  Hành động này không thể hoàn tác.
+                </p>
+              </div>
+
+              {/* Footer */}
+              <div className="flex gap-2 px-5 py-3 bg-neutral-50 dark:bg-neutral-800/50 border-t border-neutral-200 dark:border-neutral-700">
+                <button
+                  onClick={() => setShowDeleteConfirm(null)}
+                  className="flex-1 px-3 py-2 rounded-lg bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-900 dark:text-white font-medium text-sm transition-colors"
+                >
+                  Huỷ
+                </button>
+                <button
+                  onClick={() => confirmDelete(showDeleteConfirm)}
+                  disabled={deleteLoading === showDeleteConfirm}
+                  className="flex-1 px-3 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-red-400 disabled:to-red-500 text-white font-medium text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                >
+                  {deleteLoading === showDeleteConfirm ? (
+                    <>
+                      <svg className="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Đang xóa...
+                    </>
+                  ) : (
+                    "Xóa"
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
