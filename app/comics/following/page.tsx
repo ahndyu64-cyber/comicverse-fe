@@ -8,6 +8,8 @@ export default function FollowingPage() {
   const { user, isLoading: authLoading } = useAuth();
   const [comics, setComics] = useState<Comic[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const comicsPerPage = 30;
 
   const loadFollowingComics = async () => {
     try {
@@ -63,7 +65,7 @@ export default function FollowingPage() {
   if (!user) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <h1 className="mb-6 text-2xl font-semibold text-neutral-900">Truyện đang theo dõi</h1>
+        <h1 className="mb-6 text-2xl font-semibold text-neutral-900 dark:text-white pb-3 border-b-4 border-red-600 inline-block uppercase">Truyện đang theo dõi</h1>
         <div className="rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-8 text-center">
           <p className="mb-4 text-gray-600 dark:text-neutral-400">Bạn cần đăng nhập để xem truyện đã theo dõi</p>
           <a 
@@ -79,18 +81,41 @@ export default function FollowingPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-semibold text-neutral-900">Truyện đang theo dõi</h1>
+      <h1 className="mb-6 text-2xl font-semibold text-neutral-900 dark:text-white pb-3 border-b-4 border-red-600 inline-block uppercase">Truyện đang theo dõi</h1>
       
       {comics.length === 0 ? (
         <div className="rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-8 text-center">
           <p className="text-gray-600 dark:text-neutral-400">Bạn chưa theo dõi truyện nào</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {comics.map((comic) => (
-            <ComicCard key={comic._id} comic={comic} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-6 gap-6">
+            {comics.slice((currentPage - 1) * comicsPerPage, currentPage * comicsPerPage).map((comic) => (
+              <ComicCard key={comic._id} comic={comic} />
+            ))}
+          </div>
+          
+          {Math.ceil(comics.length / comicsPerPage) > 1 && (
+            <div className="mt-8 flex justify-center gap-2">
+              {Array.from({ length: Math.ceil(comics.length / comicsPerPage) }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => {
+                    setCurrentPage(page);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                    currentPage === page
+                      ? 'bg-red-600 text-white'
+                      : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-900 dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-700'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

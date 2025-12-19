@@ -131,6 +131,14 @@ export default function FollowButton({ comicId, initialFollows = 0, onFollowChan
             window.dispatchEvent(new CustomEvent('recentFollowingRefresh'));
           }, 100);
         }
+        // Dispatch event for comics list page - ONLY for /comics, NOT for /comics/[id]
+        else if (currentPath === '/comics') {
+          console.log('[FollowButton] Dispatching event from comics list page');
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('comicsListFollowEvent'));
+          }, 100);
+        }
+        // Do NOT dispatch events from comic detail pages (/comics/[id]) to prevent unwanted refreshes
       }
 
 

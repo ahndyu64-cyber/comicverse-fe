@@ -186,6 +186,24 @@ export default function ComicsPage() {
     loadComics();
   }, [page, q, sortBy]);
 
+  // Prevent refresh when user follows/unfollows comics
+  useEffect(() => {
+    const handleFollowEvents = () => {
+      console.log('[/comics] Follow event ignored - not refreshing comics list');
+      // Do nothing - intentionally ignore follow events on this page
+    };
+
+    window.addEventListener('recentFollowingRefresh', handleFollowEvents);
+    window.addEventListener('hotComicsRefresh', handleFollowEvents);
+    window.addEventListener('comicsListFollowEvent', handleFollowEvents);
+
+    return () => {
+      window.removeEventListener('recentFollowingRefresh', handleFollowEvents);
+      window.removeEventListener('hotComicsRefresh', handleFollowEvents);
+      window.removeEventListener('comicsListFollowEvent', handleFollowEvents);
+    };
+  }, []);
+
   // Debug: Log when dependencies change
   useEffect(() => {
     console.log('[/comics] Dependencies changed - page:', page, 'q:', q);
