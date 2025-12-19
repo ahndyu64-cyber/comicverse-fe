@@ -240,8 +240,8 @@ export default function AdminChaptersPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Create column */}
-        <div className="lg:col-span-1 rounded-2xl bg-white dark:bg-neutral-900 p-6 shadow">
-          <h2 className="text-lg font-semibold mb-3">Thêm chương mới</h2>
+        <div className="lg:col-span-1 rounded-2xl bg-white dark:bg-black p-6 shadow">
+          <h2 className="text-lg font-semibold mb-3 dark:text-white">Thêm chương mới</h2>
           <div className="flex gap-3">
             <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Tiêu đề chương" className="flex-1 rounded-md border border-neutral-200 px-3 py-2 focus:ring-2 focus:ring-purple-200" />
             <button onClick={createChapter} disabled={creating} className="rounded-md bg-blue-600 hover:bg-blue-700 px-4 py-2 text-white font-semibold">{creating ? 'Đang tạo...' : 'Tạo'}</button>
@@ -250,10 +250,10 @@ export default function AdminChaptersPage() {
 
         {/* List column */}
         <div className="lg:col-span-2">
-          <div className="rounded-2xl bg-white dark:bg-neutral-900 p-6 shadow">
+          <div className="rounded-2xl bg-white dark:bg-black p-6 shadow">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Danh sách chương ({chapters?.length || 0})</h3>
-              <div className="text-sm text-neutral-500">Quản lý, sửa hoặc xóa chương</div>
+              <h3 className="text-lg font-semibold dark:text-white">Danh sách chương ({chapters?.length || 0})</h3>
+              <div className="text-sm text-neutral-500 dark:text-white">Quản lý, sửa hoặc xóa chương</div>
             </div>
 
             {loading ? (
@@ -263,12 +263,12 @@ export default function AdminChaptersPage() {
             ) : (
               <div className="space-y-3">
                 {[...chapters].reverse().map((ch) => (
-                  <div key={ch._id} className="flex items-center justify-between rounded-lg border bg-white dark:bg-neutral-900 p-4">
+                  <div key={ch._id} className="flex items-center justify-between rounded-lg border bg-white dark:bg-black dark:border-neutral-800 p-4">
                     <div className="flex-1">
                       {editingId === ch._id ? (
                         <input className="w-full rounded-md border px-2 py-1" value={editingTitle} onChange={(e) => setEditingTitle(e.target.value)} />
                       ) : (
-                        <div className="font-medium text-sm">{ch.title}</div>
+                        <div className="font-medium text-sm dark:text-white">{ch.title}</div>
                       )}
                     </div>
 
@@ -280,13 +280,13 @@ export default function AdminChaptersPage() {
                         </>
                       ) : (
                         <>
-                          <button onClick={() => startEdit(ch)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gradient-to-br from-amber-100 to-amber-50 text-amber-700 text-sm font-semibold hover:from-amber-200 hover:to-amber-100 transition shadow-sm hover:shadow-md">
+                          <button onClick={() => startEdit(ch)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gradient-to-br from-amber-100 to-amber-50 text-amber-700 dark:text-white text-sm font-semibold hover:from-amber-200 hover:to-amber-100 transition shadow-sm hover:shadow-md">
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                               <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                             </svg>
                             <span>Sửa</span>
                           </button>
-                          <button onClick={() => router.push(`/admin/comics/${comicId}/chapters/${ch._id}`)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gradient-to-br from-sky-100 to-sky-50 text-sky-700 text-sm font-semibold hover:from-sky-200 hover:to-sky-100 transition shadow-sm hover:shadow-md">
+                          <button onClick={() => router.push(`/admin/comics/${comicId}/chapters/${ch._id}`)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gradient-to-br from-sky-100 to-sky-50 text-sky-700 dark:text-white text-sm font-semibold hover:from-sky-200 hover:to-sky-100 transition shadow-sm hover:shadow-md">
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                               <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
                               <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
@@ -312,7 +312,7 @@ export default function AdminChaptersPage() {
 
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-xs rounded-xl bg-white dark:bg-neutral-900 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+          <div className="w-full max-w-xs rounded-xl bg-white dark:bg-black shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
             {/* Header */}
             <div className="bg-gradient-to-r from-red-500 to-red-600 px-5 py-3">
               <h2 className="text-base font-bold text-white flex items-center gap-2">
@@ -325,16 +325,16 @@ export default function AdminChaptersPage() {
 
             {/* Body */}
             <div className="px-5 py-4">
-              <p className="text-neutral-700 dark:text-neutral-300 text-sm">
+              <p className="text-neutral-700 dark:text-white text-sm">
                 Bạn có chắc chắn muốn xóa chương <span className="font-bold text-red-600 dark:text-red-400">"{deleteChapterTitle}"</span>?
               </p>
-              <p className="text-neutral-500 dark:text-neutral-400 text-xs mt-2">
+              <p className="text-neutral-500 dark:text-white text-xs mt-2">
                 Hành động này không thể hoàn tác.
               </p>
             </div>
 
             {/* Footer */}
-            <div className="flex gap-2 px-5 py-3 bg-neutral-50 dark:bg-neutral-800/50 border-t border-neutral-200 dark:border-neutral-700">
+            <div className="flex gap-2 px-5 py-3 bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800">
               <button
                 onClick={() => setShowDeleteConfirm(null)}
                 className="flex-1 px-3 py-2 rounded-lg bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-900 dark:text-white font-medium text-sm transition-colors"

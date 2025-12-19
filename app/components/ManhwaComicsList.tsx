@@ -75,7 +75,7 @@ export default function ManhwaComicsList() {
           </div>
           <a
             href="/comics?genres[]=Manhwa"
-            className="px-6 py-2 bg-white text-black font-semibold rounded-lg hover:shadow-lg hover:bg-neutral-100 transition-all duration-300 whitespace-nowrap"
+            className="px-6 py-2 bg-white dark:bg-black text-black dark:text-white font-semibold rounded-lg hover:shadow-lg hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all duration-300 whitespace-nowrap"
           >
             Xem tất cả
           </a>

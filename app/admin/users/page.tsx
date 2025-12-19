@@ -295,7 +295,7 @@ export default function AdminUsersPage() {
 
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-xs rounded-xl bg-white dark:bg-neutral-900 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+          <div className="w-full max-w-xs rounded-xl bg-white dark:bg-black shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
             {/* Header */}
             <div className="bg-gradient-to-r from-red-500 to-red-600 px-5 py-3">
               <h2 className="text-base font-bold text-white flex items-center gap-2">
@@ -308,16 +308,16 @@ export default function AdminUsersPage() {
 
             {/* Body */}
             <div className="px-5 py-4">
-              <p className="text-neutral-700 dark:text-neutral-300 text-sm">
+              <p className="text-neutral-700 dark:text-white text-sm">
                 Bạn có chắc chắn muốn xóa người dùng <span className="font-bold text-red-600 dark:text-red-400">"{deleteUserName}"</span>?
               </p>
-              <p className="text-neutral-500 dark:text-neutral-400 text-xs mt-2">
+              <p className="text-neutral-500 dark:text-white text-xs mt-2">
                 Hành động này không thể hoàn tác.
               </p>
             </div>
 
             {/* Footer */}
-            <div className="flex gap-2 px-5 py-3 bg-neutral-50 dark:bg-neutral-800/50 border-t border-neutral-200 dark:border-neutral-700">
+            <div className="flex gap-2 px-5 py-3 bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800">
               <button
                 onClick={() => setShowDeleteConfirm(null)}
                 className="flex-1 px-3 py-2 rounded-lg bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-900 dark:text-white font-medium text-sm transition-colors"

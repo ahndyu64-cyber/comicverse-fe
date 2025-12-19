@@ -270,7 +270,7 @@ export default function AdminComicsPage() {
               return (
                 <div
                   key={comicId}
-                  className="group flex flex-col h-full rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm hover:shadow-lg transition-shadow overflow-hidden"
+                  className="group flex flex-col h-full rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black shadow-sm hover:shadow-lg transition-shadow overflow-hidden"
                 >
                   {/* Cover */}
                   <div
@@ -312,9 +312,9 @@ export default function AdminComicsPage() {
                   </div>
 
                   {/* Content */}
-                  <div className="flex flex-col flex-1 p-3 min-h-0">
+                  <div className="flex flex-col flex-1 p-3 min-h-0 bg-white dark:bg-black">
                     {/* Title */}
-                    <h3 className="line-clamp-2 text-sm font-bold text-neutral-900 hover:text-purple-600 transition-colors flex-shrink-0 cursor-pointer"
+                    <h3 className="line-clamp-2 text-sm font-bold text-neutral-900 dark:text-white hover:text-purple-600 transition-colors flex-shrink-0 cursor-pointer"
                       onClick={() => comicId && router.push(`/comics/${comicId}`)}
                     >
                       {comic.title}
@@ -322,13 +322,13 @@ export default function AdminComicsPage() {
 
                     {/* Author */}
                     {comic.author && (
-                      <p className="mt-1.5 line-clamp-1 text-xs text-neutral-600 dark:text-neutral-400 flex-shrink-0">
+                      <p className="mt-1.5 line-clamp-1 text-xs text-neutral-600 dark:text-white flex-shrink-0">
                         {comic.author}
                       </p>
                     )}
 
                     {/* Chapters count */}
-                    <div className="mt-auto pt-2 text-xs text-neutral-500 dark:text-neutral-400 flex-shrink-0">
+                    <div className="mt-auto pt-2 text-xs text-neutral-500 dark:text-white flex-shrink-0">
                       <span className="font-medium">{comic.chapters ? `${comic.chapters.length} chương` : '0 chương'}</span>
                     </div>
 
@@ -339,7 +339,7 @@ export default function AdminComicsPage() {
                         <>
                           <button
                             onClick={(e) => { e.stopPropagation(); router.push(`/admin/comics/${comic._id}/edit`); }}
-                            className="flex-1 inline-flex items-center justify-center gap-2 rounded px-2 py-1.5 text-xs font-semibold bg-gradient-to-br from-amber-100 to-amber-50 text-amber-700 hover:from-amber-200 hover:to-amber-100 transition shadow-sm hover:shadow-md"
+                            className="flex-1 inline-flex items-center justify-center gap-2 rounded px-2 py-1.5 text-xs font-semibold bg-gradient-to-br from-amber-100 to-amber-50 text-amber-700 dark:text-white hover:from-amber-200 hover:to-amber-100 transition shadow-sm hover:shadow-md"
                           >
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                               <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
@@ -349,7 +349,7 @@ export default function AdminComicsPage() {
 
                           <button
                             onClick={(e) => { e.stopPropagation(); router.push(`/admin/comics/${comic._id}/chapters`); }}
-                            className="flex-1 inline-flex items-center justify-center gap-2 rounded px-2 py-1.5 text-xs font-semibold bg-gradient-to-br from-sky-100 to-sky-50 text-sky-700 hover:from-sky-200 hover:to-sky-100 transition shadow-sm hover:shadow-md"
+                            className="flex-1 inline-flex items-center justify-center gap-2 rounded px-2 py-1.5 text-xs font-semibold bg-gradient-to-br from-sky-100 to-sky-50 text-sky-700 dark:text-white hover:from-sky-200 hover:to-sky-100 transition shadow-sm hover:shadow-md"
                           >
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                               <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
@@ -364,7 +364,7 @@ export default function AdminComicsPage() {
                         <button
                           onClick={(e) => { e.stopPropagation(); handleDelete(comic._id); }}
                           disabled={deleteLoading === comic._id}
-                          className="flex-1 inline-flex items-center justify-center gap-1 rounded px-2 py-1.5 text-xs font-semibold bg-gradient-to-br from-red-100 to-red-50 text-red-700 hover:from-red-200 hover:to-red-100 transition shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="flex-1 inline-flex items-center justify-center gap-1 rounded px-2 py-1.5 text-xs font-semibold bg-gradient-to-br from-red-100 to-red-50 text-red-700 dark:text-red-600 hover:from-red-200 hover:to-red-100 transition shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                             <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -387,11 +387,11 @@ export default function AdminComicsPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-12 flex items-center justify-center">
-              <nav className="inline-flex items-center gap-1 rounded-xl bg-white dark:bg-neutral-900 p-2 shadow-lg border border-neutral-200 dark:border-neutral-800">
+              <nav className="inline-flex items-center gap-1 rounded-xl bg-white dark:bg-black p-2 shadow-lg border border-neutral-200 dark:border-neutral-800">
                 <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-2 text-sm font-medium text-neutral-700 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   ← Trước
                 </button>
@@ -409,7 +409,7 @@ export default function AdminComicsPage() {
                           className={`px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                             page === p
                               ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
-                              : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                              : 'text-neutral-700 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800'
                           }`}
                         >
                           {p}
@@ -421,7 +421,7 @@ export default function AdminComicsPage() {
                 <button
                   onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-3 py-2 text-sm font-medium text-neutral-700 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   Sau →
                 </button>
@@ -435,7 +435,7 @@ export default function AdminComicsPage() {
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-xs rounded-xl bg-white dark:bg-neutral-900 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+          <div className="w-full max-w-xs rounded-xl bg-white dark:bg-black shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
             {/* Header */}
             <div className="bg-gradient-to-r from-red-500 to-red-600 px-5 py-3">
               <h2 className="text-base font-bold text-white flex items-center gap-2">
@@ -448,16 +448,16 @@ export default function AdminComicsPage() {
 
             {/* Body */}
             <div className="px-5 py-4">
-              <p className="text-neutral-700 dark:text-neutral-300 text-sm">
+              <p className="text-neutral-700 dark:text-white text-sm">
                 Bạn có chắc chắn muốn xóa truyện <span className="font-bold text-red-600 dark:text-red-400">"{deleteComicTitle}"</span>?
               </p>
-              <p className="text-neutral-500 dark:text-neutral-400 text-xs mt-2">
+              <p className="text-neutral-500 dark:text-white text-xs mt-2">
                 Hành động này không thể hoàn tác. Tất cả dữ liệu liên quan đến truyện này cũng sẽ bị xóa.
               </p>
             </div>
 
             {/* Footer */}
-            <div className="flex gap-2 px-5 py-3 bg-neutral-50 dark:bg-neutral-800/50 border-t border-neutral-200 dark:border-neutral-700">
+            <div className="flex gap-2 px-5 py-3 bg-neutral-50 dark:bg-neutral-900 border-t border-neutral-200 dark:border-neutral-800">
               <button
                 onClick={() => setShowDeleteConfirm(null)}
                 className="flex-1 px-3 py-2 rounded-lg bg-neutral-200 dark:bg-neutral-700 hover:bg-neutral-300 dark:hover:bg-neutral-600 text-neutral-900 dark:text-white font-medium text-sm transition-colors"

@@ -37,7 +37,7 @@ function formatChapterDate(dateString?: string) {
 
 function ComicCard({ comic }: { comic: Comic }) {
   return (
-    <article className="group flex flex-col h-full rounded-lg overflow-hidden bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-lg transition-shadow">
+    <article className="group flex flex-col h-full rounded-lg overflow-hidden bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-lg transition-shadow">
       {/* Cover Image */}
       <div className="relative w-full h-64 bg-neutral-100 dark:bg-neutral-800 overflow-hidden flex-shrink-0">
         {comic.cover ? (
@@ -58,9 +58,9 @@ function ComicCard({ comic }: { comic: Comic }) {
       </div>
 
       {/* Content */}
-      <div className="flex flex-col flex-1 p-3 bg-white dark:bg-neutral-900 min-h-0">
+      <div className="flex flex-col flex-1 p-3 bg-white dark:bg-black min-h-0">
         {/* Title */}
-        <Link href={`/comics/${comic._id}`} className="font-bold text-sm line-clamp-2 text-neutral-900 hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex-shrink-0">
+        <Link href={`/comics/${comic._id}`} className="font-bold text-sm line-clamp-2 text-neutral-900 dark:text-white hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex-shrink-0">
           {comic.title}
         </Link>
 
@@ -73,10 +73,10 @@ function ComicCard({ comic }: { comic: Comic }) {
                 href={`/reader/${comic._id}/${chapter._id}`}
                 className="flex items-center justify-between text-xs hover:bg-neutral-50 dark:hover:bg-neutral-800 px-2 py-1.5 rounded transition-colors"
               >
-                <span className="text-neutral-700 dark:text-neutral-300 line-clamp-1 flex-1 font-medium">
+                <span className="text-neutral-700 dark:text-white line-clamp-1 flex-1 font-medium">
                   {chapter.title || `Chap ${idx + 1}`}
                 </span>
-                <span className="text-neutral-500 dark:text-neutral-400 whitespace-nowrap ml-2 text-xs flex-shrink-0">
+                <span className="text-neutral-500 dark:text-white whitespace-nowrap ml-2 text-xs flex-shrink-0">
                   {formatChapterDate(chapter.date)}
                 </span>
               </Link>
