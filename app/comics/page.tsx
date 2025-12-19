@@ -463,7 +463,7 @@ export default function ComicsPage() {
                         }}
                         className="w-4 h-4 accent-purple-600 cursor-pointer"
                       />
-                      <span className="text-sm text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+                      <span className="text-sm text-neutral-700 dark:text-white group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
                         {option.label}
                       </span>
                     </label>
@@ -499,7 +499,7 @@ export default function ComicsPage() {
                           onChange={() => toggleGenre(category._id)}
                           className="w-4 h-4 accent-purple-600 cursor-pointer"
                         />
-                        <span className="text-sm text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+                        <span className="text-sm text-neutral-700 dark:text-white group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
                           {category.name}
                         </span>
                       </label>
@@ -540,7 +540,7 @@ export default function ComicsPage() {
                         }}
                         className="w-4 h-4 accent-purple-600 cursor-pointer"
                       />
-                      <span className="text-sm text-neutral-700 dark:text-neutral-300 group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+                      <span className="text-sm text-neutral-700 dark:text-white group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
                         {option.label}
                       </span>
                     </label>
