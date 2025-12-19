@@ -294,8 +294,8 @@ export default function EditComicPage() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(to bottom right, #f9fafb, #f3f4f6)'
-    }} className="dark:from-black dark:to-black dark:bg-gradient-to-br">
+      background: isDark ? 'linear-gradient(to bottom right, #000000, #000000)' : 'linear-gradient(to bottom right, #f9fafb, #f3f4f6)'
+    }}>
       <div style={{
         margin: '0 auto',
         maxWidth: '1280px',
