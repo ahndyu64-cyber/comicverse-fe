@@ -48,6 +48,7 @@ export default function Navbar() {
   const genreMenuRef = useRef<HTMLDivElement | null>(null);
   const notificationsRef = useRef<HTMLDivElement | null>(null);
   const firstMenuItemRef = useRef<HTMLButtonElement | null>(null);
+  const genreMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
   const { user, logout, isAdmin } = useAuth();
   // read localStorage only after mount to avoid hydration mismatch
@@ -324,7 +325,21 @@ export default function Navbar() {
           </Link>
           
           {/* Genre Dropdown */}
-          <div className="relative" ref={genreMenuRef}>
+          <div 
+            className="relative" 
+            ref={genreMenuRef}
+            onMouseEnter={() => {
+              if (genreMenuTimeoutRef.current) {
+                clearTimeout(genreMenuTimeoutRef.current);
+              }
+              setShowGenreMenu(true);
+            }}
+            onMouseLeave={() => {
+              genreMenuTimeoutRef.current = setTimeout(() => {
+                setShowGenreMenu(false);
+              }, 150);
+            }}
+          >
             <button
               onClick={() => setShowGenreMenu((s) => !s)}
               className="flex items-center gap-2 text-base text-black/70 hover:text-black dark:text-white dark:hover:text-white transition-colors uppercase"
@@ -334,7 +349,10 @@ export default function Navbar() {
               Thể loại
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={`h-4 w-4 transition-transform ${showGenreMenu ? 'rotate-180' : ''}`}
+                className="h-4 w-4 transition-transform duration-300"
+                style={{
+                  transform: showGenreMenu ? 'rotate(180deg)' : 'rotate(0deg)',
+                }}
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -346,21 +364,21 @@ export default function Navbar() {
               <div
                 role="menu"
                 aria-label="Genres menu"
-                className="absolute left-0 top-full mt-2 rounded-md border bg-white p-4 shadow-lg dark:bg-neutral-900 z-50"
+                className="absolute left-0 top-full mt-2 rounded-md border bg-white p-4 shadow-lg dark:bg-neutral-900 z-50 pointer-events-auto"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: `repeat(${Math.ceil(genres.length / 10)}, minmax(200px, auto))`,
                   gap: '0.5rem'
                 }}
               >
-                {genres.map((genre) => (
+                {genres.map((genre, idx) => (
                   <button
                     key={genre._id}
                     onClick={() => {
                       router.push(`/comics?genre=${encodeURIComponent(genre.name)}`);
                       setShowGenreMenu(false);
                     }}
-                    className="text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:text-neutral-300 rounded transition-colors"
+                    className="text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:text-neutral-300 rounded transition-colors border border-neutral-200 dark:border-neutral-700"
                   >
                     {genre.name}
                   </button>
