@@ -296,7 +296,7 @@ export default function ReaderPage({ params }: Props) {
         ) : (
           <>
             {/* Reader */}
-            <div className="space-y-4">
+            <div className="flex flex-col pb-8">
               {images.map((src, i) => (
                 <div key={i} className="flex justify-center">
                   <img 

@@ -39,19 +39,20 @@ function ComicCard({ comic }: { comic: Comic }) {
   return (
     <article className="group flex flex-col h-full rounded-lg overflow-hidden bg-white dark:bg-black border border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-lg transition-shadow">
       {/* Cover Image */}
-      <div className="relative w-full h-64 bg-neutral-100 dark:bg-neutral-800 overflow-hidden flex-shrink-0">
+      <div className="relative w-full h-64 bg-neutral-100 dark:bg-neutral-800 overflow-hidden flex-shrink-0 select-none">
         {comic.cover ? (
-          <Link href={`/comics/${comic._id}`} className="block w-full h-full">
+          <Link href={`/comics/${comic._id}`} className="block w-full h-full" draggable={false}>
             <Image 
               src={comic.cover} 
               alt={comic.title} 
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              className="object-cover group-hover:scale-105 transition-transform duration-300 pointer-events-none"
+              draggable={false}
             />
           </Link>
         ) : (
-          <Link href={`/comics/${comic._id}`} className="flex h-full w-full items-center justify-center bg-gradient-to-br from-neutral-200 to-neutral-300 dark:from-neutral-800 dark:to-neutral-700 text-neutral-500 dark:text-neutral-400">
+          <Link href={`/comics/${comic._id}`} className="flex h-full w-full items-center justify-center bg-gradient-to-br from-neutral-200 to-neutral-300 dark:from-neutral-800 dark:to-neutral-700 text-neutral-500 dark:text-neutral-400" draggable={false}>
             <span className="text-sm text-center">No Cover Image</span>
           </Link>
         )}

@@ -1,12 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import type { Comic } from '../lib/comics';
 import ComicCard from './ComicCard';
 
 export default function ManhuaComicsList() {
   const [manhuaComics, setManhuaComics] = useState<Comic[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   useEffect(() => {
     const fetchManhuaComics = async () => {
@@ -14,7 +18,7 @@ export default function ManhuaComicsList() {
         setIsLoading(true);
         const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
         
-        const url = `${API_BASE}/comics?genres[]=Manhua&page=1&limit=30`;
+        const url = `${API_BASE}/comics?genres[]=Manhua&page=1&limit=100`;
         console.log('[ManhuaComicsList] Fetching from:', url);
         
         const response = await fetch(url, {
@@ -50,7 +54,16 @@ export default function ManhuaComicsList() {
         console.log('[ManhuaComicsList] Comics found after filter:', comics.length);
         console.log('[ManhuaComicsList] Sample comics:', comics.slice(0, 3).map((c: Comic) => ({ title: c.title, genres: c.genres })));
         
-        setManhuaComics(comics);
+        // Sort by most recent update first, then limit to maximum 15 comics
+        const sortedComics = comics
+          .sort((a, b) => {
+            const dateA = new Date(a.updatedAt || 0).getTime();
+            const dateB = new Date(b.updatedAt || 0).getTime();
+            return dateB - dateA; // Newest first
+          })
+          .slice(0, 15);
+        
+        setManhuaComics(sortedComics);
       } catch (error) {
         console.error('[ManhuaComicsList] Error fetching manhua comics:', error);
       } finally {
@@ -60,6 +73,43 @@ export default function ManhuaComicsList() {
 
     fetchManhuaComics();
   }, []);
+
+  // Initialize scroll position to the start of actual content
+  useEffect(() => {
+    if (scrollContainerRef.current && manhuaComics.length > 0) {
+      scrollContainerRef.current.scrollLeft = 0;
+    }
+  }, [manhuaComics]);
+
+  // Handle mouse down event to start dragging
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+    setStartX(e.pageX - (scrollContainerRef.current?.offsetLeft || 0));
+    setScrollLeft(scrollContainerRef.current?.scrollLeft || 0);
+  };
+
+  // Handle mouse move event for dragging
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const x = e.pageX - (container.offsetLeft || 0);
+    const walk = (x - startX) * 2; // Scroll speed multiplier
+    container.scrollLeft = scrollLeft - walk;
+  };
+
+  // Handle mouse up event to stop dragging
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Handle mouse leave event to stop dragging
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-8">
@@ -83,12 +133,25 @@ export default function ManhuaComicsList() {
       </div>
 
       {!isLoading && manhuaComics.length > 0 ? (
-        <div>
-          <div className="grid grid-cols-3 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-            {manhuaComics.slice(0, 6).map((comic: Comic) => (
-              <ComicCard key={comic._id} comic={comic} />
-            ))}
-          </div>
+        <div
+          ref={scrollContainerRef}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          className="flex gap-6 overflow-x-auto pb-4 scroll-smooth user-select-none"
+          style={{
+            cursor: isDragging ? 'grabbing' : 'grab',
+            scrollBehavior: isDragging ? 'auto' : 'smooth',
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          }}
+        >
+          {manhuaComics.map((comic: Comic) => (
+            <div key={comic._id} className="flex-shrink-0 w-48 pointer-events-auto" draggable={false}>
+              <ComicCard comic={comic} />
+            </div>
+          ))}
         </div>
       ) : isLoading ? (
         <div className="text-center py-12">
