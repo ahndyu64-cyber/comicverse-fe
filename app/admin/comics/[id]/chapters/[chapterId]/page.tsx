@@ -293,8 +293,165 @@ export default function AdminChapterDetail() {
     e.currentTarget.value = '';
   }
 
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [savingImages, setSavingImages] = useState(false);
+
   function removeSelected(index: number) {
     setSelectedFiles((s) => s.filter((_, i) => i !== index));
+  }
+
+  async function saveImagesToBackend(newImages: string[]) {
+    setSavingImages(true);
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const chapterUrl = `${API_BASE}/comics/${comicId}/chapters/${chapterId}`;
+      const payload = { images: newImages };
+
+      let res = await fetch(chapterUrl, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify(payload),
+      });
+
+      // PATCH 404 → try PUT
+      if (res.status === 404) {
+        res = await fetch(chapterUrl, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify(payload),
+        });
+      }
+
+      // PUT 404 → try POST
+      if (res.status === 404) {
+        res = await fetch(chapterUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify(payload),
+        });
+      }
+
+      // Any 401 → try without Bearer prefix
+      if (res.status === 401) {
+        res = await fetch(chapterUrl, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: token } : {}),
+          },
+          body: JSON.stringify(payload),
+        });
+      }
+
+      // If chapter endpoint fails, try updating the entire comic
+      if (!res.ok && (res.status === 404 || res.status === 401)) {
+        const comicData: any = await (await import("../../../../../lib/api")).getAdminComic(comicId);
+        if (comicData && comicData.chapters) {
+          const updatedChapters = (comicData.chapters || []).map((ch: any) =>
+            String(ch._id || ch.id) === String(chapterId)
+              ? { ...ch, images: newImages }
+              : ch
+          );
+          const comicPayload = { ...comicData, chapters: updatedChapters };
+          delete (comicPayload as any)._id;
+          delete (comicPayload as any).id;
+
+          const comicUrl = `${API_BASE}/comics/${comicId}`;
+          res = await fetch(comicUrl, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify(comicPayload),
+          });
+
+          if (!res.ok) {
+            res = await fetch(comicUrl, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(token ? { Authorization: `Bearer ${token}` } : {}),
+              },
+              body: JSON.stringify({ chapters: updatedChapters }),
+            });
+          }
+        }
+      }
+
+      if (res.status === 401) {
+        alert('Bạn cần đăng nhập để thực hiện hành động này.');
+        router.push(`/auth/login?redirect=/admin/comics/${comicId}/chapters/${chapterId}`);
+        return false;
+      }
+
+      if (!res.ok) {
+        let bodyText = "(no body)";
+        try {
+          const j = await res.json();
+          bodyText = j?.message || JSON.stringify(j);
+        } catch (e) {
+          try { bodyText = await res.text(); } catch (e) {}
+        }
+        alert(`Không thể lưu ảnh (HTTP ${res.status}): ${bodyText}`);
+        return false;
+      }
+
+      return true;
+    } catch (err: any) {
+      console.error(err);
+      alert('Lỗi khi lưu ảnh: ' + (err?.message || err));
+      return false;
+    } finally {
+      setSavingImages(false);
+    }
+  }
+
+  function removeImage(index: number) {
+    setImages((imgs) => {
+      const newImgs = imgs.filter((_, i) => i !== index);
+      // Save to backend
+      saveImagesToBackend(newImgs);
+      return newImgs;
+    });
+  }
+
+  function handleDragStart(index: number) {
+    setDraggedIndex(index);
+  }
+
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  function handleDrop(e: React.DragEvent<HTMLDivElement>, targetIndex: number) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (draggedIndex === null || draggedIndex === targetIndex) return;
+
+    setImages((imgs) => {
+      const newImgs = [...imgs];
+      const [draggedImg] = newImgs.splice(draggedIndex, 1);
+      newImgs.splice(targetIndex, 0, draggedImg);
+      // Save to backend
+      saveImagesToBackend(newImgs);
+      return newImgs;
+    });
+    setDraggedIndex(null);
+  }
+
+  function handleDragEnd() {
+    setDraggedIndex(null);
   }
 
   if (!comicId || !chapterId) return <div className="p-8">ID truyện hoặc chương không hợp lệ</div>;
@@ -365,8 +522,28 @@ export default function AdminChapterDetail() {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {images && images.length > 0 ? (
                   images.map((src, i) => (
-                    <div key={i} className="overflow-hidden rounded border dark:border-neutral-700">
+                    <div
+                      key={i}
+                      draggable
+                      onDragStart={() => handleDragStart(i)}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleDrop(e, i)}
+                      onDragEnd={handleDragEnd}
+                      className={`relative overflow-hidden rounded border dark:border-neutral-700 group cursor-move transition-all ${
+                        draggedIndex === i ? 'opacity-50 scale-95 border-blue-500' : 'hover:border-blue-500'
+                      }`}
+                    >
                       <img src={src} alt={`img-${i}`} className="w-full h-40 object-cover" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
+                        <span className="text-white text-xs font-medium">Kéo để sắp xếp</span>
+                        <button
+                          onClick={() => removeImage(i)}
+                          className="px-2 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-xs font-medium transition"
+                          title="Xóa ảnh"
+                        >
+                          Xóa
+                        </button>
+                      </div>
                     </div>
                   ))
                 ) : (

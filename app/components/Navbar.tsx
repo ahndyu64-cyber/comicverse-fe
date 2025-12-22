@@ -657,29 +657,23 @@ export default function Navbar() {
             aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
             aria-pressed={dark}
             title={dark ? "Light mode" : "Dark mode"}
-            className="relative inline-flex items-center h-8 w-16 rounded-full transition-colors hover:opacity-90 overflow-hidden"
-            style={{
-              backgroundImage: dark 
-                ? 'linear-gradient(to right, #1e293b 0%, #0f172a 100%)' 
-                : 'linear-gradient(135deg, #87CEEB 0%, #E0F6FF 100%)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
-            }}
+            className="relative inline-flex items-center h-10 w-20 rounded-full transition-colors hover:opacity-90 overflow-hidden bg-neutral-300 dark:bg-neutral-700"
           >
+            {/* Animated circle slider */}
             <span
-              className={`inline-block h-7 w-7 transform rounded-full bg-white shadow-lg transition-transform ${
-                dark ? 'translate-x-8' : 'translate-x-0.5'
+              className={`inline-block h-8 w-8 transform rounded-full bg-white shadow-md transition-transform duration-300 flex items-center justify-center ${
+                dark ? 'translate-x-10' : 'translate-x-1'
               }`}
             >
-              {!dark ? (
-                // Sun icon for light mode
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-full w-full p-1 text-yellow-400">
+            {!dark ? (
+                // Sun icon for light mode (off state)
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-yellow-500">
                   <circle cx="12" cy="12" r="5" />
                   <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24" stroke="currentColor" strokeWidth="2" fill="none" />
                 </svg>
               ) : (
-                // Moon icon for dark mode
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-full w-full p-1 text-blue-200">
+                // Moon icon for dark mode (on state)
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-blue-400">
                   <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
                 </svg>
               )}
