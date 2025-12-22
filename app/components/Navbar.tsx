@@ -429,10 +429,11 @@ export default function Navbar() {
                 <div
                   role="menu"
                   aria-label="Notifications menu"
-                  className="absolute right-0 top-full mt-2 w-80 max-h-96 overflow-y-auto rounded-md border bg-white p-2 shadow-lg dark:bg-neutral-900 dark:border-neutral-800 z-50"
+                  className="absolute right-0 top-full mt-2 w-80 max-h-96 overflow-y-auto rounded-md border bg-white p-2 shadow-lg dark:bg-neutral-900 dark:border-neutral-800 z-50 dark:text-white"
                   style={{
                     backgroundColor: dark ? '#171717' : 'white',
-                    borderColor: dark ? '#27272a' : 'rgb(229, 231, 235)'
+                    borderColor: dark ? '#27272a' : 'rgb(229, 231, 235)',
+                    color: dark ? 'white' : 'black'
                   }}
                 >
                   {notifications.length > 0 ? (
@@ -468,11 +469,11 @@ export default function Navbar() {
                                 </p>
                                 {latestChapter && (
                                   <>
-                                    <p className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-1">
+                                    <p className="text-xs text-blue-600 dark:text-blue-300 font-medium mt-1">
                                       Cập nhật: {latestChapter.title || `Chapter ${latestChapter.chapterNumber || ''}`}
                                     </p>
                                     {latestChapter.date && (
-                                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                                      <p className="text-xs text-neutral-500 dark:text-neutral-200 mt-1">
                                         {new Date(latestChapter.date).toLocaleDateString('vi-VN', {
                                           year: 'numeric',
                                           month: 'long',
@@ -490,7 +491,7 @@ export default function Navbar() {
 
                     </>
                   ) : (
-                    <div className="px-3 py-4 text-center text-sm text-neutral-600 dark:text-neutral-400">
+                    <div className="px-3 py-4 text-center text-sm text-neutral-600 dark:text-neutral-300">
                       Không có thông báo mới
                     </div>
                   )}
