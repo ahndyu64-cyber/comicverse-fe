@@ -56,7 +56,7 @@ export default function ManhwaComicsList() {
         
         // Sort by most recent update first, then limit to maximum 15 comics
         const sortedComics = comics
-          .sort((a, b) => {
+          .sort((a: Comic, b: Comic) => {
             const dateA = new Date(a.updatedAt || 0).getTime();
             const dateB = new Date(b.updatedAt || 0).getTime();
             return dateB - dateA; // Newest first
@@ -136,7 +136,7 @@ export default function ManhwaComicsList() {
                   scrollContainerRef.current.scrollLeft -= 400;
                 }
               }}
-              className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-red-600 dark:hover:border-red-600 transition-all duration-300"
+              className="p-2 rounded-lg border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-red-600 dark:hover:border-red-600 transition-all duration-300"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -148,7 +148,7 @@ export default function ManhwaComicsList() {
                   scrollContainerRef.current.scrollLeft += 400;
                 }
               }}
-              className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-red-600 dark:hover:border-red-600 transition-all duration-300"
+              className="p-2 rounded-lg border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-red-600 dark:hover:border-red-600 transition-all duration-300"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

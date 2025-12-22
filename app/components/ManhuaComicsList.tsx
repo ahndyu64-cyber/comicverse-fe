@@ -56,7 +56,7 @@ export default function ManhuaComicsList() {
         
         // Sort by most recent update first, then limit to maximum 15 comics
         const sortedComics = comics
-          .sort((a, b) => {
+          .sort((a: Comic, b: Comic) => {
             const dateA = new Date(a.updatedAt || 0).getTime();
             const dateB = new Date(b.updatedAt || 0).getTime();
             return dateB - dateA; // Newest first
