@@ -498,8 +498,8 @@ export default function ReaderPage({ params }: Props) {
           title="Lên đầu trang"
           aria-label="Scroll to top"
         >
-          <svg className="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M7 14l5-5 5 5z" />
+          <svg className="w-7 h-7 text-red-600" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M7 16l5-5 5 5" />
           </svg>
         </button>
       )}
