@@ -656,19 +656,33 @@ export default function Navbar() {
             aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
             aria-pressed={dark}
             title={dark ? "Light mode" : "Dark mode"}
-            className="rounded-md border border-black/30 dark:border-white/30 bg-black/20 dark:bg-white/20 p-2 text-sm hover:bg-black/30 dark:hover:bg-white/30 transition-colors flex items-center justify-center"
+            className="relative inline-flex items-center h-8 w-16 rounded-full transition-colors hover:opacity-90 overflow-hidden"
+            style={{
+              backgroundImage: dark 
+                ? 'linear-gradient(to right, #1e293b 0%, #0f172a 100%)' 
+                : 'linear-gradient(135deg, #87CEEB 0%, #E0F6FF 100%)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center'
+            }}
           >
-            {dark ? (
-              // Sun icon (light mode)
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6 text-yellow-400">
-                <path d="M12 4.5a1 1 0 011 1V7a1 1 0 11-2 0V5.5a1 1 0 011-1zM12 17a5 5 0 100-10 5 5 0 000 10zm7-5a1 1 0 011 1h1.5a1 1 0 110 2H20a1 1 0 01-1-1 1 1 0 011-1zM4 12a1 1 0 011-1H6.5a1 1 0 110 2H5a1 1 0 01-1-1zM18.364 6.636a1 1 0 011.414 0l1.06 1.06a1 1 0 11-1.414 1.414l-1.06-1.06a1 1 0 010-1.414zM6.636 17.364a1 1 0 011.414 0l1.06 1.06a1 1 0 11-1.414 1.414l-1.06-1.06a1 1 0 010-1.414zM18.364 17.364a1 1 0 010 1.414l-1.06 1.06a1 1 0 11-1.414-1.414l1.06-1.06a1 1 0 011.414 0zM6.636 6.636a1 1 0 010 1.414L5.576 9.11A1 1 0 114.162 7.696l1.06-1.06a1 1 0 011.414 0z" />
-              </svg>
-            ) : (
-              // Moon icon (dark mode)
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6 text-slate-700 dark:text-slate-200">
-                <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-              </svg>
-            )}
+            <span
+              className={`inline-block h-7 w-7 transform rounded-full bg-white shadow-lg transition-transform ${
+                dark ? 'translate-x-8' : 'translate-x-0.5'
+              }`}
+            >
+              {!dark ? (
+                // Sun icon for light mode
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-full w-full p-1 text-yellow-400">
+                  <circle cx="12" cy="12" r="5" />
+                  <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24" stroke="currentColor" strokeWidth="2" fill="none" />
+                </svg>
+              ) : (
+                // Moon icon for dark mode
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-full w-full p-1 text-blue-200">
+                  <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                </svg>
+              )}
+            </span>
           </button>
         </div>
       </div>
