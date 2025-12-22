@@ -96,23 +96,56 @@ export default function FollowingPage() {
           </div>
           
           {Math.ceil(comics.length / comicsPerPage) > 1 && (
-            <div className="mt-8 flex justify-center gap-2">
-              {Array.from({ length: Math.ceil(comics.length / comicsPerPage) }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => {
-                    setCurrentPage(page);
+            <div className="mt-8 flex justify-center items-center gap-4">
+              <button
+                onClick={() => {
+                  if (currentPage > 1) {
+                    setCurrentPage(currentPage - 1);
                     window.scrollTo({ top: 0, behavior: 'smooth' });
-                  }}
-                  className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                    currentPage === page
-                      ? 'bg-red-600 text-white'
-                      : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-900 dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-700'
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+                  }
+                }}
+                disabled={currentPage === 1}
+                className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              <div className="flex gap-2">
+                {Array.from({ length: Math.ceil(comics.length / comicsPerPage) }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => {
+                      setCurrentPage(page);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    className={`w-10 h-10 rounded-full font-semibold transition-colors flex items-center justify-center ${
+                      currentPage === page
+                        ? 'bg-red-600 text-white'
+                        : 'bg-neutral-200 dark:bg-neutral-800 text-neutral-900 dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-700'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => {
+                  const totalPages = Math.ceil(comics.length / comicsPerPage);
+                  if (currentPage < totalPages) {
+                    setCurrentPage(currentPage + 1);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }
+                }}
+                disabled={currentPage === Math.ceil(comics.length / comicsPerPage)}
+                className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
           )}
         </>

@@ -418,16 +418,18 @@ export default function AdminComicsPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-12 flex items-center justify-center">
-              <nav className="inline-flex items-center gap-1 rounded-xl bg-white dark:bg-black p-2 shadow-lg border border-neutral-200 dark:border-neutral-800">
+              <div className="flex items-center justify-center gap-4">
                 <button
                   onClick={() => setPage(p => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-3 py-2 text-sm font-medium text-neutral-700 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  ← Trước
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
                 </button>
 
-                <div className="flex items-center gap-1 mx-2">
+                <div className="flex gap-2">
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
                     .filter(p => Math.abs(p - page) <= 2 || p === 1 || p === totalPages)
                     .map((p, i, arr) => (
@@ -437,10 +439,10 @@ export default function AdminComicsPage() {
                         )}
                         <button
                           onClick={() => setPage(p)}
-                          className={`px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                          className={`w-10 h-10 rounded-full font-semibold transition-all duration-300 flex items-center justify-center ${
                             page === p
-                              ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
-                              : 'text-neutral-700 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                              ? 'bg-red-600 text-white shadow-lg'
+                              : 'bg-white dark:bg-black text-black dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-900'
                           }`}
                         >
                           {p}
@@ -452,11 +454,13 @@ export default function AdminComicsPage() {
                 <button
                   onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                   disabled={page === totalPages}
-                  className="px-3 py-2 text-sm font-medium text-neutral-700 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Sau →
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </button>
-              </nav>
+              </div>
             </div>
           )}
         </>
