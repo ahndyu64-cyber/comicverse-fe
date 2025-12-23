@@ -3,6 +3,7 @@ import Image from "next/image";
 import { getComics, type Comic } from "./lib/comics";
 import ComicCard from "./components/ComicCard";
 import RecentFollowing from "./components/RecentFollowing";
+import TopTrendingComicsList from "./components/TopTrendingComicsList";
 import BannerSlider from "./components/BannerSlider";
 import HotComicsList from "./components/HotComicsList";
 import LatestComicsList from "./components/LatestComicsList";
@@ -73,6 +74,9 @@ export default async function HomePage() {
 
       {/* Recent Following Section */}
       <RecentFollowing />
+
+      {/* Top Trending Section */}
+      <TopTrendingComicsList />
 
       {/* Latest Comics and Hot Comics */}
       <section id="latest-and-hot" className="mx-auto max-w-7xl px-4 py-8">

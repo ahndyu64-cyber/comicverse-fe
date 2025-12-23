@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useRef } from "react";
 import { getComicById } from "../../../lib/comics";
-import { getComments, createComment, deleteComment } from "../../../lib/api";
+import { getComments, createComment, deleteComment, recordChapterView } from "../../../lib/api";
 import { useAuth } from "../../../contexts/AuthContext";
 import Link from "next/link";
 
@@ -38,6 +38,11 @@ export default function ReaderPage({ params }: Props) {
   const [currentPage, setCurrentPage] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
   
+  // View tracking state
+  const viewStartTimeRef = useRef<number | null>(null);
+  const viewRecordedRef = useRef<boolean>(false);
+  const [viewRecorded, setViewRecorded] = useState(false);
+  
   // Comments state
   const [comments, setComments] = useState<Comment[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
@@ -71,6 +76,12 @@ export default function ReaderPage({ params }: Props) {
           const imgs = chapter.images || [];
           setImages(imgs);
           setCurrentPage(0);
+          
+          // Reset view tracking for new chapter
+          viewStartTimeRef.current = Date.now();
+          viewRecordedRef.current = false;
+          setViewRecorded(false);
+          console.log('View tracking started for chapter:', chapterId);
         }
       })
       .catch((err: any) => {
@@ -100,6 +111,45 @@ export default function ReaderPage({ params }: Props) {
       })
       .finally(() => setLoadingComments(false));
   }, [comicId]);
+
+  // Track view time - record view after 1 minute
+  useEffect(() => {
+    // Initialize the timer immediately when chapter/comic changes
+    const startTime = Date.now();
+    viewStartTimeRef.current = startTime;
+    viewRecordedRef.current = false;
+    setViewRecorded(false);
+    
+    console.log('Starting view timer for chapter:', chapterId, 'at', new Date().toISOString());
+    
+    const timer = setTimeout(() => {
+      if (!viewRecordedRef.current) {
+        console.log('View timer triggered for chapter:', chapterId);
+        // Record the view after 1 minute
+        recordChapterView(comicId, chapterId)
+          .then((res) => {
+            console.log('✓ View recorded successfully for chapter:', chapterId, res);
+            viewRecordedRef.current = true;
+            setViewRecorded(true);
+            
+            // Trigger event for components to refresh (like TopTrendingComicsList)
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new Event('viewCountUpdated'));
+            }
+          })
+          .catch((err) => {
+            console.error('✗ Error recording view for chapter:', chapterId, err);
+            // Still mark as recorded even if error to avoid repeated attempts
+            viewRecordedRef.current = true;
+          });
+      }
+    }, 60000); // Wait exactly 60 seconds (1 minute)
+
+    return () => {
+      console.log('Cleaning up view timer for chapter:', chapterId);
+      clearTimeout(timer);
+    };
+  }, [comicId, chapterId]);
 
   // Handle scroll to show/hide scroll top button
   useEffect(() => {
@@ -314,6 +364,16 @@ export default function ReaderPage({ params }: Props) {
               <p className="text-sm text-neutral-400">
                 Trang <span className="font-bold text-purple-400">{images.length}</span> / <span className="font-bold text-purple-400">{images.length}</span>
               </p>
+              
+              {/* View Recording Status */}
+              {viewRecorded && (
+                <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-900/30 border border-green-600/50 text-green-400 text-xs font-medium">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  Lượt xem đã được ghi nhận
+                </div>
+              )}
             </div>
 
             {/* Navigation Footer */}

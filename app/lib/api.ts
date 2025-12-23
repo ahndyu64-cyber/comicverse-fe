@@ -318,3 +318,48 @@ export async function deleteAdminComic(comicId: string) {
 export async function getGenres() {
   return fetchJSON(`/genres`);
 }
+
+// Chapter Views API
+export async function recordChapterView(comicId: string, chapterId: string) {
+  try {
+    // First, try the dedicated view endpoint
+    const response = await fetchJSON(`/comics/${comicId}/views`, {
+      method: "POST",
+      body: JSON.stringify({ chapterId }),
+    });
+    console.log('View recorded via API endpoint:', response);
+    return response;
+  } catch (err1) {
+    console.warn('View endpoint not available, trying to increment views count...', err1);
+    
+    // Fallback: Fetch comic, increment views, and update it
+    try {
+      const comic = await getComic(comicId);
+      if (comic) {
+        const currentViews = comic.views || 0;
+        const updatedData = { ...comic, views: currentViews + 1 };
+        
+        const updateResult = await updateAdminComic(comicId, updatedData);
+        console.log('View recorded by updating comic:', updateResult);
+        return updateResult;
+      }
+    } catch (err2) {
+      console.error('Error recording view (all methods failed):', err1, err2);
+      
+      // Final fallback: store view locally
+      try {
+        if (typeof window !== 'undefined') {
+          const viewKey = `chapter-view-${comicId}-${chapterId}`;
+          const viewed = localStorage.getItem(viewKey);
+          if (!viewed) {
+            localStorage.setItem(viewKey, 'true');
+            localStorage.setItem(`chapter-view-time-${comicId}-${chapterId}`, new Date().toISOString());
+            console.log('View recorded locally for chapter:', chapterId);
+          }
+        }
+      } catch (storageErr) {
+        console.error('Error storing view locally:', storageErr);
+      }
+    }
+  }
+}

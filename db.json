@@ -6,7 +6,19 @@
       "cover": "/file.svg",
       "description": "Truyện demo 1",
       "views": 123,
-      "follows": 10
+      "follows": 10,
+      "chapters": [
+        {
+          "_id": "ch-1-1",
+          "title": "Chương 1",
+          "images": []
+        },
+        {
+          "_id": "ch-1-2",
+          "title": "Chương 2",
+          "images": []
+        }
+      ]
     },
     {
       "_id": "2",
@@ -14,7 +26,14 @@
       "cover": "/globe.svg",
       "description": "Truyện demo 2",
       "views": 456,
-      "follows": 20
+      "follows": 20,
+      "chapters": [
+        {
+          "_id": "ch-2-1",
+          "title": "Chương 1",
+          "images": []
+        }
+      ]
     }
   ],
   "chapters": [],
