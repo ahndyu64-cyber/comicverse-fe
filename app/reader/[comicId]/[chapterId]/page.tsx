@@ -345,6 +345,15 @@ export default function ReaderPage({ params }: Props) {
           </div>
         ) : (
           <>
+            {/* Top Banner */}
+            <div className="flex justify-center mb-0">
+              <img 
+                src="/top.jpg" 
+                alt="Chapter Banner" 
+                className="w-full max-w-2xl rounded-lg shadow-2xl border border-neutral-800"
+              />
+            </div>
+
             {/* Reader */}
             <div className="flex flex-col pb-8">
               {images.map((src, i) => (
@@ -357,23 +366,6 @@ export default function ReaderPage({ params }: Props) {
                   />
                 </div>
               ))}
-            </div>
-
-            {/* Page Counter */}
-            <div className="mt-8 text-center">
-              <p className="text-sm text-neutral-400">
-                Trang <span className="font-bold text-purple-400">{images.length}</span> / <span className="font-bold text-purple-400">{images.length}</span>
-              </p>
-              
-              {/* View Recording Status */}
-              {viewRecorded && (
-                <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-900/30 border border-green-600/50 text-green-400 text-xs font-medium">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Lượt xem đã được ghi nhận
-                </div>
-              )}
             </div>
 
             {/* Navigation Footer */}
