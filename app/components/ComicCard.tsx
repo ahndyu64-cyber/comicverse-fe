@@ -66,8 +66,10 @@ function ComicCard({ comic }: { comic: Comic }) {
         </Link>
 
         {/* Views Count */}
-        <div className="mt-1 text-xs text-neutral-600 dark:text-neutral-400 flex-shrink-0">
-          {((comic as any).views || 0).toLocaleString('vi-VN')} lượt xem
+        <div className="mt-1 flex-shrink-0">
+          <span className="inline-block px-3 py-1.5 rounded-full border border-neutral-300 dark:border-neutral-600 text-xs font-medium text-neutral-900 dark:text-white whitespace-nowrap">
+            {((comic as any).views || 0).toLocaleString('vi-VN')} lượt xem
+          </span>
         </div>
 
         {/* Latest Chapters List */}

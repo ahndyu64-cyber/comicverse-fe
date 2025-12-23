@@ -156,7 +156,7 @@ export default function HotComicsList({ initialComics }: HotComicsListProps) {
                     </Link>
                   </h3>
                   <div className="flex items-center gap-1.5 mt-1.5">
-                    <span className="text-sm text-neutral-600 dark:text-white">
+                    <span className="px-3 py-1.5 rounded-full border border-neutral-300 dark:border-neutral-600 text-xs font-medium text-neutral-900 dark:text-white whitespace-nowrap">
                       {((comic as any).views || 0).toLocaleString('vi-VN')} lượt xem
                     </span>
                   </div>
