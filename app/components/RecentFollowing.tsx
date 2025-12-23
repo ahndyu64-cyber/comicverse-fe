@@ -101,11 +101,11 @@ export default function RecentFollowing() {
   }
 
   return (
-    <section id="recent-following" className="mx-auto max-w-7xl px-4 py-8">
+    <section id="recent-following" className="mx-auto max-w-7xl px-0 sm:px-2 py-8">
       <div className="mb-4">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2 pb-3 border-b-4 border-red-600 inline-block uppercase">
+            <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-2 pb-3 border-b-4 border-red-600 inline-block uppercase">
               Theo dõi gần đây
             </h2>
             <p className="text-neutral-600 dark:text-white">
@@ -114,14 +114,14 @@ export default function RecentFollowing() {
           </div>
           <a
             href="/comics/following"
-            className="px-6 py-2 bg-white dark:bg-black text-black dark:text-white font-semibold rounded-lg hover:shadow-lg hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all duration-300"
+            className="px-3 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base bg-white dark:bg-black text-black dark:text-white font-semibold rounded-lg hover:shadow-lg hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all duration-300 whitespace-nowrap"
           >
             Xem tất cả
           </a>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
         {comics.map((comic: Comic) => (
           <ComicCard key={comic._id} comic={comic} />
         ))}

@@ -1,7 +1,7 @@
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-white dark:bg-black">
-      <div className="mx-auto max-w-4xl px-4 py-16">
+      <div className="mx-auto max-w-4xl px-0 sm:px-2 py-16">
         <h1 className="text-4xl font-bold text-neutral-900 dark:text-white mb-8">Điều khoản và Điều kiện</h1>
         
         <div className="max-w-none text-neutral-700 dark:text-white space-y-6">

@@ -204,7 +204,7 @@ export default function AdminGenresPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black">
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-5xl px-0 sm:px-2 py-8 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -311,7 +311,7 @@ export default function AdminGenresPage() {
             <p className="mt-2 text-gray-600 dark:text-neutral-400">Bắt đầu bằng cách thêm thể loại đầu tiên</p>
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-3 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {genres.map((genre) => (
               <div
                 key={genre._id}
@@ -327,13 +327,13 @@ export default function AdminGenresPage() {
                     )}
                   </div>
                 </div>
-                <div className="mt-4 flex items-center justify-between">
+                <div className="mt-4 flex flex-col items-start gap-3">
                   <span className="inline-block rounded-full bg-blue-100 dark:bg-blue-900/40 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-700">
                     Thể loại
                   </span>
                   <button
                     onClick={() => handleDelete(genre._id)}
-                    className="inline-flex items-center gap-1.5 rounded-md bg-gradient-to-br from-red-100 to-red-50 dark:from-red-900/40 dark:to-red-900/20 text-red-700 dark:text-red-700 px-3 py-1.5 text-xs font-semibold hover:from-red-200 hover:to-red-100 dark:hover:from-red-900/50 dark:hover:to-red-900/30 transition shadow-sm hover:shadow-md"
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-md bg-gradient-to-br from-red-100 to-red-50 dark:from-red-900/40 dark:to-red-900/20 text-red-700 dark:text-red-700 px-3 py-1.5 text-xs font-semibold hover:from-red-200 hover:to-red-100 dark:hover:from-red-900/50 dark:hover:to-red-900/30 transition shadow-sm hover:shadow-md"
                   >
                     <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                       <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />

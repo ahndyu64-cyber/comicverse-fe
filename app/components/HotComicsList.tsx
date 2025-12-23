@@ -111,10 +111,10 @@ export default function HotComicsList({ initialComics }: HotComicsListProps) {
   const displayComics = hotComics.length > 0 ? hotComics : initialComics;
 
   return (
-    <div>
+    <div className="px-0 sm:px-2">
       <div className="mb-4">
         <div className="mb-4">
-          <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2 pb-3 border-b-4 border-red-600 inline-block uppercase">
+          <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-2 pb-3 border-b-4 border-red-600 inline-block uppercase">
             Top theo dõi
           </h2>
           <p className="text-neutral-600 dark:text-white">

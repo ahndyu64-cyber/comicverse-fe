@@ -225,7 +225,7 @@ export default function AdminChaptersPage() {
   if (!comicId) return <div className="p-8">ID truyện không hợp lệ</div>;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto max-w-6xl px-0 sm:px-2 py-8">
       {/* Header */}
       <div className="mb-6 rounded-2xl bg-black p-6 text-white shadow-lg flex items-center justify-between">
         <div>
@@ -233,8 +233,12 @@ export default function AdminChaptersPage() {
           <p className="text-sm opacity-90">{comicTitle || '—'}</p>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={() => router.push('/admin/comics')} className="rounded-md bg-white/20 px-3 py-2 text-sm">Quay lại</button>
-          <button onClick={() => router.push(`/admin/comics/${comicId}/edit`)} className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-purple-700">Sửa truyện</button>
+          <button onClick={() => router.push('/admin/comics')} className="rounded-md bg-white/20 px-3 py-2 text-sm flex items-center gap-2 hover:bg-white/30 transition-colors">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Quay lại
+          </button>
         </div>
       </div>
 

@@ -115,10 +115,24 @@ body {
   padding-right: 1rem;
 }
 
+@media (min-width: 640px) {
+  .site-container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
 @media (min-width: 768px) {
   .site-container {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .site-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
   }
 }
 
@@ -251,6 +265,12 @@ body {
   border-radius: 0.25rem;
   background: var(--bg);
   color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .search-input {
+    width: 150px;
+  }
 }
 
 .search-button {

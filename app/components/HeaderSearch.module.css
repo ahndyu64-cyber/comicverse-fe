@@ -43,6 +43,18 @@
   color: var(--text);
 }
 
+@media (max-width: 768px) {
+  .searchInput {
+    width: 160px;
+  }
+}
+
+@media (max-width: 640px) {
+  .searchInput {
+    width: 100%;
+  }
+}
+
 .searchButton {
   padding: 0.5rem 1rem;
   background: var(--accent);
@@ -69,9 +81,16 @@
     border-top: none;
     border-left: none;
     border-right: none;
+    width: 100%;
+    flex-direction: column;
+    padding: 1rem;
   }
 
   .searchInput {
+    width: 100%;
+  }
+
+  .searchButton {
     width: 100%;
   }
 }

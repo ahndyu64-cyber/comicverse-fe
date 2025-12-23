@@ -64,7 +64,7 @@ export default function FollowingPage() {
 
   if (!user) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-8">
+      <div className="mx-auto max-w-6xl px-0 sm:px-2 py-8">
         <h1 className="mb-6 text-2xl font-semibold text-neutral-900 dark:text-white pb-3 border-b-4 border-red-600 inline-block uppercase">Truyện đang theo dõi</h1>
         <div className="rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-8 text-center">
           <p className="mb-4 text-gray-600 dark:text-neutral-400">Bạn cần đăng nhập để xem truyện đã theo dõi</p>

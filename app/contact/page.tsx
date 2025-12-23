@@ -33,7 +33,7 @@ export default function ContactPage() {
 
   return (
     <main className="min-h-screen bg-white dark:bg-black">
-      <div className="mx-auto max-w-2xl px-4 py-16">
+      <div className="mx-auto max-w-2xl px-0 sm:px-2 py-16">
         <h1 className="text-4xl font-bold text-neutral-900 dark:text-white mb-4">Liên hệ với chúng tôi</h1>
         <p className="text-neutral-600 dark:text-white mb-8">
           Có câu hỏi hoặc đề xuất? Chúng tôi rất muốn nghe từ bạn. Hãy điền vào biểu mẫu dưới đây và chúng tôi sẽ liên hệ với bạn sớm nhất.

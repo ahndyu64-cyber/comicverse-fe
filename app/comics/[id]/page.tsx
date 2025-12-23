@@ -30,7 +30,7 @@ async function ComicDetailContent({ id }: { id: string }) {
   }
 
   return (
-    <div className="min-h-screen py-8 px-4 bg-white dark:bg-black">
+    <div className="min-h-screen py-8 px-0 sm:px-2 bg-white dark:bg-black">
       <div className="mx-auto max-w-5xl">
         {/* Header Card */}
         <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl overflow-hidden">
@@ -93,37 +93,40 @@ async function ComicDetailContent({ id }: { id: string }) {
                 </div>
               )}
 
-              {/* Tác giả */}
-              <div className="flex flex-col gap-2">
-                <span className="text-xs font-bold text-purple-600 uppercase tracking-wider">Tác giả</span>
-                <p className="text-lg text-neutral-700 dark:text-neutral-300 font-semibold">
-                  {(comic.authors && comic.authors.length > 0)
-                    ? comic.authors.map((author, idx) => (
-                        <span key={idx}>
-                          {author}
-                          {idx < comic.authors.length - 1 && <span>, </span>}
-                        </span>
-                      ))
-                    : comic.author
-                    ? comic.author
-                    : "Đang cập nhật"}
-                </p>
-              </div>
+              {/* Tác giả và Trạng thái */}
+              <div className="grid grid-cols-2 gap-0">
+                {/* Tác giả */}
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-bold text-purple-600 uppercase tracking-wider">Tác giả</span>
+                  <p className="text-lg text-neutral-700 dark:text-neutral-300 font-semibold">
+                    {(comic.authors && comic.authors.length > 0)
+                      ? comic.authors.map((author, idx) => (
+                          <span key={idx}>
+                            {author}
+                            {idx < comic.authors.length - 1 && <span>, </span>}
+                          </span>
+                        ))
+                      : comic.author
+                      ? comic.author
+                      : "Đang cập nhật"}
+                  </p>
+                </div>
 
-              {/* Trạng thái */}
-              <div className="flex flex-col gap-2">
-                <span className="text-xs font-bold text-purple-600 uppercase tracking-wider">Trạng thái</span>
-                <div className="flex items-center gap-3">
-                  <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-bold ${
-                    comic.status === 'ongoing' 
-                      ? 'bg-blue-100 text-blue-800' :
-                      'bg-green-100 text-green-800'
-                  }`}>
-                    <span className={`w-2 h-2 rounded-full mr-2 ${
-                      comic.status === 'ongoing' ? 'bg-blue-600' : 'bg-green-600'
-                    }`}></span>
-                    {comic.status === 'ongoing' ? 'Đang cập nhật' : 'Hoàn thành'}
-                  </span>
+                {/* Trạng thái */}
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-bold text-purple-600 uppercase tracking-wider">Trạng thái</span>
+                  <div className="flex items-center">
+                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${
+                      comic.status === 'ongoing' 
+                        ? 'bg-blue-100 text-blue-800' :
+                        'bg-green-100 text-green-800'
+                    }`}>
+                      <span className={`w-2 h-2 rounded-full mr-2 ${
+                        comic.status === 'ongoing' ? 'bg-blue-600' : 'bg-green-600'
+                      }`}></span>
+                      {comic.status === 'ongoing' ? 'Đang cập nhật' : 'Hoàn thành'}
+                    </span>
+                  </div>
                 </div>
               </div>
 

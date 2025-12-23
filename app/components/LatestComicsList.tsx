@@ -14,10 +14,26 @@ export default function LatestComicsList({ initialComics }: LatestComicsListProp
   const [currentPage, setCurrentPage] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartX, setDragStartX] = useState(0);
+  const [comicsPerPage, setComicsPerPage] = useState(9);
   const gridContainerRef = useRef<HTMLDivElement>(null);
   
-  const COMICS_PER_PAGE = 9; // 3 rows × 3 columns
   const MAX_PAGES = 3;
+
+  // Detect screen size and set comics per page
+  useEffect(() => {
+    const handleResize = () => {
+      // Mobile (< 768px): 2 columns, 4 rows = 8 comics
+      // Desktop (>= 768px): 3 columns, 3 rows = 9 comics
+      if (typeof window !== 'undefined') {
+        const isMobile = window.innerWidth < 768;
+        setComicsPerPage(isMobile ? 8 : 9);
+      }
+    };
+
+    handleResize(); // Set initial value
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Function to fetch latest comics from backend
   const fetchLatestComics = async () => {
@@ -85,10 +101,10 @@ export default function LatestComicsList({ initialComics }: LatestComicsListProp
   }, []);
 
   // Get current page comics
-  const startIdx = currentPage * COMICS_PER_PAGE;
-  const endIdx = startIdx + COMICS_PER_PAGE;
+  const startIdx = currentPage * comicsPerPage;
+  const endIdx = startIdx + comicsPerPage;
   const currentPageComics = latestComics.slice(startIdx, endIdx);
-  const totalPages = Math.min(Math.ceil(latestComics.length / COMICS_PER_PAGE), MAX_PAGES);
+  const totalPages = Math.min(Math.ceil(latestComics.length / comicsPerPage), MAX_PAGES);
   
   const handleNextPage = () => {
     if (currentPage < totalPages - 1) {
@@ -136,39 +152,39 @@ export default function LatestComicsList({ initialComics }: LatestComicsListProp
   };
   
   return (
-    <div className="lg:col-span-2">
+    <div className="lg:col-span-2 px-0 sm:px-0">
       <div className="mb-4">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2 pb-3 border-b-4 border-red-600 inline-block uppercase">
-              Truyện mới cập nhật
+            <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-2 pb-3 border-b-4 border-red-600 inline-block uppercase">
+              Mới cập nhật
             </h2>
             <p className="text-neutral-600 dark:text-white">
-              Những bộ truyện mới nhất vừa được đăng tải
+              Truyện mới được cập nhật
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <a
               href="/comics"
-              className="px-6 py-2 bg-white dark:bg-black text-black dark:text-white font-semibold rounded-lg hover:shadow-lg hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all duration-300 whitespace-nowrap"
+              className="px-3 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base bg-white dark:bg-black text-black dark:text-white font-semibold rounded-lg hover:shadow-lg hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all duration-300 whitespace-nowrap"
             >
               Xem tất cả
             </a>
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 0}
-              className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages - 1}
-              className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-red-600 dark:hover:border-red-600 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -189,7 +205,7 @@ export default function LatestComicsList({ initialComics }: LatestComicsListProp
             opacity: 1,
           }}
         >
-          <div className="grid grid-cols-3 gap-6 transition-all duration-500 ease-in-out">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 transition-all duration-500 ease-in-out">
             {currentPageComics.map((comic: Comic) => (
               <ComicCard key={comic._id} comic={comic} />
             ))}

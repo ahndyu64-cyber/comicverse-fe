@@ -233,7 +233,7 @@ export default function ReaderPage({ params }: Props) {
     <div className="min-h-screen bg-gradient-to-b from-neutral-950 to-neutral-900">
       {/* Header */}
       <div className="relative z-10 border-b border-neutral-800 bg-neutral-900/95 backdrop-blur">
-        <div className="mx-auto max-w-6xl px-4 py-4">
+        <div className="mx-auto max-w-6xl px-0 sm:px-2 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link href={`/comics/${comicId}`} className="flex items-center gap-2 text-sm text-purple-400 hover:text-purple-300 transition">
@@ -321,7 +321,7 @@ export default function ReaderPage({ params }: Props) {
       </div>
 
       {/* Main Content */}
-      <div className="mx-auto max-w-6xl px-4 py-8">
+      <div className="mx-auto max-w-6xl px-0 sm:px-2 py-8">
         {loading ? (
           <div className="flex flex-col items-center justify-center gap-4 py-20">
             <div className="w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>

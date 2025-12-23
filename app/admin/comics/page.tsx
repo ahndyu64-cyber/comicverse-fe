@@ -187,7 +187,7 @@ export default function AdminComicsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-black">
-      <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-0 sm:px-2 py-8">
         {/* Header */}
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -288,7 +288,7 @@ export default function AdminComicsPage() {
           </div>
         ) : (
           <>
-            <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+            <div className="grid gap-3 sm:gap-5 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
             {sortedComics.map((comic) => {
               const statusBadge = getStatusBadge(comic.status);
               const comicId = comic._id || comic.id;

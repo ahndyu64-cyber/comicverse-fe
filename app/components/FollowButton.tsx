@@ -157,8 +157,7 @@ export default function FollowButton({ comicId, initialFollows = 0, onFollowChan
         className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h6a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V5z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5a1 1 0 011-1h4a1 1 0 011 1v1H9V5z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
         </svg>
         Đăng nhập để theo dõi
       </a>
@@ -186,17 +185,16 @@ export default function FollowButton({ comicId, initialFollows = 0, onFollowChan
         <button
           onClick={handleFollow}
           disabled={isLoading || isCheckingStatus}
-          className={`inline-flex items-center justify-center gap-2 px-6 py-3 font-bold rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl flex-1 sm:flex-initial ${
+          className={`inline-flex items-center justify-center p-3 font-bold rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl ${
             isFollowing
-              ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white'
-              : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white'
+              ? 'bg-red-600 hover:bg-red-700 text-white'
+              : 'bg-blue-600 hover:bg-blue-700 text-white'
           } ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+          title={isFollowing ? 'Đã theo dõi' : 'Theo dõi'}
         >
           <svg className="w-5 h-5" fill={isFollowing ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h6a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V5z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5a1 1 0 011-1h4a1 1 0 011 1v1H9V5z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
           </svg>
-          {isLoading ? 'Đang xử lý...' : isFollowing ? 'Đã theo dõi' : 'Theo dõi'}
         </button>
         <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 whitespace-nowrap">
           <span className="text-blue-600 dark:text-blue-400">{followCount.toLocaleString('vi-VN')}</span> người theo dõi

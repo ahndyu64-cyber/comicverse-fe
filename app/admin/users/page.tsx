@@ -225,7 +225,7 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black mx-auto max-w-6xl px-4 py-8">
+    <div className="min-h-screen bg-white dark:bg-black mx-auto max-w-6xl px-0 sm:px-2 py-8">
       <h1 className="mb-6 text-2xl font-semibold text-neutral-900 dark:text-white uppercase pb-3 border-b-4 border-red-600 inline-block">Quản lý người dùng</h1>
       {/* Search */}
       <div className="mb-4 flex items-center gap-3 w-full max-w-md">
@@ -250,8 +250,8 @@ export default function AdminUsersPage() {
       )}
       
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
-          <thead className="bg-gray-50 dark:bg-black">
+        <table className="w-full divide-y divide-gray-200 dark:divide-neutral-700">
+          <thead className="bg-gray-50 dark:bg-black hidden sm:table-header-group">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-white">
                 Tên người dùng
@@ -264,17 +264,17 @@ export default function AdminUsersPage() {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-neutral-700 bg-white dark:bg-black">
+          <tbody className="divide-y divide-gray-200 dark:divide-neutral-700 bg-white dark:bg-black block sm:table-row-group">
             {filteredUsers.length === 0 ? (
-              <tr>
-                <td colSpan={3} className="px-6 py-8 text-center text-gray-500 dark:text-neutral-400">
+              <tr className="block sm:table-row">
+                <td colSpan={3} className="block sm:table-cell px-6 py-8 text-center text-gray-500 dark:text-neutral-400">
                   {searchQuery ? `Không tìm thấy người dùng với từ khóa "${searchQuery}"` : (error ? "Không có quyền truy cập hoặc có lỗi." : "Không có người dùng để hiển thị.")}
                 </td>
               </tr>
             ) : (
               filteredUsers.map((user) => (
-                <tr key={user._id}>
-                  <td className="whitespace-nowrap px-6 py-4">
+                <tr key={user._id} className="block sm:table-row mb-6 sm:mb-0 border sm:border-b border-gray-200 dark:border-neutral-700 rounded-lg p-4 sm:p-0 bg-white dark:bg-black sm:bg-transparent">
+                  <td className="block sm:table-cell whitespace-nowrap px-0 sm:px-6 py-2 sm:py-4">
                     <div className="flex items-center">
                       {user.avatar ? (
                         <img src={user.avatar} alt={user.username} className="mr-3 h-10 w-10 rounded-full object-cover" />
@@ -287,7 +287,7 @@ export default function AdminUsersPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4">
+                  <td className="block sm:table-cell whitespace-nowrap px-0 sm:px-6 py-2 sm:py-4">
                     <div className="flex items-center gap-2">
                       <select
                         value={user.role || "user"}
@@ -306,9 +306,9 @@ export default function AdminUsersPage() {
                       <span className="text-xs px-2 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-white">{user.role || 'user'}</span>
                     </div>
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => handleDelete(user._id!)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-gradient-to-br from-red-100 to-red-50 text-red-700 text-sm font-semibold hover:from-red-200 hover:to-red-100 transition shadow-sm hover:shadow-md">
+                  <td className="block sm:table-cell whitespace-nowrap px-0 sm:px-6 py-2 sm:py-4 mt-3 sm:mt-0">
+                    <div className="flex flex-col gap-2">
+                      <button onClick={() => handleDelete(user._id!)} className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md bg-gradient-to-br from-red-100 to-red-50 text-red-700 text-sm font-semibold hover:from-red-200 hover:to-red-100 transition shadow-sm hover:shadow-md dark:from-red-900/40 dark:to-red-900/20 dark:text-red-700 dark:hover:from-red-900/50 dark:hover:to-red-900/30">
                         <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
                           <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
                         </svg>

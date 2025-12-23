@@ -57,6 +57,7 @@ export default function ComicsPage() {
   const q = searchParams?.get('q') || '';
   const genreParam = searchParams?.get('genre') || '';
   const genresArrayString = searchParams?.get('genres[]') || '';
+  const openGenres = searchParams?.get('openGenres') === 'true';
 
   // Listen to dark mode changes
   useEffect(() => {
@@ -104,6 +105,16 @@ export default function ComicsPage() {
       }
     }
   }, [genreParam, genresArrayString, categories]);
+
+  // Auto-open genres section when openGenres=true
+  useEffect(() => {
+    if (openGenres) {
+      setExpandedSections(prev => ({
+        ...prev,
+        genres: true
+      }));
+    }
+  }, [openGenres]);
 
   // Load categories from backend
   useEffect(() => {
@@ -264,7 +275,7 @@ export default function ComicsPage() {
     if (sortBy === 'alpha') {
       items.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
     } else if (sortBy === 'popular') {
-      items.sort((a, b) => (b.views || 0) - (a.views || 0));
+      items.sort((a, b) => ((b as any).views || 0) - ((a as any).views || 0));
     } else if (sortBy === 'new') {
       items.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
     }
@@ -384,7 +395,7 @@ export default function ComicsPage() {
     <main className="min-h-screen bg-white dark:bg-black">
       {/* Page Header */}
       <div className="border-b border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black backdrop-blur-sm">
-        <div className="mx-auto max-w-7xl px-4 py-4">
+        <div className="mx-auto max-w-7xl px-0 sm:px-2 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
               <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white pb-3 border-b-4 border-red-600 inline-block uppercase">
@@ -400,7 +411,7 @@ export default function ComicsPage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-6">
+      <div className="mx-auto max-w-7xl px-0 sm:px-2 py-6">
         {/* Filters Section */}
         <div className="space-y-3">
           {/* Filter Header */}
@@ -489,21 +500,23 @@ export default function ComicsPage() {
                 </svg>
               </button>
               {expandedSections.genres && (
-                <div className="px-4 py-3 space-y-2 bg-neutral-50 dark:bg-neutral-900/50 max-h-64 overflow-y-auto border-t border-neutral-300 dark:border-neutral-700">
+                <div className="px-4 py-3 bg-neutral-50 dark:bg-neutral-900/50 border-t border-neutral-300 dark:border-neutral-700">
                   {categories.length > 0 ? (
-                    categories.map((category) => (
-                      <label key={category._id} className="flex items-center gap-3 cursor-pointer group">
-                        <input
-                          type="checkbox"
-                          checked={selectedGenres.includes(category._id)}
-                          onChange={() => toggleGenre(category._id)}
-                          className="w-4 h-4 accent-purple-600 cursor-pointer"
-                        />
-                        <span className="text-sm text-neutral-700 dark:text-white group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
-                          {category.name}
-                        </span>
-                      </label>
-                    ))
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-2">
+                      {categories.map((category) => (
+                        <label key={category._id} className="flex items-center gap-3 cursor-pointer group">
+                          <input
+                            type="checkbox"
+                            checked={selectedGenres.includes(category._id)}
+                            onChange={() => toggleGenre(category._id)}
+                            className="w-4 h-4 accent-purple-600 cursor-pointer"
+                          />
+                          <span className="text-sm text-neutral-700 dark:text-white group-hover:text-neutral-900 dark:group-hover:text-white transition-colors">
+                            {category.name}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
                   ) : (
                     <p className="text-xs text-neutral-500">Không có thể loại</p>
                   )}

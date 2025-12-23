@@ -321,13 +321,14 @@ export default function Navbar() {
       <div className="flex w-full items-center justify-between gap-4 px-0 py-0">
         <div className="flex items-center gap-4">
           <Logo />
-          <Link href="/comics" className="text-base text-black/70 hover:text-black dark:text-white dark:hover:text-white transition-colors uppercase">
+          {/* Desktop: Show list and genres */}
+          <Link href="/comics" className="hidden md:block text-base text-black/70 hover:text-black dark:text-white dark:hover:text-white transition-colors uppercase">
             Danh sách
           </Link>
           
-          {/* Genre Dropdown */}
+          {/* Desktop: Genre Dropdown */}
           <div 
-            className="relative" 
+            className="relative hidden md:block" 
             ref={genreMenuRef}
             onMouseEnter={() => {
               if (genreMenuTimeoutRef.current) {
@@ -555,6 +556,24 @@ export default function Navbar() {
                   </>
                 ) : (
                   <>
+                    {/* Mobile: Show list and genres in user menu */}
+                    <div className="md:hidden border-b border-neutral-200 dark:border-neutral-700">
+                      <MenuNavButton
+                        ref={firstMenuItemRef}
+                        onClick={() => { router.push("/comics"); setShowMenu(false); }}
+                        className="border-b border-neutral-200 dark:border-neutral-700"
+                      >
+                        Danh sách
+                      </MenuNavButton>
+                      
+                      <MenuNavButton
+                        onClick={() => { router.push("/comics?openGenres=true"); setShowMenu(false); }}
+                      >
+                        Thể loại
+                      </MenuNavButton>
+                    </div>
+
+                    {/* Authenticated user menu items */}
                     {/* show admin/uploader links if user has permission */}
                     {(() => {
                       const u = effectiveUser as any;
@@ -641,6 +660,22 @@ export default function Navbar() {
                     >
                       Truyện đã theo dõi
                     </MenuNavButton>
+                    {/* Mobile: Dark mode toggle in menu */}
+                    <button
+                      onClick={() => { toggle(); setShowMenu(false); }}
+                      className="md:hidden w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-white dark:hover:bg-neutral-800 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between"
+                    >
+                      <span>{dark ? "Light mode" : "Dark mode"}</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                        {dark ? (
+                          // Sun icon
+                          <circle cx="12" cy="12" r="5" />
+                        ) : (
+                          // Moon icon
+                          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                        )}
+                      </svg>
+                    </button>
                     <button
                       onClick={() => { logout(); setShowMenu(false); }}
                       className="w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-white dark:hover:bg-neutral-800"
@@ -652,12 +687,13 @@ export default function Navbar() {
               </div>
             )}
           </div>
+          {/* Desktop: Dark mode toggle */}
           <button
             onClick={toggle}
             aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
             aria-pressed={dark}
             title={dark ? "Light mode" : "Dark mode"}
-            className="relative inline-flex items-center h-10 w-20 rounded-full transition-colors hover:opacity-90 overflow-hidden bg-neutral-300 dark:bg-neutral-700"
+            className="hidden md:flex relative inline-flex items-center h-10 w-20 rounded-full transition-colors hover:opacity-90 overflow-hidden bg-neutral-300 dark:bg-neutral-700"
           >
             {/* Animated circle slider */}
             <span

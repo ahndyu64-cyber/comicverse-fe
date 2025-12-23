@@ -176,7 +176,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
+    <div className="mx-auto max-w-4xl px-0 sm:px-2 py-8">
       <div className="relative rounded-lg overflow-hidden shadow">
         <div className="h-40 w-full bg-gradient-to-r from-sky-400 to-indigo-600" />
         <div className="-mt-10 flex items-end justify-between px-6">

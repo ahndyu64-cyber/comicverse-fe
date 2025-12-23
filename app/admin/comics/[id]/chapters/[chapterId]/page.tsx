@@ -295,9 +295,55 @@ export default function AdminChapterDetail() {
 
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [savingImages, setSavingImages] = useState(false);
+  const [touchDragIndex, setTouchDragIndex] = useState<number | null>(null);
+  const [touchStartY, setTouchStartY] = useState(0);
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
+  const [isMobileDragging, setIsMobileDragging] = useState(false);
+  const [draggedFileIndex, setDraggedFileIndex] = useState<number | null>(null);
+  const gridColumns = 2; // Number of columns in the grid
 
   function removeSelected(index: number) {
     setSelectedFiles((s) => s.filter((_, i) => i !== index));
+  }
+
+  function handleSelectedFileDragStart(index: number) {
+    setDraggedFileIndex(index);
+  }
+
+  function handleSelectedFileDragOver(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  function handleSelectedFileDrop(e: React.DragEvent<HTMLDivElement>, targetIndex: number) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (draggedFileIndex === null || draggedFileIndex === targetIndex) return;
+
+    setSelectedFiles((files) => {
+      const newFiles = [...files];
+      const draggedFile = newFiles[draggedFileIndex];
+      
+      // Remove from source
+      newFiles.splice(draggedFileIndex, 1);
+      
+      // Adjust target index if dragging from before to after
+      let insertIndex = targetIndex;
+      if (draggedFileIndex < targetIndex) {
+        insertIndex = targetIndex - 1;
+      }
+      
+      // Insert at target
+      newFiles.splice(insertIndex, 0, draggedFile);
+      
+      return newFiles;
+    });
+    setDraggedFileIndex(null);
+  }
+
+  function handleSelectedFileDragEnd() {
+    setDraggedFileIndex(null);
   }
 
   async function saveImagesToBackend(newImages: string[]) {
@@ -454,18 +500,131 @@ export default function AdminChapterDetail() {
     setDraggedIndex(null);
   }
 
+  function moveImageUp(index: number) {
+    if (index <= 0) return;
+    setImages((imgs) => {
+      const newImgs = [...imgs];
+      [newImgs[index], newImgs[index - 1]] = [newImgs[index - 1], newImgs[index]];
+      saveImagesToBackend(newImgs);
+      return newImgs;
+    });
+  }
+
+  function moveImageDown(index: number) {
+    if (index >= images.length - 1) return;
+    setImages((imgs) => {
+      const newImgs = [...imgs];
+      [newImgs[index], newImgs[index + 1]] = [newImgs[index + 1], newImgs[index]];
+      saveImagesToBackend(newImgs);
+      return newImgs;
+    });
+  }
+
+  function moveImageToStart(index: number) {
+    if (index <= 0) return;
+    setImages((imgs) => {
+      const newImgs = [...imgs];
+      const [img] = newImgs.splice(index, 1);
+      newImgs.unshift(img);
+      saveImagesToBackend(newImgs);
+      return newImgs;
+    });
+  }
+
+  function moveImageToEnd(index: number) {
+    if (index >= images.length - 1) return;
+    setImages((imgs) => {
+      const newImgs = [...imgs];
+      const [img] = newImgs.splice(index, 1);
+      newImgs.push(img);
+      saveImagesToBackend(newImgs);
+      return newImgs;
+    });
+  }
+
+  function handleMobileTouchStart(index: number, e: React.TouchEvent<HTMLDivElement>) {
+    setTouchStartY(e.touches[0].clientY);
+    setTouchStartX(e.touches[0].clientX);
+    
+    // Start long press timer
+    const timer = setTimeout(() => {
+      setTouchDragIndex(index);
+      setIsMobileDragging(true);
+    }, 300); // 300ms long press
+    
+    setLongPressTimer(timer);
+  }
+
+  function handleMobileTouchMove(e: React.TouchEvent<HTMLDivElement>) {
+    if (touchDragIndex === null || !isMobileDragging) return;
+    
+    e.preventDefault();
+    const currentY = e.touches[0].clientY;
+    const currentX = e.touches[0].clientX;
+    const deltaY = touchStartY - currentY;
+    const deltaX = currentX - touchStartX;
+    
+    // Determine dominant direction
+    const absDeltaY = Math.abs(deltaY);
+    const absDeltaX = Math.abs(deltaX);
+    
+    // Move up if swiped down (negative deltaY, dominant Y)
+    if (absDeltaY > absDeltaX && deltaY > 50 && touchDragIndex > gridColumns - 1) {
+      moveImageUp(touchDragIndex);
+      setTouchDragIndex(touchDragIndex - gridColumns);
+      setTouchStartY(currentY);
+      setTouchStartX(currentX);
+    }
+    // Move down if swiped up (positive deltaY, dominant Y)
+    else if (absDeltaY > absDeltaX && deltaY < -50 && touchDragIndex < images.length - gridColumns) {
+      moveImageDown(touchDragIndex);
+      setTouchDragIndex(touchDragIndex + gridColumns);
+      setTouchStartY(currentY);
+      setTouchStartX(currentX);
+    }
+    // Move left if swiped right (positive deltaX, dominant X)
+    else if (absDeltaX > absDeltaY && deltaX > 50 && touchDragIndex % gridColumns !== 0) {
+      moveImageUp(touchDragIndex);
+      setTouchDragIndex(touchDragIndex - 1);
+      setTouchStartY(currentY);
+      setTouchStartX(currentX);
+    }
+    // Move right if swiped left (negative deltaX, dominant X)
+    else if (absDeltaX > absDeltaY && deltaX < -50 && touchDragIndex % gridColumns !== gridColumns - 1 && touchDragIndex < images.length - 1) {
+      moveImageDown(touchDragIndex);
+      setTouchDragIndex(touchDragIndex + 1);
+      setTouchStartY(currentY);
+      setTouchStartX(currentX);
+    }
+  }
+
+  function handleMobileTouchEnd() {
+    // Clear long press timer
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      setLongPressTimer(null);
+    }
+    
+    setTouchDragIndex(null);
+    setIsMobileDragging(false);
+  }
+
   if (!comicId || !chapterId) return <div className="p-8">ID truyện hoặc chương không hợp lệ</div>;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+    <div className="mx-auto max-w-5xl px-0 sm:px-2 py-8">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold dark:text-white">Chương</h1>
           <div className="text-sm text-neutral-500 dark:text-white">{comicTitle || '—'} · {title || '—'}</div>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => router.push(`/admin/comics/${comicId}/chapters`)} className="rounded bg-neutral-100 dark:bg-neutral-800 dark:text-white px-3 py-2">Quay lại</button>
-          <button onClick={() => router.push(`/admin/comics/${comicId}/edit`)} className="rounded bg-sky-100 dark:bg-neutral-800 dark:text-white px-3 py-2">Sửa truyện</button>
+          <button onClick={() => router.push(`/admin/comics/${comicId}/chapters`)} className="rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 dark:text-white px-3 py-2 flex items-center gap-2 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Quay lại
+          </button>
         </div>
       </div>
 
@@ -506,9 +665,19 @@ export default function AdminChapterDetail() {
                   <div className="text-sm font-medium mb-3 dark:text-white">Ảnh đã chọn ({selectedFiles.length})</div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-3">
                     {selectedFiles.map((f, i) => (
-                      <div key={i} className="relative w-full h-40 rounded overflow-hidden border dark:border-neutral-700">
+                      <div
+                        key={i}
+                        draggable
+                        onDragStart={() => handleSelectedFileDragStart(i)}
+                        onDragOver={handleSelectedFileDragOver}
+                        onDrop={(e) => handleSelectedFileDrop(e, i)}
+                        onDragEnd={handleSelectedFileDragEnd}
+                        className={`relative w-full h-40 rounded overflow-hidden border dark:border-neutral-700 group cursor-move transition-all ${
+                          draggedFileIndex === i ? 'opacity-50 scale-95 border-blue-500' : 'hover:border-blue-500'
+                        }`}
+                      >
                         <img src={URL.createObjectURL(f)} alt={f.name} className="w-full h-full object-cover" />
-                        <button onClick={() => removeSelected(i)} className="absolute top-1 right-1 rounded bg-red-600 text-white text-xs px-1.5 py-0.5">×</button>
+                        <button onClick={() => removeSelected(i)} className="absolute top-1 right-1 rounded bg-red-600 text-white text-xs px-1.5 py-0.5 hover:bg-red-700 transition-colors">×</button>
                       </div>
                     ))}
                   </div>
@@ -529,21 +698,31 @@ export default function AdminChapterDetail() {
                       onDragOver={handleDragOver}
                       onDrop={(e) => handleDrop(e, i)}
                       onDragEnd={handleDragEnd}
-                      className={`relative overflow-hidden rounded border dark:border-neutral-700 group cursor-move transition-all ${
+                      onTouchStart={(e) => handleMobileTouchStart(i, e)}
+                      onTouchMove={handleMobileTouchMove}
+                      onTouchEnd={handleMobileTouchEnd}
+                      className={`relative overflow-hidden rounded border dark:border-neutral-700 group transition-all ${
                         draggedIndex === i ? 'opacity-50 scale-95 border-blue-500' : 'hover:border-blue-500'
-                      }`}
+                      } ${touchDragIndex === i ? 'ring-2 ring-blue-500 scale-95' : ''}`}
+                      style={{ touchAction: 'none' }}
                     >
                       <img src={src} alt={`img-${i}`} className="w-full h-40 object-cover" />
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
-                        <span className="text-white text-xs font-medium">Kéo để sắp xếp</span>
-                        <button
-                          onClick={() => removeImage(i)}
-                          className="px-2 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-xs font-medium transition"
-                          title="Xóa ảnh"
-                        >
-                          Xóa
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => removeImage(i)}
+                        className="absolute top-2 left-2 p-1.5 rounded bg-red-600 hover:bg-red-700 text-white transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100"
+                        title="Xóa ảnh"
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M9 3v1H5v2h1v13a2 2 0 002 2h8a2 2 0 002-2V6h1V4h-4V3H9zm0 5h2v8H9V8zm4 0h2v8h-2V8z" />
+                        </svg>
+                      </button>
+                      
+                      {/* Mobile long-press hint */}
+                      {isMobileDragging && touchDragIndex === i && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-blue-500/20 md:hidden">
+                          <span className="text-white text-xs font-semibold bg-blue-600 px-2 py-1 rounded">Kéo để di chuyển</span>
+                        </div>
+                      )}
                     </div>
                   ))
                 ) : (

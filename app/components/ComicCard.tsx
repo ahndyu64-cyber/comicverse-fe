@@ -61,15 +61,10 @@ function ComicCard({ comic }: { comic: Comic }) {
       {/* Content */}
       <div className="flex flex-col flex-1 p-3 bg-white dark:bg-black min-h-0">
         {/* Title */}
-        <Link href={`/comics/${comic._id}`} className="font-bold text-sm line-clamp-2 text-neutral-900 dark:text-white hover:text-purple-600 dark:hover:text-purple-400 transition-colors flex-shrink-0">
-          {comic.title}
-        </Link>
-
-        {/* Views Count */}
-        <div className="mt-1 flex-shrink-0">
-          <span className="inline-block px-3 py-1.5 rounded-full border border-neutral-300 dark:border-neutral-600 text-xs font-medium text-neutral-900 dark:text-white whitespace-nowrap">
-            {((comic as any).views || 0).toLocaleString('vi-VN')} lượt xem
-          </span>
+        <div className="flex-shrink-0">
+          <Link href={`/comics/${comic._id}`} className="block font-bold text-sm leading-snug text-neutral-900 dark:text-white hover:text-purple-600 dark:hover:text-purple-400 transition-colors overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', height: '2.4rem'}}>
+            {comic.title}
+          </Link>
         </div>
 
         {/* Latest Chapters List */}

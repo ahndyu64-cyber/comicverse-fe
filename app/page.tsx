@@ -79,13 +79,17 @@ export default async function HomePage() {
       <TopTrendingComicsList />
 
       {/* Latest Comics and Hot Comics */}
-      <section id="latest-and-hot" className="mx-auto max-w-7xl px-4 py-8">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {/* Latest Comics - 2/3 width */}
-          <LatestComicsList initialComics={latestComics} />
+      <section id="latest-and-hot" className="mx-auto max-w-7xl px-0 sm:px-2 py-8">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 md:gap-8 lg:grid-cols-3">
+          {/* Latest Comics - 2/3 width on desktop, full width on mobile */}
+          <div className="lg:col-span-2">
+            <LatestComicsList initialComics={latestComics} />
+          </div>
 
-          {/* Hot Comics - 1/3 width */}
-          <HotComicsList initialComics={hotComics.length > 0 ? hotComics : latestComics} />
+          {/* Hot Comics - 1/3 width on desktop, full width on mobile */}
+          <div className="lg:col-span-1">
+            <HotComicsList initialComics={hotComics.length > 0 ? hotComics : latestComics} />
+          </div>
         </div>
       </section>
 

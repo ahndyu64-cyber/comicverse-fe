@@ -118,21 +118,21 @@ export default function TopTrendingComicsList() {
   }
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-8">
+    <section className="mx-auto max-w-7xl px-0 sm:px-2 py-8">
       <div className="mb-4">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2 pb-3 border-b-4 border-red-600 inline-block uppercase">
+            <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-neutral-900 dark:text-white mb-2 pb-3 border-b-4 border-red-600 inline-block uppercase">
               Top Thịnh Hành
             </h2>
             <p className="text-neutral-600 dark:text-white">
-              Những truyện được xem nhiều nhất
+              Truyện được xem nhiều nhất
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <a
               href="/comics?sort=views"
-              className="px-6 py-2 bg-white dark:bg-black text-black dark:text-white font-semibold rounded-lg hover:shadow-lg hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all duration-300 whitespace-nowrap"
+              className="px-3 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base bg-white dark:bg-black text-black dark:text-white font-semibold rounded-lg hover:shadow-lg hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all duration-300 whitespace-nowrap"
             >
               Xem tất cả
             </a>
@@ -142,9 +142,9 @@ export default function TopTrendingComicsList() {
                   scrollContainerRef.current.scrollLeft -= 400;
                 }
               }}
-              className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-orange-600 dark:hover:border-orange-600 transition-all duration-300"
+              className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-orange-600 dark:hover:border-orange-600 transition-all duration-300"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
@@ -154,9 +154,9 @@ export default function TopTrendingComicsList() {
                   scrollContainerRef.current.scrollLeft += 400;
                 }
               }}
-              className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-orange-600 dark:hover:border-orange-600 transition-all duration-300"
+              className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full border-2 border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white hover:border-orange-600 dark:hover:border-orange-600 transition-all duration-300"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
