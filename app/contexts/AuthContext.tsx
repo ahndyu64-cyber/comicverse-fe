@@ -61,6 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.ok) {
         const userData = await response.json();
         const userData_data = userData.data || userData;
+        console.log('Refreshed user data:', userData_data);
         // Normalize user shape so `role` is always a string (supports `roles` array)
         const normalize = (u: any) => {
           if (!u) return u;
@@ -79,7 +80,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Ensure `id` is always set (prefer `_id` for some backends)
         const id = (userData_data && (userData_data._id || userData_data.id)) || (normalizedRaw && (normalizedRaw._id || normalizedRaw.id));
         const normalized = { ...normalizedRaw, id };
+        
+        console.log('Normalized user:', normalized);
+        
+        // Update user state with new data
         setUser(normalized);
+        
         // Update localStorage with new user data
         localStorage.setItem('user', JSON.stringify(normalized));
       }
@@ -94,10 +100,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const storedToken = localStorage.getItem('token');
     const storedRefreshToken = localStorage.getItem('refreshToken');
 
-    // If we have a stored user and token, restore them; refresh token is optional.
-    if (storedUser && storedToken) {
+    // Check for tokens in cookies (set by middleware after Google OAuth callback)
+    let cookieToken = null;
+    let cookieRefreshToken = null;
+    
+    if (typeof document !== 'undefined') {
+      const cookies = document.cookie.split(';');
+      for (const cookie of cookies) {
+        const [name, value] = cookie.trim().split('=');
+        if (name === 'token') cookieToken = decodeURIComponent(value);
+        if (name === 'refreshToken') cookieRefreshToken = decodeURIComponent(value);
+      }
+    }
+
+    // Use cookie tokens if available (fresh from OAuth), otherwise use stored tokens
+    const token = cookieToken || storedToken;
+    const refreshToken = cookieRefreshToken || storedRefreshToken;
+
+    // If we have a token, restore auth state
+    if (token) {
       // Check if token is expired
-      if (isTokenExpired(storedToken)) {
+      if (isTokenExpired(token)) {
         // Token is expired, clear all auth data
         localStorage.removeItem('user');
         localStorage.removeItem('token');
@@ -107,7 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       try {
-        const parsed = JSON.parse(storedUser);
+        const parsed = storedUser ? JSON.parse(storedUser) : {};
         // Ensure role normalization on load from localStorage
         let roleFromRolesArray: any = undefined;
         if (Array.isArray(parsed.roles) && parsed.roles.length > 0) {
@@ -121,15 +144,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const id = parsed?.id || parsed?._id || undefined;
         setUser({ ...parsed, role, id });
       } catch (e) {
-        setUser(JSON.parse(storedUser));
+        setUser(storedUser ? JSON.parse(storedUser) : null);
       }
-      setToken(storedToken);
-      // Only set `refreshToken` if present
-      if (storedRefreshToken) setRefreshToken(storedRefreshToken);
+      setToken(token);
+      if (refreshToken) setRefreshToken(refreshToken);
+
+      // Store tokens in localStorage for persistence (if they came from cookies)
+      if (cookieToken) {
+        localStorage.setItem('token', cookieToken);
+        if (cookieRefreshToken) {
+          localStorage.setItem('refreshToken', cookieRefreshToken);
+        }
+      }
 
       // Always attempt to refresh user data to ensure it's fresh
       // This helps with persistence across page reloads
-      refreshUserData(storedToken).finally(() => {
+      refreshUserData(token).finally(() => {
         setIsLoading(false);
       });
     } else {
@@ -184,7 +214,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('token', response.accessToken);
     localStorage.setItem('refreshToken', response.refreshToken);
     
-    // Refresh user data from server to get latest avatar and info
+    // Refresh user data to get full profile with avatar
     refreshUserData(response.accessToken);
   };
 

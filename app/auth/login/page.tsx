@@ -79,7 +79,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full rounded-lg bg-white/10 dark:bg-white/5 border border-white/20 dark:border-black/10 px-4 py-3 text-black dark:text-white placeholder-slate-600 dark:placeholder-slate-400 transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 focus:bg-white/20 dark:focus:bg-white/5 backdrop-blur-sm"
+                className="w-full rounded-lg bg-white/10 dark:bg-gray-700 border border-white/20 dark:border-gray-600 px-4 py-3 text-black dark:text-white placeholder-slate-600 dark:placeholder-slate-400 transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 focus:bg-white/20 dark:focus:bg-gray-600 backdrop-blur-sm"
                 placeholder="username@example.com"
               />
             </div>
@@ -95,7 +95,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full rounded-lg bg-white/10 dark:bg-white/5 border border-white/20 dark:border-black/10 px-4 py-3 pr-10 text-black dark:text-white placeholder-slate-600 dark:placeholder-slate-400 transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 focus:bg-white/20 dark:focus:bg-white/5 backdrop-blur-sm"
+                  className="w-full rounded-lg bg-white/10 dark:bg-gray-700 border border-white/20 dark:border-gray-600 px-4 py-3 pr-10 text-black dark:text-white placeholder-slate-600 dark:placeholder-slate-400 transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 focus:bg-white/20 dark:focus:bg-gray-600 backdrop-blur-sm"
                   placeholder="••••••••"
                 />
                 <button
@@ -123,7 +123,7 @@ export default function LoginPage() {
               <label className="flex items-center gap-2 text-slate-700 dark:text-white hover:text-black dark:hover:text-white transition-colors">
                 <input
                   type="checkbox"
-                  className="h-4 w-4 rounded bg-white/10 dark:bg-white/5 border border-white/20 dark:border-black/10 text-blue-500 focus:ring-blue-400"
+                  className="h-4 w-4 rounded bg-white/10 dark:bg-gray-700 border border-white/20 dark:border-gray-600 text-blue-500 focus:ring-blue-400"
                 />
                 Ghi nhớ đăng nhập
               </label>
@@ -155,10 +155,10 @@ export default function LoginPage() {
 
             <div className="relative my-8">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/20 dark:border-black/10"></div>
+                <div className="w-full border-t border-slate-300 dark:border-white/20"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 dark:from-black dark:via-slate-950 dark:to-black px-2 text-slate-600 dark:text-slate-400">Hoặc tiếp tục với</span>
+                <span className="bg-white dark:bg-black px-2 text-slate-600 dark:text-white">Hoặc tiếp tục với</span>
               </div>
             </div>
 

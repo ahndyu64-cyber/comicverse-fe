@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import type { Comic } from '../lib/comics';
+import { getComics } from '../lib/comics';
 import ComicCard from './ComicCard';
 
 type LatestComicsListProps = {
@@ -39,24 +40,8 @@ export default function LatestComicsList({ initialComics }: LatestComicsListProp
   const fetchLatestComics = async () => {
     try {
       setIsLoading(true);
-      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
-      
-      // Fetch latest comics sorted by update time
-      const response = await fetch(`${API_BASE}/comics?page=1&limit=30&sortBy=updated`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        console.warn('Failed to fetch latest comics');
-        setIsLoading(false);
-        return;
-      }
-
-      const data = await response.json();
-      const comics = data.data || data.items || [];
+      const data = await getComics(1, 30, 'latest');
+      const comics = data.items || [];
       
       setLatestComics(comics.length > 0 ? comics : initialComics);
       setCurrentPage(0); // Reset to first page when new data is fetched

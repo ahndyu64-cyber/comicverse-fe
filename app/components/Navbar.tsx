@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef, useState, forwardRef } from "react";
+import { useEffect, useRef, useState, forwardRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import SearchBox from "./SearchBox";
 import Logo from "./Logo";
@@ -51,20 +51,37 @@ export default function Navbar() {
   const firstMenuItemRef = useRef<HTMLButtonElement | null>(null);
   const genreMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isAdmin, refreshUser } = useAuth();
   // read localStorage only after mount to avoid hydration mismatch
   const [localUser, setLocalUser] = useState<any | null>(null);
   
   const effectiveUser = (user as any) || localUser;
   const avatarUrl = extractAvatarUrl((effectiveUser as any)?.avatar);
+  
+  useEffect(() => {
+    console.log('Avatar URL updated:', avatarUrl);
+    console.log('Effective user:', effectiveUser);
+  }, [avatarUrl]);
+
+  // Memoize userId to ensure stable dependency - must come before useEffects that use it
+  const userId = useMemo(() => {
+    return effectiveUser ? ((effectiveUser as any)._id || (effectiveUser as any).id) : null;
+  }, [effectiveUser]);
+
+  // Refresh user data whenever user changes to get latest avatar
+  useEffect(() => {
+    if (user && refreshUser) {
+      refreshUser();
+    }
+  }, [user, refreshUser]);
 
   // Initialize readNotificationIds from localStorage (per user)
   useEffect(() => {
     if (typeof window !== 'undefined' && effectiveUser) {
-      const userId = (effectiveUser as any)._id || (effectiveUser as any).id;
-      if (!userId) return;
+      const userIdLocal = (effectiveUser as any)._id || (effectiveUser as any).id;
+      if (!userIdLocal) return;
       
-      const key = `readNotifications_${userId}`;
+      const key = `readNotifications_${userIdLocal}`;
       const stored = localStorage.getItem(key);
       if (stored) {
         try {
@@ -75,18 +92,18 @@ export default function Navbar() {
         }
       }
     }
-  }, [effectiveUser]);
+  }, [userId]);
 
   // Save readNotificationIds to localStorage whenever it changes (per user)
   useEffect(() => {
     if (typeof window !== 'undefined' && effectiveUser) {
-      const userId = (effectiveUser as any)._id || (effectiveUser as any).id;
-      if (!userId) return;
+      const userIdLocal = (effectiveUser as any)._id || (effectiveUser as any).id;
+      if (!userIdLocal) return;
       
-      const key = `readNotifications_${userId}`;
+      const key = `readNotifications_${userIdLocal}`;
       localStorage.setItem(key, JSON.stringify(Array.from(readNotificationIds)));
     }
-  }, [readNotificationIds, effectiveUser]);
+  }, [readNotificationIds, userId]);
 
   useEffect(() => {
     try {
@@ -108,76 +125,84 @@ export default function Navbar() {
 
   // Fetch notifications for logged-in user
   useEffect(() => {
-    if (!effectiveUser) return;
-
-    const userId = (effectiveUser as any)._id || (effectiveUser as any).id;
     if (!userId) return;
+
+    const abortController = new AbortController();
 
     const fetchNotifications = async () => {
       try {
         const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
-        // Fetch followed comics to check for new chapters
-        const followingResponse = await fetch(`${API_BASE}/users/${userId}/following`);
+        const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
         
-        if (followingResponse.ok) {
-          const followingData = await followingResponse.json();
-          // Handle various response formats
-          let followedComics = followingData.data || followingData.items || followingData || [];
-          if (!Array.isArray(followedComics)) {
-            followedComics = [];
+        // Fetch followed comics to check for new chapters
+        const followingResponse = await fetch(`${API_BASE}/users/${userId}/following`, {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+          signal: abortController.signal,
+        });
+        
+        if (!followingResponse.ok) {
+          // Silently handle errors - don't log network failures during redirect
+          if (followingResponse.status !== 401) {
+            console.debug('Failed to fetch following comics:', followingResponse.status);
+          }
+          return;
+        }
+        
+        const followingData = await followingResponse.json();
+        // Handle various response formats
+        let followedComics = followingData.data || followingData.items || followingData || [];
+        if (!Array.isArray(followedComics)) {
+          followedComics = [];
+        }
+        
+        // Check for recent updates (within last 24 hours)
+        const recentUpdates = followedComics.filter((comic: any) => {
+          if (!comic) return false;
+          
+          // Get the most recent chapter date
+          let lastUpdateTime = null;
+          
+          if (comic.chapters && Array.isArray(comic.chapters) && comic.chapters.length > 0) {
+            const lastChapter = comic.chapters[comic.chapters.length - 1];
+            lastUpdateTime = new Date(lastChapter.createdAt || lastChapter.date || 0);
+          } else if (comic.updatedAt) {
+            lastUpdateTime = new Date(comic.updatedAt);
+          } else if (comic.createdAt) {
+            lastUpdateTime = new Date(comic.createdAt);
           }
           
-          // Check for recent updates (within last 24 hours)
-          const recentUpdates = followedComics.filter((comic: any) => {
-            if (!comic) return false;
-            
-            // Get the most recent chapter date
-            let lastUpdateTime = null;
-            
-            if (comic.chapters && Array.isArray(comic.chapters) && comic.chapters.length > 0) {
-              const lastChapter = comic.chapters[comic.chapters.length - 1];
-              lastUpdateTime = new Date(lastChapter.createdAt || lastChapter.date || 0);
-            } else if (comic.updatedAt) {
-              lastUpdateTime = new Date(comic.updatedAt);
-            } else if (comic.createdAt) {
-              lastUpdateTime = new Date(comic.createdAt);
-            }
-            
-            if (!lastUpdateTime) return false;
-            
-            const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-            return lastUpdateTime > dayAgo;
-          });
+          if (!lastUpdateTime) return false;
           
-          setNotifications(recentUpdates);
-          
-          // Auto-remove read status for comics with new recent updates
-          // This ensures that when a comic gets a new chapter, it shows as unread
-          const currentReadIds = new Set(readNotificationIds);
+          const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+          return lastUpdateTime > dayAgo;
+        });
+        
+        setNotifications(recentUpdates);
+        
+        // Update read notification IDs using functional updates
+        // This avoids creating a dependency on readNotificationIds in the effect
+        setReadNotificationIds((currentReadIds) => {
+          const newReadIds = new Set(currentReadIds);
           let hasChanges = false;
           
           recentUpdates.forEach((comic: any) => {
             // If this comic is in recent updates and was marked as read,
             // it means there's a new update, so remove it from read set
-            if (currentReadIds.has(comic._id)) {
-              currentReadIds.delete(comic._id);
+            if (newReadIds.has(comic._id)) {
+              newReadIds.delete(comic._id);
               hasChanges = true;
             }
           });
           
-          // Update read status if there were changes
-          if (hasChanges) {
-            setReadNotificationIds(currentReadIds);
-          }
-          
-          // Only count unread notifications
-          const unreadNotifications = recentUpdates.filter(
-            (comic: any) => !currentReadIds.has(comic._id)
-          );
-          setUnreadCount(unreadNotifications.length);
+          return hasChanges ? newReadIds : currentReadIds;
+        });
+      } catch (error: any) {
+        // Silently ignore abort errors - they're expected during cleanup
+        if (error.name === 'AbortError') {
+          return;
         }
-      } catch (error) {
-        console.error('Error fetching notifications:', error);
+        // Silently ignore network errors to avoid console spam
+        console.debug('Error fetching notifications:', error.message);
       }
     };
 
@@ -195,8 +220,9 @@ export default function Navbar() {
     return () => {
       clearInterval(interval);
       window.removeEventListener('recentFollowingRefresh', handleFollowChange);
+      abortController.abort();
     };
-  }, [effectiveUser, readNotificationIds, notifications]);
+  }, [userId]);
 
   // Update unread count when readNotificationIds changes
   useEffect(() => {

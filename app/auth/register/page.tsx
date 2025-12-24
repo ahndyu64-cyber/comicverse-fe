@@ -75,7 +75,7 @@ export default function RegisterPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="w-full rounded-lg bg-white/10 dark:bg-white/5 border border-white/20 dark:border-black/10 px-4 py-3 text-black dark:text-white placeholder-slate-600 dark:placeholder-slate-400 transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 focus:bg-white/20 dark:focus:bg-white/5 backdrop-blur-sm"
+                className="w-full rounded-lg bg-white/10 dark:bg-gray-700 border border-white/20 dark:border-gray-600 px-4 py-3 text-black dark:text-white placeholder-slate-600 dark:placeholder-slate-400 transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 focus:bg-white/20 dark:focus:bg-gray-600 backdrop-blur-sm"
                 placeholder="Nhập tên của bạn"
               />
             </div>
@@ -90,7 +90,7 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full rounded-lg bg-white/10 dark:bg-white/5 border border-white/20 dark:border-black/10 px-4 py-3 text-black dark:text-white placeholder-slate-600 dark:placeholder-slate-400 transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 focus:bg-white/20 dark:focus:bg-white/5 backdrop-blur-sm"
+                className="w-full rounded-lg bg-white/10 dark:bg-gray-700 border border-white/20 dark:border-gray-600 px-4 py-3 text-black dark:text-white placeholder-slate-600 dark:placeholder-slate-400 transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 focus:bg-white/20 dark:focus:bg-gray-600 backdrop-blur-sm"
                 placeholder="username@example.com"
               />
             </div>
@@ -106,7 +106,7 @@ export default function RegisterPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full rounded-lg bg-white/10 dark:bg-white/5 border border-white/20 dark:border-black/10 px-4 py-3 pr-10 text-black dark:text-white placeholder-slate-600 dark:placeholder-slate-400 transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 focus:bg-white/20 dark:focus:bg-white/5 backdrop-blur-sm"
+                  className="w-full rounded-lg bg-white/10 dark:bg-gray-700 border border-white/20 dark:border-gray-600 px-4 py-3 pr-10 text-black dark:text-white placeholder-slate-600 dark:placeholder-slate-400 transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 focus:bg-white/20 dark:focus:bg-gray-600 backdrop-blur-sm"
                   placeholder="••••••••"
                 />
                 <button
@@ -141,7 +141,7 @@ export default function RegisterPage() {
                   value={confirm}
                   onChange={(e) => setConfirm(e.target.value)}
                   required
-                  className="w-full rounded-lg bg-white/10 dark:bg-white/5 border border-white/20 dark:border-black/10 px-4 py-3 pr-10 text-black dark:text-white placeholder-slate-600 dark:placeholder-slate-400 transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 focus:bg-white/20 dark:focus:bg-white/5 backdrop-blur-sm"
+                  className="w-full rounded-lg bg-white/10 dark:bg-gray-700 border border-white/20 dark:border-gray-600 px-4 py-3 pr-10 text-black dark:text-white placeholder-slate-600 dark:placeholder-slate-400 transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 focus:bg-white/20 dark:focus:bg-gray-600 backdrop-blur-sm"
                   placeholder="••••••••"
                 />
                 <button
@@ -170,7 +170,7 @@ export default function RegisterPage() {
                 id="terms"
                 type="checkbox"
                 required
-                className="h-4 w-4 mt-1 rounded bg-white/10 dark:bg-white/5 border border-white/20 dark:border-black/10 text-blue-500 focus:ring-blue-400 cursor-pointer"
+                className="h-4 w-4 mt-1 rounded bg-white/10 dark:bg-gray-700 border border-white/20 dark:border-gray-600 text-blue-500 focus:ring-blue-400 cursor-pointer"
               />
               <label htmlFor="terms" className="text-sm text-slate-700 dark:text-white leading-relaxed">
                 Tôi đồng ý với <a href="/terms" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">Điều khoản sử dụng</a> và <a href="/terms" className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">Chính sách bảo mật</a>
