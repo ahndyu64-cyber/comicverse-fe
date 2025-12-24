@@ -76,7 +76,7 @@ function ComicCard({ comic }: { comic: Comic }) {
                 href={`/reader/${comic._id}/${chapter._id}`}
                 className="flex items-center justify-between text-xs hover:bg-neutral-50 dark:hover:bg-neutral-800 px-2 py-1.5 rounded transition-colors"
               >
-                <span className="text-neutral-700 dark:text-white line-clamp-1 flex-1 font-medium">
+                <span className="text-neutral-700 dark:text-white line-clamp-1 flex-shrink font-medium truncate overflow-hidden text-ellipsis max-w-[40%]">
                   {chapter.title || `Chap ${idx + 1}`}
                 </span>
                 <span className="text-neutral-500 dark:text-white whitespace-nowrap ml-2 text-xs flex-shrink-0">

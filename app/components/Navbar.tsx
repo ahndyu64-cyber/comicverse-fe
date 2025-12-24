@@ -68,13 +68,6 @@ export default function Navbar() {
     return effectiveUser ? ((effectiveUser as any)._id || (effectiveUser as any).id) : null;
   }, [effectiveUser]);
 
-  // Refresh user data whenever user changes to get latest avatar
-  useEffect(() => {
-    if (user && refreshUser) {
-      refreshUser();
-    }
-  }, [user, refreshUser]);
-
   // Initialize readNotificationIds from localStorage (per user)
   useEffect(() => {
     if (typeof window !== 'undefined' && effectiveUser) {

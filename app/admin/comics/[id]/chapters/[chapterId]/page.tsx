@@ -619,7 +619,7 @@ export default function AdminChapterDetail() {
           <div className="text-sm text-neutral-500 dark:text-white">{comicTitle || '—'} · {title || '—'}</div>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => router.push(`/admin/comics/${comicId}/chapters`)} className="rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 dark:text-white px-3 py-2 flex items-center gap-2 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors">
+          <button onClick={() => router.push(`/admin/comics/${comicId}/chapters`)} className="rounded border border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 dark:text-white px-3 py-2 flex items-center gap-2 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>

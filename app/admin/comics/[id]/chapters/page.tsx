@@ -60,7 +60,18 @@ export default function AdminChaptersPage() {
           return;
         }
         setComicTitle(data.title || "");
-        setChapters(data.chapters || []);
+        // Sort chapters by date (newest first), using the correct field name
+        const sortedChapters = (data.chapters || []).sort((a, b) => {
+          // Try to sort by date if available (chapters have 'date' field)
+          const aDate = a.date || a.createdAt;
+          const bDate = b.date || b.createdAt;
+          if (aDate && bDate) {
+            return new Date(bDate).getTime() - new Date(aDate).getTime();
+          }
+          // Fallback: sort by ID to ensure consistent order
+          return String(b._id || '').localeCompare(String(a._id || ''));
+        });
+        setChapters(sortedChapters);
       }
     } catch (err: any) {
       console.error(err);
@@ -179,17 +190,29 @@ export default function AdminChaptersPage() {
 
   async function removeChapter(id: string) {
     const chapter = chapters.find(c => c._id === id);
+    console.log('Removing chapter:', { id, chapter, allChapters: chapters, chapterIndex: chapters.findIndex(c => c._id === id) });
     setDeleteChapterTitle(chapter?.title || "chương");
     setShowDeleteConfirm(id);
   }
 
   async function confirmRemoveChapter(id: string) {
+    const targetChapter = chapters.find(c => c._id === id);
+    const chapterIndex = chapters.findIndex(c => c._id === id);
+    console.log('Confirming delete for chapter ID:', id, 'Chapter:', targetChapter, 'Index:', chapterIndex, 'All chapters:', chapters);
+    
+    // Verify we found the right chapter
+    if (!targetChapter) {
+      alert('Lỗi: Không tìm thấy chương để xóa');
+      return;
+    }
+    
     setShowDeleteConfirm(null);
     setDeleteLoading(id);
     try {
       const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
       const chapterId = String(id).trim();
       const url = `${API_BASE}/comics/${comicId}/chapters/${chapterId}`;
+      console.log('DELETE URL:', url, 'Target chapter:', targetChapter, 'Chapter index in array:', chapterIndex);
 
       const res = await fetch(url, {
         method: "DELETE",
@@ -266,7 +289,12 @@ export default function AdminChaptersPage() {
               <div className="p-6 text-red-600">{error}</div>
             ) : (
               <div className="space-y-3">
-                {[...chapters].reverse().map((ch) => (
+                {chapters && chapters.map((ch, index) => {
+                  if (!ch._id) {
+                    console.warn('Chapter missing _id at index:', index, ch);
+                    return null;
+                  }
+                  return (
                   <div key={ch._id} className="flex items-center justify-between rounded-lg border bg-white dark:bg-black dark:border-neutral-800 p-4">
                     <div className="flex-1">
                       {editingId === ch._id ? (
@@ -307,7 +335,8 @@ export default function AdminChaptersPage() {
                       )}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -346,7 +375,7 @@ export default function AdminChaptersPage() {
                 Huỷ
               </button>
               <button
-                onClick={() => confirmRemoveChapter(showDeleteConfirm)}
+                onClick={() => confirmRemoveChapter(showDeleteConfirm!)}
                 disabled={deleteLoading === showDeleteConfirm}
                 className="flex-1 px-3 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-red-400 disabled:to-red-500 text-white font-medium text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-70"
               >
