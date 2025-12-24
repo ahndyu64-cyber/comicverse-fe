@@ -115,7 +115,7 @@ export default function Navbar() {
 
     const fetchNotifications = async () => {
       try {
-        const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+        const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
         // Fetch followed comics to check for new chapters
         const followingResponse = await fetch(`${API_BASE}/users/${userId}/following`);
         
@@ -220,7 +220,7 @@ export default function Navbar() {
   useEffect(() => {
     async function fetchGenres() {
       try {
-        const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+        const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
         const response = await fetch(`${API_BASE}/genres`);
         if (response.ok) {
           const data = await response.json();

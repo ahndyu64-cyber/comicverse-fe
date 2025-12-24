@@ -26,7 +26,7 @@ export type ComicsResponse = {
   limit: number;
 };
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
 export const getComics = async (page: number = 1, limit: number = 30, sortBy?: string): Promise<ComicsResponse> => {
   const params = new URLSearchParams();

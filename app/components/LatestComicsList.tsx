@@ -39,7 +39,7 @@ export default function LatestComicsList({ initialComics }: LatestComicsListProp
   const fetchLatestComics = async () => {
     try {
       setIsLoading(true);
-      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
       
       // Fetch latest comics sorted by update time
       const response = await fetch(`${API_BASE}/comics?page=1&limit=30&sortBy=updated`, {

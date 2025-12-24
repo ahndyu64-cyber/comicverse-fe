@@ -27,7 +27,7 @@ export default function RecentFollowing() {
         return;
       }
 
-      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
       // Get following comics
       const response = await fetch(`${API_BASE}/users/${userId}/following`, {

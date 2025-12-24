@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUserData = async (authToken: string): Promise<void> => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000'}/users/profile`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001'}/users/profile`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${authToken}`,

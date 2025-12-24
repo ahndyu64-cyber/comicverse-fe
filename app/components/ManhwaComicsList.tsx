@@ -16,7 +16,7 @@ export default function ManhwaComicsList() {
     const fetchManhwaComics = async () => {
       try {
         setIsLoading(true);
-        const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+        const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
         
         const url = `${API_BASE}/comics?genres[]=Manhwa&page=1&limit=100`;
         console.log('[ManhwaComicsList] Fetching from:', url);
