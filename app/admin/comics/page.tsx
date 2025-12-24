@@ -249,7 +249,6 @@ export default function AdminComicsPage() {
               >
                 <option value="new">Mới cập nhật</option>
                 <option value="alpha">A → Z</option>
-                <option value="popular">Nổi bật</option>
               </select>
             </div>
           </div>
