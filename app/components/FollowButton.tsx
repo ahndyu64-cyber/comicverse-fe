@@ -197,7 +197,7 @@ export default function FollowButton({ comicId, initialFollows = 0, onFollowChan
           </svg>
         </button>
         <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 whitespace-nowrap">
-          <span className="text-blue-600 dark:text-blue-400">{followCount.toLocaleString('vi-VN')}</span> người theo dõi
+          <span className="text-blue-600 dark:text-blue-400">{(followCount || 0).toLocaleString('vi-VN')}</span> người theo dõi
         </p>
       </div>
       {error && (
