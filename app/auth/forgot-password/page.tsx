@@ -26,13 +26,18 @@ export default function ForgotPasswordPage() {
       return;
     }
 
-    if (newPassword !== confirmPassword) {
-      setError("Mật khẩu xác nhận không khớp!");
+    if (code.length !== 8) {
+      setError("Mã xác thực phải có đúng 8 ký tự!");
       return;
     }
 
-    if (newPassword.length < 6) {
-      setError("Mật khẩu phải có ít nhất 6 ký tự!");
+    if (newPassword.length < 4) {
+      setError("Mật khẩu phải có ít nhất 4 ký tự!");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setError("Mật khẩu xác nhận không khớp!");
       return;
     }
 
@@ -45,7 +50,7 @@ export default function ForgotPasswordPage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, code, newPassword }),
+        body: JSON.stringify({ email, token: code, password: newPassword, confirmPassword }),
       });
 
       if (!response.ok) {
@@ -125,7 +130,7 @@ export default function ForgotPasswordPage() {
         <div className="rounded-2xl bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-black/10 px-8 py-10 shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="rounded-lg bg-red-500/20 dark:bg-red-950/30 border border-red-500/50 dark:border-red-900/50 p-4 text-sm text-red-200 dark:text-red-300">
+              <div className="rounded-lg bg-red-600/40 dark:bg-red-600/50 border border-red-500 dark:border-red-500 p-4 text-sm text-red-900 dark:text-red-50 font-semibold">
                 {error}
               </div>
             )}

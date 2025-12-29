@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -9,62 +9,41 @@ export default function CallbackPage() {
   const searchParams = useSearchParams();
   const { login: setAuth } = useAuth();
   const [error, setError] = useState<string>('');
+  const hasHandledRef = useRef(false);
 
   useEffect(() => {
+    // Prevent duplicate handling
+    if (hasHandledRef.current) return;
+    hasHandledRef.current = true;
+
     const handleCallback = async () => {
       try {
-        // Get the token from URL query params - check for both 'token' and 'accessToken'
         const token = searchParams?.get('token') || searchParams?.get('accessToken');
         const refreshToken = searchParams?.get('refreshToken');
+        const userParam = searchParams?.get('user');
 
-        // If tokens are in query params, use them
-        if (token && refreshToken) {
-          // Store tokens in localStorage
+        if (token && refreshToken && userParam) {
+          // Store tokens
           localStorage.setItem('token', token);
           localStorage.setItem('refreshToken', refreshToken);
 
-          // Fetch user profile with the token
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001'}/users/profile`,
-            {
-              method: 'GET',
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-              credentials: 'include',
-            }
-          );
+          // Parse user data từ URL param
+          const user = JSON.parse(decodeURIComponent(userParam));
 
-          if (response.ok) {
-            const userData = await response.json();
-            const user = userData.data || userData;
+          const authResponse = {
+            accessToken: token,
+            refreshToken: refreshToken,
+            user: user,
+          };
 
-            // Create AuthResponse format
-            const authResponse = {
-              accessToken: token,
-              refreshToken: refreshToken,
-              user: {
-                id: user._id || user.id,
-                username: user.username,
-                email: user.email,
-                roles: user.roles || [user.role || 'user'],
-                avatar: user.avatar,
-              },
-            };
-
-            setAuth(authResponse);
-            router.push('/');
-          } else {
-            throw new Error('Failed to fetch user profile');
-          }
+          setAuth(authResponse);
+          router.push('/');
         } else {
-          throw new Error('No authentication tokens found in callback URL');
+          throw new Error('No authentication tokens found');
         }
       } catch (err: any) {
         console.error('Auth callback error:', err);
         setError(err?.message || 'Authentication failed');
-        // Redirect to login after 3 seconds
         setTimeout(() => {
           router.push('/auth/login?error=auth_failed');
         }, 3000);

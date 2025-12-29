@@ -48,6 +48,7 @@ export default function Navbar() {
   const menuRef = useRef<HTMLDivElement | null>(null);
   const genreMenuRef = useRef<HTMLDivElement | null>(null);
   const notificationsRef = useRef<HTMLDivElement | null>(null);
+  const userRef = useRef<any>(null);
   const firstMenuItemRef = useRef<HTMLButtonElement | null>(null);
   const genreMenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
@@ -109,9 +110,11 @@ export default function Navbar() {
 
   // Update localUser when user from AuthContext changes
   useEffect(() => {
-    if (user) {
+    if (user && JSON.stringify(userRef.current) !== JSON.stringify(user)) {
+      userRef.current = user;
       setLocalUser(user);
-    } else {
+    } else if (!user && userRef.current !== null) {
+      userRef.current = null;
       setLocalUser(null);
     }
   }, [user]);
