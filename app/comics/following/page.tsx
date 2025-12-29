@@ -9,7 +9,21 @@ export default function FollowingPage() {
   const [comics, setComics] = useState<Comic[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const comicsPerPage = 10;
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Determine comics per page based on screen size
+  const comicsPerPage = isMobile ? 10 : 30; // Mobile: 2 cols × 5 rows = 10, PC: 6 cols × 5 rows = 30
+
+  // Check screen size on mount and on resize
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const loadFollowingComics = async () => {
     try {
@@ -89,7 +103,7 @@ export default function FollowingPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 lg:gap-6">
             {comics.slice((currentPage - 1) * comicsPerPage, currentPage * comicsPerPage).map((comic) => (
               <ComicCard key={comic._id} comic={comic} />
             ))}
