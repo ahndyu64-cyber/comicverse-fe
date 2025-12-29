@@ -699,7 +699,11 @@ export default function Navbar() {
                       </svg>
                     </button>
                     <button
-                      onClick={() => { logout(); setShowMenu(false); }}
+                      onClick={() => { 
+                        logout();
+                        setShowMenu(false);
+                        router.push('/');
+                      }}
                       className="w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-100 dark:text-white dark:hover:bg-neutral-800"
                     >
                       Đăng xuất
