@@ -154,6 +154,51 @@ export default function EditComicPage() {
     }
   };
 
+  // Helper function to compress image
+  const compressImage = (file: File): Promise<File> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          // Resize if image is larger than 1200px width
+          if (width > 1200) {
+            height = (height * 1200) / width;
+            width = 1200;
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const compressedFile = new File([blob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now(),
+                });
+                resolve(compressedFile);
+              } else {
+                resolve(file);
+              }
+            },
+            'image/jpeg',
+            0.8 // 80% quality
+          );
+        };
+      };
+    });
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -175,9 +220,12 @@ export default function EditComicPage() {
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setError('Kích thước ảnh không được vượt quá 5MB');
+    // Compress image before upload
+    const compressedFile = await compressImage(file);
+
+    // Validate compressed file size (max 500KB)
+    if (compressedFile.size > 500 * 1024) {
+      setError('Kích thước ảnh không được vượt quá 500KB');
       return;
     }
 
@@ -187,15 +235,23 @@ export default function EditComicPage() {
     try {
       // Create FormData for file upload
       const formDataFile = new FormData();
-      formDataFile.append('file', file);
+      formDataFile.append('file', compressedFile);
 
-      const response = await fetch('/api/upload', {
+      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      
+      const response = await fetch(`${API_BASE}/upload`, {
         method: 'POST',
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: formDataFile,
       });
 
       if (!response.ok) {
-        throw new Error('Failed to upload image');
+        const errorData = await response.text();
+        console.error(`Upload failed with status ${response.status}:`, errorData);
+        throw new Error(`Upload failed: ${response.status} - ${errorData || 'Unknown error'}`);
       }
 
       const data = await response.json();

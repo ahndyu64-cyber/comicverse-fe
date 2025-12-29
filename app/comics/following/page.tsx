@@ -9,7 +9,7 @@ export default function FollowingPage() {
   const [comics, setComics] = useState<Comic[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const comicsPerPage = 30;
+  const comicsPerPage = 10;
 
   const loadFollowingComics = async () => {
     try {
@@ -89,7 +89,7 @@ export default function FollowingPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
             {comics.slice((currentPage - 1) * comicsPerPage, currentPage * comicsPerPage).map((comic) => (
               <ComicCard key={comic._id} comic={comic} />
             ))}
