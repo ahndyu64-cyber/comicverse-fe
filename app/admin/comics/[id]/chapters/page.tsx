@@ -296,11 +296,11 @@ export default function AdminChaptersPage() {
                   }
                   return (
                   <div key={ch._id} className="flex items-center justify-between rounded-lg border bg-white dark:bg-black dark:border-neutral-800 p-4">
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       {editingId === ch._id ? (
                         <input className="w-full rounded-md border px-2 py-1" value={editingTitle} onChange={(e) => setEditingTitle(e.target.value)} />
                       ) : (
-                        <div className="font-medium text-sm dark:text-white">{ch.title}</div>
+                        <div className="font-medium text-sm dark:text-white truncate" title={ch.title}>{ch.title}</div>
                       )}
                     </div>
 
