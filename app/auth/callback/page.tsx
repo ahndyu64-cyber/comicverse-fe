@@ -4,32 +4,29 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function CallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string>('');
-  const [authContext, setAuthContext] = useState<any>(null);
+  const [mounted, setMounted] = useState(false);
   const hasHandledRef = useRef(false);
 
-  // Load auth context on client side only
   useEffect(() => {
-    try {
-      const { useAuth } = require('../../contexts/AuthContext');
-      const auth = useAuth();
-      setAuthContext(auth);
-    } catch (e) {
-      console.error('Failed to load auth context:', e);
-    }
+    setMounted(true);
   }, []);
 
   useEffect(() => {
-    // Prevent duplicate handling
-    if (hasHandledRef.current || !authContext) return;
+    if (!mounted || hasHandledRef.current) return;
     hasHandledRef.current = true;
 
     const handleCallback = async () => {
       try {
+        // Import useAuth only on client
+        const { useAuth } = await import('../../contexts/AuthContext');
+        // This won't work with hooks, so let's do it differently
+        
         const token = searchParams?.get('token') || searchParams?.get('accessToken');
         const refreshToken = searchParams?.get('refreshToken');
         const userParam = searchParams?.get('user');
@@ -41,15 +38,12 @@ export default function CallbackPage() {
 
           // Parse user data từ URL param
           const user = JSON.parse(decodeURIComponent(userParam));
+          localStorage.setItem('user', JSON.stringify(user));
 
-          const authResponse = {
-            accessToken: token,
-            refreshToken: refreshToken,
-            user: user,
-          };
-
-          authContext.login(authResponse);
-          router.push('/');
+          // Small delay to ensure storage is complete
+          setTimeout(() => {
+            router.push('/');
+          }, 100);
         } else {
           throw new Error('No authentication tokens found');
         }
@@ -63,7 +57,7 @@ export default function CallbackPage() {
     };
 
     handleCallback();
-  }, [searchParams, router, authContext]);
+  }, [mounted, searchParams, router]);
 
   if (error) {
     return (
