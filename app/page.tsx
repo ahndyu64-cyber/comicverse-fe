@@ -42,7 +42,7 @@ const mockComics: Comic[] = [
 
 async function getLatestComics() {
   try {
-    const data = await getComics(1, 30, 'latest'); // Sort by latest updates
+    const data = await getComics(1, 30, 'new'); // Sort by latest updates
     return data?.items || [];
   } catch (error) {
     console.error("Error fetching latest comics:", error);
