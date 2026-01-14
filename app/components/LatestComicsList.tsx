@@ -40,7 +40,7 @@ export default function LatestComicsList({ initialComics }: LatestComicsListProp
   const fetchLatestComics = async () => {
     try {
       setIsLoading(true);
-      const data = await getComics(1, 30, 'latest');
+      const data = await getComics(1, 30, 'new');
       const comics = data.items || [];
       
       setLatestComics(comics.length > 0 ? comics : initialComics);
