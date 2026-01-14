@@ -1,12 +1,12 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import React, { useState, useEffect } from 'react';
 import ComicCard from "../components/ComicCard";
 import { getComics, type Comic } from "../lib/comics";
 import { useSearchParams } from 'next/navigation';
 import { searchComics } from '../lib/api';
-
-export const dynamic = 'force-dynamic';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3001";
 
