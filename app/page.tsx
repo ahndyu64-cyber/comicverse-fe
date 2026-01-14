@@ -46,11 +46,8 @@ async function getLatestComics() {
     return data?.items || [];
   } catch (error) {
     console.error("Error fetching latest comics:", error);
-    // Return mock data in development when backend is unavailable
-    if (process.env.NODE_ENV === "development") {
-      return mockComics;
-    }
-    return [];
+    // Always return mock data when backend is unavailable
+    return mockComics;
   }
 }
 
