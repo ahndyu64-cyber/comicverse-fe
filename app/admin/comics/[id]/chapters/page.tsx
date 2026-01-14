@@ -61,7 +61,7 @@ export default function AdminChaptersPage() {
         }
         setComicTitle(data.title || "");
         // Sort chapters by date (newest first), using the correct field name
-        const sortedChapters = (data.chapters || []).sort((a, b) => {
+        const sortedChapters = (data.chapters || []).sort((a: any, b: any) => {
           // Try to sort by date if available (chapters have 'date' field)
           const aDate = a.date || a.createdAt;
           const bDate = b.date || b.createdAt;
