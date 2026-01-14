@@ -146,7 +146,7 @@ async function ComicDetailContent({ id }: { id: string }) {
               {comic.chapters && comic.chapters.length > 0 && (
                 <ComicActions 
                   comicId={comic._id || ''} 
-                  followCount={comic.follows || 0}
+                  followCount={(comic as any).follows || 0}
                   firstChapterId={comic.chapters[0]._id}
                 />
               )}
