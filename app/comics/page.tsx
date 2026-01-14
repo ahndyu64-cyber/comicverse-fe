@@ -3,6 +3,7 @@
 export const dynamic = 'force-dynamic';
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import ComicCard from "../components/ComicCard";
 import { getComics, type Comic } from "../lib/comics";
 import { searchComics } from '../lib/api';
@@ -31,6 +32,7 @@ export default function ComicsPage() {
   // NOTE: This component intentionally does NOT listen to follow events
   // to avoid unnecessary refreshes when users follow/unfollow comics.
   // The /comics/following page handles follow event refreshes.
+  const searchParams = useSearchParams();
   const [isClient, setIsClient] = useState(false);
   const [comics, setComics] = useState<Comic[]>([]);
   const [allComics, setAllComics] = useState<Comic[]>([]);
