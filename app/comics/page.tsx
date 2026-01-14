@@ -5,7 +5,6 @@ export const dynamic = 'force-dynamic';
 import React, { useState, useEffect } from 'react';
 import ComicCard from "../components/ComicCard";
 import { getComics, type Comic } from "../lib/comics";
-import { useSearchParams } from 'next/navigation';
 import { searchComics } from '../lib/api';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE || "http://localhost:3001";
@@ -32,6 +31,7 @@ export default function ComicsPage() {
   // NOTE: This component intentionally does NOT listen to follow events
   // to avoid unnecessary refreshes when users follow/unfollow comics.
   // The /comics/following page handles follow event refreshes.
+  const [isClient, setIsClient] = useState(false);
   const [comics, setComics] = useState<Comic[]>([]);
   const [allComics, setAllComics] = useState<Comic[]>([]);
   const [loading, setLoading] = useState(true);
@@ -55,11 +55,25 @@ export default function ComicsPage() {
     sort: false,
   });
 
-  const searchParams = useSearchParams();
-  const q = searchParams?.get('q') || '';
-  const genreParam = searchParams?.get('genre') || '';
-  const genresArrayString = searchParams?.get('genres[]') || '';
-  const openGenres = searchParams?.get('openGenres') === 'true';
+  // Initialize on client side only
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Use window.location.search instead of useSearchParams
+  const [q, setQ] = useState('');
+  const [genreParam, setGenreParam] = useState('');
+  const [genresArrayString, setGenresArrayString] = useState('');
+  const [openGenres, setOpenGenres] = useState(false);
+
+  useEffect(() => {
+    if (!isClient) return;
+    const params = new URLSearchParams(window.location.search);
+    setQ(params.get('q') || '');
+    setGenreParam(params.get('genre') || '');
+    setGenresArrayString(params.get('genres[]') || '');
+    setOpenGenres(params.get('openGenres') === 'true');
+  }, [isClient]);
 
   // Listen to dark mode changes
   useEffect(() => {
