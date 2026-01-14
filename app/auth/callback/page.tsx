@@ -9,7 +9,13 @@ export const dynamic = 'force-dynamic';
 export default function CallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login: setAuth } = useAuth();
+  let setAuth: any = null;
+  try {
+    const auth = useAuth();
+    setAuth = auth?.login;
+  } catch (e) {
+    // Auth context may not be available during prerender
+  }
   const [error, setError] = useState<string>('');
   const hasHandledRef = useRef(false);
 
