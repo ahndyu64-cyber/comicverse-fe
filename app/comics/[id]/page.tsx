@@ -106,8 +106,6 @@ async function ComicDetailContent({ id }: { id: string }) {
                             {idx < comic.authors.length - 1 && <span>, </span>}
                           </span>
                         ))
-                      : comic.author
-                      ? comic.author
                       : "Đang cập nhật"}
                   </p>
                 </div>
