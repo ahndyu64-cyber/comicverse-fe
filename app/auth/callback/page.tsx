@@ -1,34 +1,29 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-
-export const dynamic = 'force-dynamic';
+import { useRouter } from 'next/navigation';
 
 export default function CallbackPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [error, setError] = useState<string>('');
-  const [mounted, setMounted] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const hasHandledRef = useRef(false);
 
   useEffect(() => {
-    setMounted(true);
+    setIsClient(true);
   }, []);
 
   useEffect(() => {
-    if (!mounted || hasHandledRef.current) return;
+    if (!isClient || hasHandledRef.current) return;
     hasHandledRef.current = true;
 
     const handleCallback = async () => {
       try {
-        // Import useAuth only on client
-        const { useAuth } = await import('../../contexts/AuthContext');
-        // This won't work with hooks, so let's do it differently
-        
-        const token = searchParams?.get('token') || searchParams?.get('accessToken');
-        const refreshToken = searchParams?.get('refreshToken');
-        const userParam = searchParams?.get('user');
+        // Get URL params on client side only
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token') || params.get('accessToken');
+        const refreshToken = params.get('refreshToken');
+        const userParam = params.get('user');
 
         if (token && refreshToken && userParam) {
           // Store tokens
@@ -56,7 +51,7 @@ export default function CallbackPage() {
     };
 
     handleCallback();
-  }, [mounted, searchParams, router]);
+  }, [isClient, router]);
 
   if (error) {
     return (
