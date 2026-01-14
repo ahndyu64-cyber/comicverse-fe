@@ -1,9 +1,6 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
-
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
 import ComicCard from "../components/ComicCard";
 import { getComics, type Comic } from "../lib/comics";
 import { searchComics } from '../lib/api';
@@ -32,7 +29,6 @@ export default function ComicsPage() {
   // NOTE: This component intentionally does NOT listen to follow events
   // to avoid unnecessary refreshes when users follow/unfollow comics.
   // The /comics/following page handles follow event refreshes.
-  const searchParams = useSearchParams();
   const [isClient, setIsClient] = useState(false);
   const [comics, setComics] = useState<Comic[]>([]);
   const [allComics, setAllComics] = useState<Comic[]>([]);
@@ -99,7 +95,16 @@ export default function ComicsPage() {
   // Initialize selected genres from URL parameter
   useEffect(() => {
     // Check for genres[] array parameter
-    const genresArray = searchParams?.getAll('genres[]') || [];
+    if (!genresArrayString) return;
+    
+    const params = new URLSearchParams(genresArrayString);
+    const genresArray = [];
+    // Parse genres[] array from URL
+    for (const [key, value] of params.entries()) {
+      if (key === 'genres[]') {
+        genresArray.push(value);
+      }
+    }
     
     if (genresArray.length > 0) {
       // Handle genres[] array parameter (e.g., from ManhuaComicsList)
