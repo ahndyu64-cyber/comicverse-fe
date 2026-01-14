@@ -104,7 +104,7 @@ export default function FollowingPage() {
       ) : (
         <>
           <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 lg:gap-6">
-            {comics.slice((currentPage - 1) * comicsPerPage, currentPage * comicsPerPage).map((comic) => (
+            {comics.slice((currentPage - 1) * comicsPerPage, currentPage * comicsPerPage).map((comic: any) => (
               <ComicCard key={comic._id} comic={comic} />
             ))}
           </div>
