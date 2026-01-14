@@ -68,7 +68,7 @@ async function ComicDetailContent({ id }: { id: string }) {
                   <span className="text-xs font-bold text-purple-600 uppercase tracking-wider">Thể loại</span>
                   <div className="flex flex-wrap gap-2">
                     {comic.genres
-                      .filter(genre => {
+                      .filter((genre: any) => {
                         // Lọc bỏ thể loại trống hoặc không hợp lệ
                         if (typeof genre === 'string') {
                           return genre && genre.trim() !== '';
@@ -76,7 +76,7 @@ async function ComicDetailContent({ id }: { id: string }) {
                         // Nếu là object, kiểm tra có name hoặc _id không
                         return genre && (genre.name || genre._id);
                       })
-                      .map((genre, idx) => {
+                      .map((genre: any, idx: number) => {
                         // Lấy tên thể loại (có thể là string hoặc object)
                         const genreName = typeof genre === 'string' ? genre : (genre.name || genre._id || '');
                         return genreName ? (
