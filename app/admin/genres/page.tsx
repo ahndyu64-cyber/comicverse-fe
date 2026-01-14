@@ -66,7 +66,7 @@ export default function AdminGenresPage() {
       const token = localStorage.getItem("token");
       
       // Create payload with different variations to handle different backend DTO requirements
-      const basePayload = { name: newGenre.name.trim() };
+      const basePayload: any = { name: newGenre.name.trim() };
       if (newGenre.description?.trim()) {
         basePayload.description = newGenre.description.trim();
       }
