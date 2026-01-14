@@ -2,30 +2,18 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '../../contexts/AuthContext';
 
-export const dynamic = 'force-dynamic';
-
-export default function CallbackPage() {
+export default function CallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { login: setAuth } = useAuth();
   const [error, setError] = useState<string>('');
-  const [authContext, setAuthContext] = useState<any>(null);
   const hasHandledRef = useRef(false);
-
-  // Load auth context on client side only
-  useEffect(() => {
-    try {
-      const { useAuth } = require('../../contexts/AuthContext');
-      const auth = useAuth();
-      setAuthContext(auth);
-    } catch (e) {
-      console.error('Failed to load auth context:', e);
-    }
-  }, []);
 
   useEffect(() => {
     // Prevent duplicate handling
-    if (hasHandledRef.current || !authContext) return;
+    if (hasHandledRef.current) return;
     hasHandledRef.current = true;
 
     const handleCallback = async () => {
@@ -48,7 +36,7 @@ export default function CallbackPage() {
             user: user,
           };
 
-          authContext.login(authResponse);
+          setAuth(authResponse);
           router.push('/');
         } else {
           throw new Error('No authentication tokens found');
@@ -63,7 +51,7 @@ export default function CallbackPage() {
     };
 
     handleCallback();
-  }, [searchParams, router, authContext]);
+  }, [searchParams, router, setAuth]);
 
   if (error) {
     return (
